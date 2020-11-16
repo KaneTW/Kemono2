@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Kemono</title>
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/normalize.css@8.0.1/normalize.css">
+    <!-- TODO: Replace push notifications with Python library -->
+    <!--<meta name="push_key" content="${process.env.VAPID_PUBLIC_KEY}"/>-->
+    {% if props.compatibility %}
+      <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/compatibility.css') }}">
+    {% else %}
+      <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/index.css') }}">
+    {% endif %}
+    {% if props.discord %}
+      <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/discord.css') }}">
+    {% endif %}
+    {% if props.service %}
+      <meta name="service" content="{{ props.service }}"/>
+    {% endif %}
+    {% if props.importId %}
+      <meta name="importId" content="{{ props.importId }}"/>
+    {% endif %}
+    {% if props.count %}
+      <meta name="count" content="{{ props.count }}"/>
+    {% endif %}
+    {% if props.posts and length(props.posts > 0) %}
+      {% if first(props.posts).published %}
+        <meta name="published" content="{{ first(props.posts).published }}"/>
+      {% endif %}
+      <meta name="added" content="{{ first(props.posts).added }}"/>
+      <meta name="id" content="{{ first(props.posts).id }}"/>
+    {% endif %}
+  </head>
+  <body>
+    <div class="main" id="main">
+      {% include 'components/header.html' %}
+      {% include 'components/subheader.html' %}
+      {% block content %}{% endblock %}
+    </div>
+  </body>
+</html>

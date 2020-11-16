@@ -1,0 +1,27 @@
+<ul class="subheader">
+  {% if props.currentPage == 'posts' %}
+    <li><a href="/posts">List</a></li>
+    <li><a href="/posts/random">Random</a></li>
+    <li><a href="/help/posts">Help</a></li>
+  {% endif %}
+  {% if props.currentPage == 'artists' %}
+    <li><a href="/">List</a></li>
+    <li><a href="/artists/random">Random</a></li>
+    <li><a href="/artists/updated">Recently Updated</a></li>
+    <li><a href="/artists/favorites">Favorites</a></li>
+  {% endif %}
+  {% if props.currentPage == 'requests' %}
+    <li><a href="/requests">List</a></li>
+    <li><a href="/requests/new">New</a></li>
+  {% endif %}
+  {% if props.currentPage == 'import' %}
+    <li><a href="">List</a></li>
+  {% endif %}
+  {% if props.currentPage == 'help' %}
+    <li><a href="">List</a></li>
+  {% endif %}
+  {% if props.currentPage == 'board' %}
+    <li><a href="/board">List</a></li>
+    <li><a href="/board/new">New</a></li>
+  {% endif %}
+</ul>

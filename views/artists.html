@@ -1,0 +1,118 @@
+{% extends 'components/shell.html' %}
+{% block content %}
+  <div class="page" id="page">
+    <form
+      autocomplete="off"
+      class="search-form"
+      novalidate="novalidate"
+      action="/"
+      accept-charset="UTF-8"
+      method="get"
+      onsubmit="return (typeof submitted == 'undefined') ? (submitted = true) : !submitted"
+    >
+      <div>
+        <label for="q">Name</label>
+        <input
+          type="text"
+          name="q"
+          id="q"
+          autocomplete="off"
+          value="{{ request.args.get('q') if request.args.get('q') }}"
+        >
+        <small class="subtitle" style="margin-left: 5px;">Leave blank to list all</small>
+      </div>
+      <div>
+        <label for="service">Service</label>
+        <select id="service" name="service">
+          <option value="">All</option>
+          <option value="patreon" {{ 'selected' if request.args.get('service') == 'patreon' }}>Patreon</option>
+          <option value="fanbox" {{ 'selected' if request.args.get('service') == 'fanbox' }}>Pixiv Fanbox</option>
+          <option value="gumroad" {{ 'selected' if request.args.get('service') == 'gumroad' }}>Gumroad</option>
+          <option value="subscribestar" {{ 'selected' if request.args.get('service') == 'subscribestar' }}>SubscribeStar</option>
+          <option value="discord" {{ 'selected' if request.args.get('service') == 'discord' }}>Discord</option>
+          <option value="dlsite" {{ 'selected' if request.args.get('service') == 'dlsite' }}>DLsite</option>
+        </select>
+      </div>
+      <div>
+        <label for="sort_by">Sort by</label>
+        <select id="sort_by" name="sort_by">
+          <option value="indexed" {{ 'selected' if request.args.get('sort_by') == 'indexed' }}>Date Indexed</option>
+          <option value="name" {{ 'selected' if request.args.get('sort_by') == 'name' }}>Alphabetical Order</option>
+          <option value="service" {{ 'selected' if request.args.get('sort_by') == 'service' }}>Service</option>
+        </select>
+        <select name="order">
+          <option value="asc">Ascending</option>
+          <option value="desc" {{ 'selected' if request.args.get('order') == 'desc'}}>Descending</option>
+        </select>
+      </div>
+      <input type="submit" name="commit" value="Search" data-disable-with="Search">
+    </form>
+    <div class="vertical-views">
+      {% if results|length %}
+        <div class="paginator" id="paginator-top">
+          {% include 'components/paginator.html' %}
+        </div>
+      {% endif %}
+      <table class="search-results" width="100%">
+        <thead>
+          <tr>
+            <th width="50px">Icon</th>
+            <th>Name</th>
+            <th>Transliteration</th>
+            <th>Service</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if results|length == 0 %}
+            <tr>
+              <td></td>
+              <td class="subtitle">No artists found for your query.</td>
+              <td></td>
+              <td></td>
+            </tr>
+          {% else %}
+            {% for artist in results.artist %}
+              <tr class="artist-row">
+                <td>
+                  <div class="user-icon" data-user="{{ artist.id }}" data-service=" {{ artist.service }}"></div>
+                </td>
+                <td>
+                  <a href="/{{ artist.service }}/{{ 'server' if artist.service == 'discord' else 'user' }}/{{ artist.id }}">{{ artist.name }}</a>
+                </td>
+                <td>
+                  <!-- TODO: Reimplemnt transliteration -->
+                  <div><!--${transliterate(artist.name) !== artist.name ? transliterate(artist.name) : '<span class="subtitle">(N/A)</span>'}--></div>
+                </td>
+                <td>
+                  {% if artist.service == 'patreon' %}
+                    Patreon
+                  {% elif artist.service == 'fanbox' %}
+                    Pixiv Fanbox
+                  {% elif artist.service == 'subscribestar' %}
+                    SubscribeStar
+                  {% elif artist.service == 'gumroad' %}
+                    Gumroad
+                  {% elif artist.service == 'discord' %}
+                    Discord
+                  {% elif artist.service == 'dlsite' %}
+                    DLsite
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          {% endif %}
+        </tbody>
+      </table>
+      {% if results|length %}
+        <div class="paginator" id="paginator-bottom">
+          {% include 'components/paginator.html' %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+  {% if results|length %}
+    <script src="https://unpkg.com/unfetch@4.1.0/polyfill/index.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js"></script>
+    <script src="/js/artists.js"></script>
+  {% endif %}
+{% endblock %}
