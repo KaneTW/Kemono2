@@ -25,14 +25,27 @@ def artists():
         results = {}
     else:
         query = "SELECT * FROM lookup "
-        query += "WHERE name ILIKE '%{}%' ".format(request.args.get('q'))
+        query += "WHERE name ILIKE %s "
+        params = ('%' + request.args.get('q') + '%',)
         if request.args.get('service'):
-            query += "AND service = '{}' ".format(request.args.get('service'))
+            query += "AND service = %s "
+            params += (request.args.get('service'),)
         query += "AND service != 'discord-channel' "
-        query += "ORDER BY {0} {1} ".format(request.args.get('sort_by'), request.args.get('order'))
-        query += "OFFSET {} ".format(request.args.get('o') if request.args.get('o') else 0)
+        if request.args.get('sort_by') == 'indexed':
+            query += 'ORDER BY indexed '
+        elif request.args.get('sort_by') == 'name':
+            query += 'ORDER BY name '
+        elif request.args.get('sort_by') == 'service':
+            query += 'ORDER BY service '
+        if request.args.get('order') == 'asc':
+            query += 'asc '
+        elif request.args.get('order') == 'desc':
+            query += 'desc '
+        query += "OFFSET %s "
+        offset = request.args.get('o') if request.args.get('o') else 0
+        params += (offset,)
         query += "LIMIT 25"
-        cursor.execute(query)
+        cursor.execute(query, params)
         results = cursor.fetchall()
     return render_template(
         'artists.html',
