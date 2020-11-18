@@ -1,17 +1,16 @@
 <menu>
-  {% set skip = request.args.get('o') if request.args.get('o') else 0 %}
-  {% if skip > 50 %}
-    <!-- TODO: Fix broken URL pagination manipulation -->
-    {# <li><a href="{{ url_for(endpoint, o = skip - 50) }}" title="-50">«</a></li> #}
+  {% set skip = request.args.get('o')|int if request.args.get('o') else 0 %}
+  {% if skip >= 50 %}
+    <li><a href="{{ url_for(request.endpoint, o = skip - 50, **base) }}" title="-50">«</a></li>
   {% else %}
     <li class="subtitle">«</li>
   {% endif %}
-  {% if skip > 25 %}
-    {# <li><a href="{{ url_for(endpoint, o = skip - 25) }}" title="-25">‹</a></li> #}
+  {% if skip >= 25 %}
+    <li><a href="{{ url_for(request.endpoint, o = skip - 25, **base) }}" title="-25">‹</a></li>
   {% else %}
     <li class="subtitle">‹</li>
   {% endif %}
   <li>offset: {{ skip }}{{ '/' ~ props.count if props.count}}</li>
-  {# <li><a href="{{ url_for(endpoint, o = skip + 25) }}" title="+25">›</a></li> #}
-  {# <li><a href="{{ url_for(endpoint, o = skip + 50) }}" title="+50">»</a></li> #}
+  <li><a href="{{ url_for(request.endpoint, o = skip + 25, **base) }}" title="+25">›</a></li>
+  <li><a href="{{ url_for(request.endpoint, o = skip + 50, **base) }}" title="+50">»</a></li>
 </menu>
