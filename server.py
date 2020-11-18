@@ -26,6 +26,8 @@ def artists():
     props = {
         'currentPage': 'artists'
     }
+    base = request.args.to_dict()
+    base.pop('o', None)
     if not request.args.get('commit'):
         results = {}
     else:
@@ -52,8 +54,6 @@ def artists():
         query += "LIMIT 25"
         cursor.execute(query, params)
         results = cursor.fetchall()
-        base = request.args.to_dict()
-        base.pop('o', None)
     return render_template(
         'artists.html',
         props = props,
