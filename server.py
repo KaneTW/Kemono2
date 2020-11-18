@@ -6,12 +6,13 @@ load_dotenv(join(dirname(__file__), '.env'))
 from flask import Flask, render_template, request, redirect, url_for
 from markupsafe import Markup
 import psycopg2
+from psycopg2 import pool
 app = Flask(
     __name__,
     template_folder='views'
 )
 try:
-    connection = psycopg2.connect(
+    pool = psycopg2.pool.SimpleConnectionPool(1, 20,
         host = getenv('PGHOST') if getenv('PGHOST') else 'localhost',
         dbname = getenv('PGDATABASE') if getenv('PGDATABASE') else 'kemonodb',
         user = getenv('PGUSER') if getenv('PGUSER') else 'nano',
@@ -22,7 +23,6 @@ except Exception as error:
 
 @app.route('/')
 def artists():
-    cursor = connection.cursor()
     props = {
         'currentPage': 'artists'
     }
@@ -31,6 +31,8 @@ def artists():
     if not request.args.get('commit'):
         results = {}
     else:
+        connection = pool.getconn()
+        cursor = connection.cursor()
         query = "SELECT * FROM lookup "
         query += "WHERE name ILIKE %s "
         params = ('%' + request.args.get('q') + '%',)
@@ -54,6 +56,9 @@ def artists():
         query += "LIMIT 25"
         cursor.execute(query, params)
         results = cursor.fetchall()
+        cursor.close()
+        if connection:
+            pool.putconn(connection)
     return render_template(
         'artists.html',
         props = props,
@@ -67,10 +72,14 @@ def root():
 
 @app.route('/artists/random')
 def random_artist():
+    connection = pool.getconn()
     cursor = connection.cursor()
     query = "SELECT id, service FROM lookup WHERE service != 'discord-channel' ORDER BY random() LIMIT 1"
     cursor.execute(query)
     random = cursor.fetchall()
+    cursor.close()
+    if connection:
+        pool.putconn(connection)
     if len(random) == 0:
         return redirect('back')
     print(random)
