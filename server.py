@@ -87,6 +87,7 @@ def random_artist():
 
 @app.route('/artists/updated')
 def updated_artists():
+    connection = pool.getconn()
     cursor = connection.cursor()
     props = {
         'currentPage': 'artists'
@@ -95,6 +96,8 @@ def updated_artists():
         'select "user", "posts"."service", "lookup"."name", "max" from "posts" inner join "lookup" on "posts"."user" = "lookup"."id"'
     cursor.execute(query)
     results = cursor.fetchall()
+    if connection:
+        pool.putconn(connection)
     return render_template(
         'updated.html',
         props = props,
