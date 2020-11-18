@@ -76,6 +76,22 @@ def random_artist():
     print(random)
     return redirect(f'/{random[0][1]}/user/{random[0][0]}')
 
+@app.route('/artists/updated')
+def updated_artists():
+    cursor = connection.cursor()
+    props = {
+        'currentPage': 'artists'
+    }
+    query = 'WITH "posts" as (select "user", "service", max("added") from "booru_posts" group by "user", "service" order by max(added) desc limit 50) '\
+        'select "user", "posts"."service", "lookup"."name", "max" from "posts" inner join "lookup" on "posts"."user" = "lookup"."id"'
+    cursor.execute(query)
+    results = cursor.fetchall()
+    return render_template(
+        'updated.html',
+        props = props,
+        results = results
+    )
+
 @app.route('/artists/favorites')
 def favorites():
     props = {
