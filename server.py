@@ -61,3 +61,13 @@ def artists():
 @app.route('/artists')
 def root():
     return redirect('/', code=308)
+
+@app.route('/artists/random')
+def random():
+    query = "SELECT id, service FROM lookup WHERE service != 'discord-channel' ORDER BY random() LIMIT 1"
+    cursor.execute(query)
+    random = cursor.fetchall()
+    if len(random) == 0:
+        return redirect('back')
+    print(random)
+    return redirect(f'/{random[0][1]}/user/{random[0][0]}')
