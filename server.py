@@ -72,3 +72,13 @@ def random_artist():
         return redirect('back')
     print(random)
     return redirect(f'/{random[0][1]}/user/{random[0][0]}')
+
+@app.route('/artists/favorites')
+def favorites():
+    props = {
+        'currentPage': 'artists'
+    }
+    return render_template(
+        'favorites.html',
+        props = props
+    )
