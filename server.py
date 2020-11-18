@@ -1,3 +1,8 @@
+from os import getenv
+from os.path import join, dirname
+from dotenv import load_dotenv
+load_dotenv(join(dirname(__file__), '.env'))
+
 from flask import Flask, render_template, request, redirect, url_for
 from markupsafe import Markup
 import psycopg2
@@ -7,10 +12,10 @@ app = Flask(
 )
 try:
     connection = psycopg2.connect(
-        host = 'localhost',
-        dbname = 'kemonodb',
-        user = 'nano',
-        password = 'shinonome'
+        host = getenv('PGHOST') if getenv('PGHOST') else 'localhost',
+        dbname = getenv('PGDATABASE') if getenv('PGDATABASE') else 'kemonodb',
+        user = getenv('PGUSER') if getenv('PGUSER') else 'nano',
+        password = getenv('PGPASSWORD') if getenv('PGPASSWORD') else 'shinonome'
     )
     cursor = connection.cursor()
 except Exception as error:
