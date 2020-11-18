@@ -17,12 +17,12 @@ try:
         user = getenv('PGUSER') if getenv('PGUSER') else 'nano',
         password = getenv('PGPASSWORD') if getenv('PGPASSWORD') else 'shinonome'
     )
-    cursor = connection.cursor()
 except Exception as error:
     print("Failed to connect to the database: ",error)
 
 @app.route('/')
 def artists():
+    cursor = connection.cursor()
     props = {
         'currentPage': 'artists'
     }
@@ -63,7 +63,8 @@ def root():
     return redirect('/', code=308)
 
 @app.route('/artists/random')
-def random():
+def random_artist():
+    cursor = connection.cursor()
     query = "SELECT id, service FROM lookup WHERE service != 'discord-channel' ORDER BY random() LIMIT 1"
     cursor.execute(query)
     random = cursor.fetchall()
