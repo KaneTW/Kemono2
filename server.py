@@ -96,6 +96,7 @@ def updated_artists():
         'select "user", "posts"."service", "lookup"."name", "max" from "posts" inner join "lookup" on "posts"."user" = "lookup"."id"'
     cursor.execute(query)
     results = cursor.fetchall()
+    cursor.close()
     if connection:
         pool.putconn(connection)
     return render_template(
@@ -112,4 +113,37 @@ def favorites():
     return render_template(
         'favorites.html',
         props = props
+    )
+
+@app.route('/posts')
+def posts():
+    connection = pool.getconn()
+    cursor = connection.cursor()
+    props = {
+        'currentPage': 'posts'
+    }
+    base = request.args.to_dict()
+    base.pop('o', None)
+
+    query = "SELECT * FROM booru_posts ORDER BY added desc "
+    params = ()
+
+    offset = request.args.get('o') if request.args.get('o') else 0
+    query += "OFFSET %s "
+    params += (offset,)
+    limit = request.args.get('limit') if request.args.get('limit') and request.args.get('limit') <= 50 else 25
+    query += "LIMIT %s"
+    params += (limit,)
+
+    cursor.execute(query, params)
+    results = cursor.fetchall()
+    cursor.close()
+
+    if connection:
+        pool.putconn(connection)
+    return render_template(
+        'posts.html',
+        props = props,
+        results = results,
+        base = base
     )
