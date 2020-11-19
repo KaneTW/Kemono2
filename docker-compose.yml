@@ -1,0 +1,66 @@
+version: '2.3'
+services:
+  kemono-db:
+    image: healthcheck/postgres
+    container_name: kemono-db
+    environment:
+      - POSTGRES_USER=nano
+      - POSTGRES_PASSWORD=shinonome
+      - POSTGRES_DB=kemonodb
+    volumes:
+      - db-data:/var/lib/postgresql/data/
+    restart: unless-stopped
+    # ports:
+    #  - 5432:5432
+  kemono-app:
+    build: .
+    container_name: kemono
+    restart: unless-stopped
+    depends_on:
+      kemono-db:
+        condition: service_healthy
+    ports:
+      - 8000:80
+    env_file:
+      - .env
+    environment:
+      - PGUSER=nano
+      - PGPASSWORD=shinonome
+      - PGDATABASE=kemonodb
+      - PGHOST=kemono-db
+    volumes:
+      - data:/storage
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80"]
+      interval: 1m
+      timeout: 2m
+      retries: 3
+      start_period: 30s
+  autoheal:
+    restart: always
+    container_name: kemono-autoheal
+    image: willfarrell/autoheal
+    environment:
+      - AUTOHEAL_CONTAINER_LABEL=all
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+volumes:
+  # If you need to store your volumes manually, uncomment the "driver_opts" lines and specify your "device" location.
+  cache-data:
+    driver: local
+    # driver_opts:
+    #   type: 'none'
+    #   o: 'bind'
+    #   device: "/mnt/slab1/kemono-cache"
+  db-data:
+    driver: local
+    # driver_opts:
+    #   type: 'none'
+    #   o: 'bind'
+    #   device: "/mnt/slab1/kemono-db"
+  data:
+    driver: local
+    # driver_opts:
+    #   type: 'none'
+    #   o: 'bind'
+    #   device: "/mnt/slab1/kemono"
