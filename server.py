@@ -4,7 +4,8 @@ from os.path import join, dirname
 from dotenv import load_dotenv
 load_dotenv(join(dirname(__file__), '.env'))
 
-from flask import Flask, render_template, request, redirect, url_for, send_from_directory
+from flask import Flask, render_template, request, redirect, url_for, send_from_directory, make_response
+from flask_caching import Cache
 from markupsafe import Markup
 import psycopg2
 from psycopg2 import pool
@@ -12,6 +13,8 @@ app = Flask(
     __name__,
     template_folder='views'
 )
+app.config.from_pyfile('flask.cfg')
+cache = Cache(app)
 app.jinja_env.filters['regex_match'] = lambda val, rgx: re.match(rgx, val)
 app.jinja_env.filters['regex_find'] = lambda val, rgx: re.findall(rgx, val)
 try:
@@ -24,7 +27,11 @@ try:
 except Exception as error:
     print("Failed to connect to the database: ",error)
 
+def make_cache_key(*args,**kwargs):
+    return request.full_path
+
 @app.route('/')
+@cache.cached(key_prefix=make_cache_key)
 def artists():
     props = {
         'currentPage': 'artists'
@@ -62,12 +69,14 @@ def artists():
         cursor.close()
         if connection:
             pool.putconn(connection)
-    return render_template(
+    response = make_response(render_template(
         'artists.html',
         props = props,
         results = results,
         base = base
-    )
+    ), 200)
+    response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
+    return response
 
 @app.route('/artists')
 def root():
@@ -88,6 +97,7 @@ def random_artist():
     return redirect(f'/{random[0][1]}/user/{random[0][0]}')
 
 @app.route('/artists/updated')
+@cache.cached(key_prefix=make_cache_key)
 def updated_artists():
     connection = pool.getconn()
     cursor = connection.cursor()
@@ -101,23 +111,28 @@ def updated_artists():
     cursor.close()
     if connection:
         pool.putconn(connection)
-    return render_template(
+    response = make_response(render_template(
         'updated.html',
         props = props,
         results = results
-    )
+    ), 200)
+    response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
+    return response
 
 @app.route('/artists/favorites')
 def favorites():
     props = {
         'currentPage': 'artists'
     }
-    return render_template(
+    response = make_response(render_template(
         'favorites.html',
         props = props
-    )
+    ), 200)
+    response.headers['Cache-Control'] = 'max-age=300, public, stale-while-revalidate=2592000'
+    return response
 
 @app.route('/posts')
+@cache.cached(key_prefix=make_cache_key)
 def posts():
     connection = pool.getconn()
     cursor = connection.cursor()
@@ -143,12 +158,14 @@ def posts():
 
     if connection:
         pool.putconn(connection)
-    return render_template(
+    response = make_response(render_template(
         'posts.html',
         props = props,
         results = results,
         base = base
-    )
+    ), 200)
+    response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
+    return response
 
 @app.route('/posts/random')
 def random_post():
@@ -177,6 +194,7 @@ def inline(path):
 # TODO: /:service/user/:id/rss
 
 @app.route('/<service>/user/<id>')
+@cache.cached(key_prefix=make_cache_key)
 def user(service, id):
     connection = pool.getconn()
     cursor = connection.cursor()
@@ -213,9 +231,11 @@ def user(service, id):
     if connection:
         pool.putconn(connection)
 
-    return render_template(
+    response = make_response(render_template(
         'user.html',
         props = props,
         results = results,
         base = base
-    )
+    ), 200)
+    response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
+    return response
