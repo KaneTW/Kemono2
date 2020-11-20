@@ -85,7 +85,6 @@ def random_artist():
         pool.putconn(connection)
     if len(random) == 0:
         return redirect('back')
-    print(random)
     return redirect(f'/{random[0][1]}/user/{random[0][0]}')
 
 @app.route('/artists/updated')
@@ -150,3 +149,15 @@ def posts():
         results = results,
         base = base
     )
+
+@app.route('/posts/random')
+def random_post():
+    connection = pool.getconn()
+    cursor = connection.cursor()
+    query = "SELECT service, \"user\", id FROM booru_posts WHERE random() < 0.01 LIMIT 1"
+    cursor.execute(query)
+    random = cursor.fetchall()
+    cursor.close()
+    if connection:
+        pool.putconn(connection)
+    return redirect(f'/{random[0][0]}/user/{random[0][1]}/post/{random[0][2]}')
