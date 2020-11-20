@@ -15,7 +15,7 @@ app = Flask(
 )
 app.config.from_pyfile('flask.cfg')
 cache = Cache(app)
-app.jinja_env.filters['regex_match'] = lambda val, rgx: re.match(rgx, val)
+app.jinja_env.filters['regex_match'] = lambda val, rgx: re.search(rgx, val)
 app.jinja_env.filters['regex_find'] = lambda val, rgx: re.findall(rgx, val)
 try:
     pool = psycopg2.pool.SimpleConnectionPool(1, 20,
