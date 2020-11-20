@@ -1,13 +1,14 @@
 {% set ns = namespace(parent=false) %}
 {% set href = '/' ~ post[2] ~ '/user/' ~ post[1] ~ '/post/' ~ post[0] %}
-{% for url in post[4]|regex_find("(?:http\:|https\:)?\/\/?.*\.(?:png|jpe?g|png|webp)")|reverse %}
+<!-- TODO: fix regex for inline images -->
+<!-- {% for url in post[4]|regex_find("(?:http\:|https\:)?\/\/?.*\.(?:png|jpe?g|png|webp)")|reverse %}
   {% set ns.parent = true %}
   {% with %}
     {% set src = url %}
     {% set class = 'thumb-child' %}
     {% include 'components/thumb.html' %}
   {% endwith %}
-{% endfor %}
+{% endfor %} -->
 
 {% for attachment in post[11]|reverse %}
   {% if attachment.path|regex_match("/\.(gif|jpe?g|png|webp)$/i") %}
