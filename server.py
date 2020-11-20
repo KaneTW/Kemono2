@@ -1,3 +1,4 @@
+import re
 from os import getenv
 from os.path import join, dirname
 from dotenv import load_dotenv
@@ -11,6 +12,8 @@ app = Flask(
     __name__,
     template_folder='views'
 )
+app.jinja_env.filters['regex_match'] = lambda val, rgx: re.match(rgx, val)
+app.jinja_env.filters['regex_find'] = lambda val, rgx: re.findall(rgx, val)
 try:
     pool = psycopg2.pool.SimpleConnectionPool(1, 20,
         host = getenv('PGHOST') if getenv('PGHOST') else 'localhost',

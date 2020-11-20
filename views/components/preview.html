@@ -1,1 +1,31 @@
-<!-- I have no idea how to port this one lol -->
+{% set ns = namespace(parent=false) %}
+{% set href = '/' ~ post[2] ~ '/user/' ~ post[1] ~ '/post/' ~ post[0] %}
+{% for url in post[4]|regex_find("(?:http\:|https\:)?\/\/?.*\.(?:png|jpe?g|png|webp)")|reverse %}
+  {% set ns.parent = true %}
+  {% with %}
+    {% set src = url %}
+    {% set class = 'thumb-child' %}
+    {% include 'components/thumb.html' %}
+  {% endwith %}
+{% endfor %}
+
+{% for attachment in post[11]|reverse %}
+  {% if attachment.path|regex_match("/\.(gif|jpe?g|png|webp)$/i") %}
+    {% set ns.parent = true %}
+    {% with %}
+      {% set src = url %}
+      {% set class = 'thumb-child' %}
+      {% include 'components/thumb.html' %}
+    {% endwith %}
+  {% endif %}
+{% endfor %}
+
+{% with %}
+  {% if post[10].path and post[10].path|regex_match("/\.(gif|jpe?g|png|webp)$/i") %}
+    {% set src = post[10].path %}
+  {% endif %}
+  {% set title = post[3] %}
+  {% set content = post[4]|striptags %}
+  {% set class = 'thumb-shared' if post[6] else ('thumb-parent' if ns.parent) %}
+  {% include 'components/thumb.html' %}
+{% endwith %}
