@@ -20,13 +20,13 @@
     <script src="https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js"></script>
     <script src="https://unpkg.com/unfetch@4.1.0/polyfill/index.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js"></script>
-    <script src="/js/utils.js"></script>
-    <script src="/js/user.js"></script>
+    <script src="{{ url_for('static', filename='js/utils.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/user.js') }}"></script>
     <h1>Options</h1>
     <div class="results">
-      <li><a href="/requests/new?user=${props.id}&service=${props.service}">Request update</a></li>
-      <li><a href="/posts/upload?user=${props.id}&service=${props.service}">Upload file</a></li>
-      <li><a href="${props.url.replace(/\/$/, '')}/rss">RSS</a></li>
+      <li><a href="/requests/new?user={{ props.id }}&service={{ props.service }}">Request update</a></li>
+      <li><a href="/posts/upload?user={{ props.id }}&service={{ props.service }}">Upload file</a></li>
+      <li><a href="{{ request.path }}/rss">RSS</a></li>
     </div>
   </div>
   {% include 'components/list.html' %}

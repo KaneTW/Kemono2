@@ -199,14 +199,16 @@ def user(service, id):
     connection = pool.getconn()
     cursor = connection.cursor()
     props = {
-        'currentPage': 'posts'
+        'currentPage': 'posts',
+        'id': id,
+        'service': service
     }
     base = request.args.to_dict()
     base.pop('o', None)
     base["service"] = service
     base["id"] = id
 
-    query = "SELECT * FROM booru_posts WHERE \"user\" = %s AND service = %s "
+    query = "SELECT * FROM booru_posts WHERE \"user\" = %s AND service = %s ORDER BY published desc "
     params = (id, service)
 
     offset = request.args.get('o') if request.args.get('o') else 0
