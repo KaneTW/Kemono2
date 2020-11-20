@@ -7,7 +7,8 @@ pip install virtualenv
 virtualenv venv
 source venv/bin/activate # venv\Scripts\activate on Windows
 pip install -r requirements.txt
-cp .env.example .env # open .env and change settings
+cp .env.example .env # open .env and configure
+cp flask.cfg.example flask.cfg # open flask.cfg and configure
 set FLASK_APP=server.py
 set FLASK_ENV=development
 flask run
