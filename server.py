@@ -4,7 +4,7 @@ from os.path import join, dirname
 from dotenv import load_dotenv
 load_dotenv(join(dirname(__file__), '.env'))
 
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, send_from_directory
 from markupsafe import Markup
 import psycopg2
 from psycopg2 import pool
@@ -161,3 +161,15 @@ def random_post():
     if connection:
         pool.putconn(connection)
     return redirect(f'/{random[0][0]}/user/{random[0][1]}/post/{random[0][2]}')
+
+@app.route('/files/<path>')
+def files(path):
+    return send_from_directory(join(getenv('DB_ROOT'), 'files'), path)
+
+@app.route('/attachments/<path>')
+def attachments(path):
+    return send_from_directory(join(getenv('DB_ROOT'), 'attachments'), path)
+
+@app.route('/inline/<path>')
+def inline(path):
+    return send_from_directory(join(getenv('DB_ROOT'), 'inline'), path)
