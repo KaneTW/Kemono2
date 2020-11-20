@@ -173,3 +173,49 @@ def attachments(path):
 @app.route('/inline/<path>')
 def inline(path):
     return send_from_directory(join(getenv('DB_ROOT'), 'inline'), path)
+
+# TODO: /:service/user/:id/rss
+
+@app.route('/<service>/user/<id>')
+def user(service, id):
+    connection = pool.getconn()
+    cursor = connection.cursor()
+    props = {
+        'currentPage': 'posts'
+    }
+    base = request.args.to_dict()
+    base.pop('o', None)
+    base["service"] = service
+    base["id"] = id
+
+    query = "SELECT * FROM booru_posts WHERE \"user\" = %s AND service = %s "
+    params = (id, service)
+
+    offset = request.args.get('o') if request.args.get('o') else 0
+    query += "OFFSET %s "
+    params += (offset,)
+    limit = request.args.get('limit') if request.args.get('limit') and request.args.get('limit') <= 50 else 25
+    query += "LIMIT %s"
+    params += (limit,)
+
+    cursor.execute(query, params)
+    results = cursor.fetchall()
+    cursor.close()
+
+    cursor2 = connection.cursor()
+    query2 = "SELECT id FROM booru_posts WHERE \"user\" = %s AND service = %s GROUP BY id"
+    params2 = (id, service)
+    cursor2.execute(query2, params2)
+    results2 = cursor2.fetchall()
+    cursor2.close()
+    props["count"] = len(results2)
+
+    if connection:
+        pool.putconn(connection)
+
+    return render_template(
+        'user.html',
+        props = props,
+        results = results,
+        base = base
+    )
