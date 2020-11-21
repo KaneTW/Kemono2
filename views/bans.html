@@ -1,0 +1,16 @@
+{% extends 'components/shell.html' %}
+{% block content %}
+<div class="views">
+  {% include 'components/help_sidebar.html' %}
+  <div class="page" id="page">
+    <h1>Bans</h1>
+    <p>
+      The following users have been banned from this instance. Posts from them will not import.<br>
+      <ul id="bans">
+        
+      </ul>
+    </p>
+  </div>
+</div>
+<script src="/static/js/bans.js"></script>
+{% endblock %}

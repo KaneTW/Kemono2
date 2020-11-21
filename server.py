@@ -4,6 +4,8 @@ from os.path import join, dirname
 from dotenv import load_dotenv
 load_dotenv(join(dirname(__file__), '.env'))
 
+from routes.help import help_app
+
 from flask import Flask, render_template, request, redirect, url_for, send_from_directory, make_response
 from flask_caching import Cache
 from markupsafe import Markup
@@ -17,6 +19,7 @@ app.config.from_pyfile('flask.cfg')
 cache = Cache(app)
 app.jinja_env.filters['regex_match'] = lambda val, rgx: re.search(rgx, val)
 app.jinja_env.filters['regex_find'] = lambda val, rgx: re.findall(rgx, val)
+app.register_blueprint(help_app, url_prefix='/help')
 try:
     pool = psycopg2.pool.SimpleConnectionPool(1, 20,
         host = getenv('PGHOST') if getenv('PGHOST') else 'localhost',
