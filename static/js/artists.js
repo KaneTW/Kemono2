@@ -39,15 +39,6 @@ window.onload = () => {
           });
         break;
       }
-      case 'discord': {
-        fetch(`/proxy/discord/server/${icon.getAttribute('data-user')}`)
-          .then(res => res.json())
-          .then(user => {
-            const avatar = `https://cdn.discordapp.com/icons/${icon.getAttribute('data-user')}/${user[0].icon}?size=256`;
-            icon.setAttribute('style', `background-image: url('${avatar}');`);
-          });
-        break;
-      }
     }
   });
 };
