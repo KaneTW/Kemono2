@@ -11,6 +11,7 @@ from flask_caching import Cache
 from markupsafe import Markup
 import psycopg2
 from psycopg2 import pool
+from psycopg2.extras import RealDictCursor
 app = Flask(
     __name__,
     template_folder='views'
@@ -241,6 +242,81 @@ def user(service, id):
         props = props,
         results = results,
         base = base
+    ), 200)
+    response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
+    return response
+
+@app.route('/<service>/<type>/<id>/post/<post>')
+@cache.cached(key_prefix=make_cache_key)
+def post(service, type, id, post):
+    connection = pool.getconn()
+    cursor = connection.cursor(cursor_factory=RealDictCursor)
+    props = {
+        'currentPage': 'posts',
+        'service': service if service else 'patreon'
+    }
+    base = request.args.to_dict()
+    base.pop('o', None)
+    query = 'SELECT * FROM booru_posts '
+    query += 'WHERE id = %s '
+    params = (post,)
+    query += 'AND booru_posts.user = %s '
+    params += (id,)
+    query += 'AND service = %s '
+    params += (service,)
+    query += 'ORDER BY added asc'
+
+    cursor.execute(query, params)
+    results = cursor.fetchall()
+    cursor.close()
+    if connection:
+        pool.putconn(connection)
+
+    result_previews = []
+    result_attachments = []
+    for post in results:
+        print(post)
+        previews = []
+        attachments = []
+        if len(post['file']):
+            if re.search("\.(gif|jpe?g|png|webp)$", post['file']['path'], re.IGNORECASE):
+                previews.append({
+                    'type': 'thumbnail',
+                    'path': post['file']['path'].replace('https://kemono.party','')
+                })
+            else:
+                attachments.append({
+                    'path': post['file']['path'],
+                    'name': post['file']['name']
+                })
+        if len(post['embed']):
+            previews.append({
+                'type': 'embed',
+                'url': post['embed']['url'],
+                'subject': post['embed']['subject'],
+                'description': post['embed']['description']
+            })
+        for attachment in post['attachments']:
+            if re.search("\.(gif|jpe?g|png|webp)$", attachment['path'], re.IGNORECASE):
+                previews.append({
+                    'type': 'thumbnail',
+                    'path': attachment['path'].replace('https://kemono.party','')
+                })
+            else:
+                attachments.append({
+                    'path': attachment['path'],
+                    'name': attachment['name']
+                })
+        result_previews.append(previews)
+        result_attachments.append(attachments)
+    
+    response = make_response(render_template(
+        'post.html',
+        props = props,
+        results = results,
+        base = base,
+        result_previews = result_previews,
+        result_attachments = result_attachments
     ), 200)
     response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
     return response
