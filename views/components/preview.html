@@ -8,6 +8,7 @@
     {% include 'components/thumb.html' %}
   {% endwith %}
 {% endfor %}
+
 {% for attachment in post[11] %}
   {% if attachment.path|lower|regex_match("\.(gif|jpe?g|png|webp)$") %}
     {% set ns.parent = true %}
