@@ -246,9 +246,9 @@ def user(service, id):
     response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
     return response
 
-@app.route('/<service>/<type>/<id>/post/<post>')
+@app.route('/<service>/user/<id>/post/<post>')
 @cache.cached(key_prefix=make_cache_key)
-def post(service, type, id, post):
+def post(service, id, post):
     connection = pool.getconn()
     cursor = connection.cursor(cursor_factory=RealDictCursor)
     props = {
