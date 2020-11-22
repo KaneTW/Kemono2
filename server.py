@@ -296,7 +296,6 @@ def post(service, id, post):
     result_previews = []
     result_attachments = []
     for post in results:
-        print(post)
         previews = []
         attachments = []
         if len(post['file']):
