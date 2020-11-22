@@ -7,7 +7,7 @@ load_dotenv(join(dirname(__file__), '.env'))
 from routes.help import help_app
 from routes.proxy import proxy_app
 
-from flask import Flask, render_template, request, redirect, url_for, send_from_directory, make_response
+from flask import Flask, jsonify, render_template, request, redirect, url_for, send_from_directory, make_response
 from flask_caching import Cache
 from markupsafe import Markup
 import psycopg2
@@ -19,6 +19,7 @@ app = Flask(
 )
 app.config.from_pyfile('flask.cfg')
 cache = Cache(app)
+app.url_map.strict_slashes = False
 app.jinja_env.filters['regex_match'] = lambda val, rgx: re.search(rgx, val)
 app.jinja_env.filters['regex_find'] = lambda val, rgx: re.findall(rgx, val)
 app.register_blueprint(help_app, url_prefix='/help')
@@ -35,6 +36,12 @@ except Exception as error:
 
 def make_cache_key(*args,**kwargs):
     return request.full_path
+
+@app.before_request
+def clear_trailing():
+    rp = request.path 
+    if rp != '/' and rp.endswith('/'):
+        return redirect(rp[:-1])
 
 @app.route('/')
 @cache.cached(key_prefix=make_cache_key)
@@ -173,6 +180,18 @@ def posts():
     response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
     return response
 
+@app.route('/posts/upload')
+def upload_post():
+    props = {
+        'currentPage': 'posts'
+    }
+    response = make_response(render_template(
+        'upload.html',
+        props=props
+    ), 200)
+    response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
+    return response
+
 @app.route('/posts/random')
 def random_post():
     connection = pool.getconn()
@@ -220,7 +239,7 @@ def user(service, id):
     offset = request.args.get('o') if request.args.get('o') else 0
     query += "OFFSET %s "
     params += (offset,)
-    limit = request.args.get('limit') if request.args.get('limit') and request.args.get('limit') <= 50 else 25
+    limit = request.args.get('limit') if request.args.get('limit') and int(request.args.get('limit')) <= 50 else 25
     query += "LIMIT %s"
     params += (limit,)
 
@@ -312,6 +331,7 @@ def post(service, id, post):
         result_previews.append(previews)
         result_attachments.append(attachments)
     
+    props['posts'] = results[0]
     response = make_response(render_template(
         'post.html',
         props = props,
@@ -321,4 +341,82 @@ def post(service, id, post):
         result_attachments = result_attachments
     ), 200)
     response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
+    return response
+
+### API ###
+
+@app.route('/api/bans')
+def bans():
+    connection = pool.getconn()
+    cursor = connection.cursor(cursor_factory=RealDictCursor)
+    query = "SELECT * FROM dnp"
+    cursor.execute(query)
+    results = cursor.fetchall()
+    cursor.close()
+    pool.putconn(connection)
+    return make_response(jsonify(results), 200)
+
+@app.route('/api/recent')
+def recent():
+    connection = pool.getconn()
+    cursor = connection.cursor(cursor_factory=RealDictCursor)
+    query = "SELECT * FROM booru_posts ORDER BY added desc "
+    params = ()
+
+    offset = request.args.get('o') if request.args.get('o') else 0
+    query += "OFFSET %s "
+    params += (offset,)
+    limit = request.args.get('limit') if request.args.get('limit') and int(request.args.get('limit')) <= 50 else 25
+    query += "LIMIT %s"
+    params += (limit,)
+
+    cursor.execute(query, params)
+    results = cursor.fetchall()
+    cursor.close()
+
+    if connection:
+        pool.putconn(connection)
+    response = make_response(jsonify(results), 200)
+    response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
+    return response
+
+@app.route('/api/lookup')
+def lookup():
+    if (request.args.get('q') is None):
+        return make_response('Bad request', 400)
+    connection = pool.getconn()
+    cursor = connection.cursor()
+    query = "SELECT * FROM lookup "
+    params = ()
+    query += "WHERE name ILIKE %s "
+    params += ('%' + request.args.get('q') + '%',)
+    if (request.args.get('service')):
+        query += "AND service = %s "
+        params += (request.args.get('service'),)
+    limit = request.args.get('limit') if request.args.get('limit') and int(request.args.get('limit')) <= 150 else 50
+    query += "LIMIT %s"
+    params += (limit,)
+
+    cursor.execute(query, params)
+    results = cursor.fetchall()
+    cursor.close()
+    pool.putconn(connection)
+    response = make_response(jsonify(list(map(lambda x: x[0], results))), 200)
+    return response
+
+# @app.route('/api/discord/channels/lookup')
+# def discord_lookup():
+@app.route('/api/lookup/cache/<id>')
+def lookup_cache(id):
+    if (request.args.get('service') is None):
+        return make_response('Bad request', 400)
+    connection = pool.getconn()
+    cursor = connection.cursor()
+    query = "SELECT * FROM lookup WHERE id = %s AND service = %s"
+    params = (id, request.args.get('service'))
+    cursor.execute(query, params)
+    results = cursor.fetchall()
+    cursor.close()
+    pool.putconn(connection)
+    response = make_response(jsonify({ "name": results[0][1] if results[0][1] else '' }))
     return response

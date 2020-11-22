@@ -41,7 +41,6 @@ function attemptFlag (_, api) {
   fetch(cacheApi)
     .then(function (data) { return data.json(); })
     .then(function (cache) {
-      console.log(cache);
       resultsView.innerHTML += `
         <li>
           User: <a href="../">${cache.name}</a>
