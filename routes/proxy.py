@@ -24,11 +24,20 @@ def fanbox(id):
 def gumroad(id):
   data = requests.get('https://gumroad.com/' + id).text
   soup = BeautifulSoup(data, 'html.parser')
-  response = make_response(jsonify({
-    "background": soup.find('img', class_='profile-background-container js-background-image-container')['src'],
-    "avatar": re.findall(r'(?:http\:|https\:)?\/\/.*\.(?:png|jpe?g|gif)', soup.find('div', class_='profile-picture js-profile-picture')['style'])[0],
-    "name": soup.find('h2', class_='creator-profile-card__name js-creator-name').string.replace("\n", "")
-  }), 200)
+  try:
+    response = make_response(jsonify({
+      # "background": soup.find('img', class_='profile-background-container js-background-image-container')['src'],
+      "avatar": re.findall(r'(?:http\:|https\:)?\/\/.*\.(?:png|jpe?g|gif)', soup.find('div', class_='profile-picture js-profile-picture')['style'], re.IGNORECASE)[0],
+      "name": soup.find('h2', class_='creator-profile-card__name js-creator-name').string.replace("\n", "")
+    }), 200)
+  except Exception as error:
+    print('Failed to get Gumroad data for user {0}. '.format(id), error)
+    response = make_response(
+      'Failed to get Gumroad data for user {0}.'.format(id),
+      500
+    )
+    response.mimetype = 'text/plain'
+    return response
   response.headers['Cache-Control'] = 'max-age=2629800, public, stale-while-revalidate=2592000'
   return response
 
