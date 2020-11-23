@@ -130,6 +130,7 @@ a:link {
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
+  word-break: break-word;
 }
 
 select {
