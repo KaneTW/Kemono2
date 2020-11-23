@@ -22,7 +22,7 @@ function renderPatreonQuery (query = '', limit = 10) {
           .then(cache => {
             resultsView.innerHTML += rowHTML({
               id: `patreon-user-${userId}`,
-              href: '/user/' + userId,
+              href: '/patreon/user/' + userId,
               avatar: '',
               title: cache.name,
               subtitle: 'Patreon'
