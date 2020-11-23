@@ -107,7 +107,7 @@ def random_artist():
         pool.putconn(connection)
     if len(random) == 0:
         return redirect('back')
-    return redirect(f'/{random[0][1]}/user/{random[0][0]}')
+    return redirect(url_for('user', service = random[0][1], id = random[0][0]))
 
 @app.route('/artists/updated')
 @cache.cached(key_prefix=make_cache_key)
@@ -202,7 +202,7 @@ def random_post():
     cursor.close()
     if connection:
         pool.putconn(connection)
-    return redirect(f'/{random[0][0]}/user/{random[0][1]}/post/{random[0][2]}')
+    return redirect(url_for('post', service = random[0][0], id = random[0][1], post = random[0][2]))
 
 @app.route('/files/<path>')
 def files(path):

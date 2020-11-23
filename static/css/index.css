@@ -99,7 +99,7 @@ a:link {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-image: url(/loading.gif);
+  background-image: url(/static/loading.gif);
   background-position: center;
   background-repeat: no-repeat;
 }
@@ -130,6 +130,7 @@ a:link {
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
+  word-break: break-word;
 }
 
 select {
