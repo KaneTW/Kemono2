@@ -202,7 +202,7 @@ def random_post():
     cursor.close()
     if connection:
         pool.putconn(connection)
-    return redirect(f'/{random[0][0]}/user/{random[0][1]}/post/{random[0][2]}')
+    return redirect(url_for('post', service = random[0][0], id = random[0][1], post = random[0][2]))
 
 @app.route('/files/<path>')
 def files(path):
