@@ -7,7 +7,7 @@ load_dotenv(join(dirname(__file__), '.env'))
 from routes.help import help_app
 from routes.proxy import proxy_app
 
-from flask import Flask, jsonify, render_template, request, redirect, url_for, send_from_directory, make_response
+from flask import Flask, jsonify, render_template, request, redirect, url_for, send_from_directory, make_response, g
 from flask_caching import Cache
 from markupsafe import Markup
 import psycopg2
@@ -29,7 +29,8 @@ try:
         host = getenv('PGHOST') if getenv('PGHOST') else 'localhost',
         dbname = getenv('PGDATABASE') if getenv('PGDATABASE') else 'kemonodb',
         user = getenv('PGUSER') if getenv('PGUSER') else 'nano',
-        password = getenv('PGPASSWORD') if getenv('PGPASSWORD') else 'shinonome'
+        password = getenv('PGPASSWORD') if getenv('PGPASSWORD') else 'shinonome',
+        cursor_factory = RealDictCursor
     )
 except Exception as error:
     print("Failed to connect to the database: ",error)
@@ -39,9 +40,24 @@ def make_cache_key(*args,**kwargs):
 
 @app.before_request
 def clear_trailing():
-    rp = request.path 
+    rp = request.path
     if rp != '/' and rp.endswith('/'):
         return redirect(rp[:-1])
+
+def get_cursor():
+    if 'cursor' not in g:
+        g.connection = pool.getconn()
+        g.cursor = g.connection.cursor()
+    return g.cursor
+
+@app.teardown_appcontext
+def close(e):
+    cursor = g.pop('cursor', None)
+    if cursor is not None:
+        cursor.close()
+        connection = g.pop('connection', None)
+        if connection is not None:
+            pool.putconn(connection)
 
 @app.route('/')
 @cache.cached(key_prefix=make_cache_key)
@@ -54,8 +70,6 @@ def artists():
     if not request.args.get('commit'):
         results = {}
     else:
-        connection = pool.getconn()
-        cursor = connection.cursor()
         query = "SELECT * FROM lookup "
         query += "WHERE name ILIKE %s "
         params = ('%' + request.args.get('q') + '%',)
@@ -77,11 +91,10 @@ def artists():
         offset = request.args.get('o') if request.args.get('o') else 0
         params += (offset,)
         query += "LIMIT 25"
+
+        cursor = get_cursor()
         cursor.execute(query, params)
         results = cursor.fetchall()
-        cursor.close()
-        if connection:
-            pool.putconn(connection)
     response = make_response(render_template(
         'artists.html',
         props = props,
@@ -97,35 +110,27 @@ def root():
 
 @app.route('/artists/random')
 def random_artist():
-    connection = pool.getconn()
-    cursor = connection.cursor()
+    cursor = get_cursor()
     query = "SELECT id, service FROM lookup WHERE service != 'discord-channel' ORDER BY random() LIMIT 1"
     cursor.execute(query)
     random = cursor.fetchall()
-    cursor.close()
-    if connection:
-        pool.putconn(connection)
     if len(random) == 0:
         return redirect('back')
-    response = redirect(url_for('user', service = random[0][1], id = random[0][0]))
+    response = redirect(url_for('user', service = random[0]['service'], id = random[0]['id']))
     response.autocorrect_location_header = False
     return response
 
 @app.route('/artists/updated')
 @cache.cached(key_prefix=make_cache_key)
 def updated_artists():
-    connection = pool.getconn()
-    cursor = connection.cursor()
+    cursor = get_cursor()
     props = {
         'currentPage': 'artists'
     }
     query = 'WITH "posts" as (select "user", "service", max("added") from "booru_posts" group by "user", "service" order by max(added) desc limit 50) '\
-        'select "user", "posts"."service", "lookup"."name", "max" from "posts" inner join "lookup" on "posts"."user" = "lookup"."id"'
+        'select "user", "posts"."service" as service, "lookup"."name" as name, "max" from "posts" inner join "lookup" on "posts"."user" = "lookup"."id"'
     cursor.execute(query)
     results = cursor.fetchall()
-    cursor.close()
-    if connection:
-        pool.putconn(connection)
     response = make_response(render_template(
         'updated.html',
         props = props,
@@ -149,8 +154,7 @@ def favorites():
 @app.route('/posts')
 @cache.cached(key_prefix=make_cache_key)
 def posts():
-    connection = pool.getconn()
-    cursor = connection.cursor()
+    cursor = get_cursor()
     props = {
         'currentPage': 'posts'
     }
@@ -169,10 +173,7 @@ def posts():
 
     cursor.execute(query, params)
     results = cursor.fetchall()
-    cursor.close()
 
-    if connection:
-        pool.putconn(connection)
     response = make_response(render_template(
         'posts.html',
         props = props,
@@ -196,15 +197,11 @@ def upload_post():
 
 @app.route('/posts/random')
 def random_post():
-    connection = pool.getconn()
-    cursor = connection.cursor()
+    cursor = get_cursor()
     query = "SELECT service, \"user\", id FROM booru_posts WHERE random() < 0.01 LIMIT 1"
     cursor.execute(query)
     random = cursor.fetchall()
-    cursor.close()
-    if connection:
-        pool.putconn(connection)
-    response = redirect(url_for('post', service = random[0][0], id = random[0][1], post = random[0][2]))
+    response = redirect(url_for('post', service = random[0]['service'], id = random[0]['user'], post = random[0]['id']))
     response.autocorrect_location_header = False
     return response
 
@@ -225,8 +222,7 @@ def inline(path):
 @app.route('/<service>/user/<id>')
 @cache.cached(key_prefix=make_cache_key)
 def user(service, id):
-    connection = pool.getconn()
-    cursor = connection.cursor()
+    cursor = get_cursor()
     props = {
         'currentPage': 'posts',
         'id': id,
@@ -249,18 +245,13 @@ def user(service, id):
 
     cursor.execute(query, params)
     results = cursor.fetchall()
-    cursor.close()
 
-    cursor2 = connection.cursor()
+    cursor2 = get_cursor()
     query2 = "SELECT id FROM booru_posts WHERE \"user\" = %s AND service = %s GROUP BY id"
     params2 = (id, service)
     cursor2.execute(query2, params2)
     results2 = cursor2.fetchall()
-    cursor2.close()
     props["count"] = len(results2)
-
-    if connection:
-        pool.putconn(connection)
 
     response = make_response(render_template(
         'user.html',
@@ -274,14 +265,11 @@ def user(service, id):
 @app.route('/<service>/user/<id>/post/<post>')
 @cache.cached(key_prefix=make_cache_key)
 def post(service, id, post):
-    connection = pool.getconn()
-    cursor = connection.cursor(cursor_factory=RealDictCursor)
+    cursor = get_cursor()
     props = {
         'currentPage': 'posts',
         'service': service if service else 'patreon'
     }
-    base = request.args.to_dict()
-    base.pop('o', None)
     query = 'SELECT * FROM booru_posts '
     query += 'WHERE id = %s '
     params = (post,)
@@ -293,9 +281,6 @@ def post(service, id, post):
 
     cursor.execute(query, params)
     results = cursor.fetchall()
-    cursor.close()
-    if connection:
-        pool.putconn(connection)
 
     result_previews = []
     result_attachments = []
@@ -339,7 +324,6 @@ def post(service, id, post):
         'post.html',
         props = props,
         results = results,
-        base = base,
         result_previews = result_previews,
         result_attachments = result_attachments
     ), 200)
@@ -350,19 +334,15 @@ def post(service, id, post):
 
 @app.route('/api/bans')
 def bans():
-    connection = pool.getconn()
-    cursor = connection.cursor(cursor_factory=RealDictCursor)
+    cursor = get_cursor()
     query = "SELECT * FROM dnp"
     cursor.execute(query)
     results = cursor.fetchall()
-    cursor.close()
-    pool.putconn(connection)
     return make_response(jsonify(results), 200)
 
 @app.route('/api/recent')
 def recent():
-    connection = pool.getconn()
-    cursor = connection.cursor(cursor_factory=RealDictCursor)
+    cursor = get_cursor()
     query = "SELECT * FROM booru_posts ORDER BY added desc "
     params = ()
 
@@ -375,10 +355,7 @@ def recent():
 
     cursor.execute(query, params)
     results = cursor.fetchall()
-    cursor.close()
 
-    if connection:
-        pool.putconn(connection)
     response = make_response(jsonify(results), 200)
     response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
     return response
@@ -387,8 +364,7 @@ def recent():
 def lookup():
     if (request.args.get('q') is None):
         return make_response('Bad request', 400)
-    connection = pool.getconn()
-    cursor = connection.cursor()
+    cursor = get_cursor()
     query = "SELECT * FROM lookup "
     params = ()
     query += "WHERE name ILIKE %s "
@@ -402,24 +378,20 @@ def lookup():
 
     cursor.execute(query, params)
     results = cursor.fetchall()
-    cursor.close()
-    pool.putconn(connection)
-    response = make_response(jsonify(list(map(lambda x: x[0], results))), 200)
+    response = make_response(jsonify(list(map(lambda x: x['id'], results))), 200)
     return response
 
 # @app.route('/api/discord/channels/lookup')
 # def discord_lookup():
+
 @app.route('/api/lookup/cache/<id>')
 def lookup_cache(id):
     if (request.args.get('service') is None):
         return make_response('Bad request', 400)
-    connection = pool.getconn()
-    cursor = connection.cursor()
+    cursor = get_cursor()
     query = "SELECT * FROM lookup WHERE id = %s AND service = %s"
     params = (id, request.args.get('service'))
     cursor.execute(query, params)
     results = cursor.fetchall()
-    cursor.close()
-    pool.putconn(connection)
-    response = make_response(jsonify({ "name": results[0][1] if results[0][1] else '' }))
+    response = make_response(jsonify({ "name": results[0]['name'] if results[0]['name'] else '' }))
     return response
