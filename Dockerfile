@@ -12,4 +12,4 @@ RUN pip3 install -r requirements.txt
 COPY ./nginx.conf /etc/nginx/sites-enabled/default
 
 ENV DB_ROOT=/storage
-CMD service nginx start && uwsgi -s /tmp/kemono.sock --chmod-socket=666 --manage-script-name --mount /=server:app --processes 1 --threads 2
+CMD service nginx start && uwsgi -s /tmp/kemono.sock --chmod-socket=666 --manage-script-name --mount /=server:app --processes 16

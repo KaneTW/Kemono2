@@ -8,7 +8,6 @@ from routes.help import help_app
 from routes.proxy import proxy_app
 
 from flask import Flask, jsonify, render_template, request, redirect, url_for, send_from_directory, make_response, g
-from flask_thumbnails import Thumbnail
 from flask_caching import Cache
 from markupsafe import Markup
 import psycopg2
@@ -25,9 +24,6 @@ app.jinja_env.filters['regex_match'] = lambda val, rgx: re.search(rgx, val)
 app.jinja_env.filters['regex_find'] = lambda val, rgx: re.findall(rgx, val)
 app.register_blueprint(help_app, url_prefix='/help')
 app.register_blueprint(proxy_app, url_prefix='/proxy')
-thumb = Thumbnail(app)
-app.config['THUMBNAIL_MEDIA_ROOT'] = join(getenv('DB_ROOT'), 'thumbnails')
-app.config['THUMBNAIL_MEDIA_URL'] = '/thumbnail/'
 try:
     pool = psycopg2.pool.SimpleConnectionPool(1, 20,
         host = getenv('PGHOST') if getenv('PGHOST') else 'localhost',
@@ -62,10 +58,6 @@ def close(e):
         connection = g.pop('connection', None)
         if connection is not None:
             pool.putconn(connection)
-
-@app.route('/thumbnail/<regex("([\w\d_/-]+)?.(?:jpe?g|gif|png)"):filename>')
-def media_file(filename):
-    return send_from_directory(app.config['THUMBNAIL_MEDIA_THUMBNAIL_ROOT'], filename)
 
 @app.route('/')
 @cache.cached(key_prefix=make_cache_key)

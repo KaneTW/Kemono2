@@ -8,7 +8,6 @@ cloudscraper==1.2.48
 colorama==0.4.4
 Flask==1.1.2
 Flask-Caching==1.9.0
-Flask-thumbnails==1.0.6
 idna==2.10
 isort==5.6.4
 itsdangerous==1.1.0
@@ -16,7 +15,6 @@ Jinja2==2.11.2
 lazy-object-proxy==1.4.3
 MarkupSafe==1.1.1
 mccabe==0.6.1
-Pillow==8.0.1
 psycopg2==2.8.6
 pylint==2.6.0
 pyparsing==2.4.7

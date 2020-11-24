@@ -1,7 +1,7 @@
 <a href="{{ href }}" class="thumb-link">
   {% if src %}
     <div class="thumb thumb-with-image {{ class if class else 'thumb-standard' }}">
-      <img src="{{ src|replace('https://kemono.party', '')|thumbnail('500') }}">
+      <img src="{{ src|replace('https://kemono.party', '') }}?size=500">
     </div>
   {% else %}
     <div class="thumb thumb-with-text {{ class if class else 'thumb-standard' }}">
