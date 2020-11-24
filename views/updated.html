@@ -34,19 +34,14 @@
                 <!-- <div>${transliterate(artist.name) !== artist.name ? transliterate(artist.name) : '<span class="subtitle">(N/A)</span>'}</div> -->
               </td>
               <td>
-                {% if artist['service'] == 'patreon' %}
-                  Patreon
-                {% elif artist['service'] == 'fanbox' %}
-                  Pixiv Fanbox
-                {% elif artist['service'] == 'subscribestar' %}
-                  SubscribeStar
-                {% elif artist['service'] == 'gumroad' %}
-                  Gumroad
-                {% elif artist['service'] == 'discord' %}
-                  Discord
-                {% elif artist['service'] == 'dlsite' %}
-                  DLsite
-                {% endif %}
+                {{ {
+                  'patreon': 'Patreon',
+                  'fanbox': 'Pixiv Fanbox',
+                  'subscribestar': 'SubscribeStar',
+                  'gumroad': 'Gumroad',
+                  'discord': 'Discord',
+                  'dlsite': 'DLsite'
+                }.get(artist['service'], '') }}
               </td>
               <td>
                 {{ artist['max'] }}
