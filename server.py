@@ -25,7 +25,7 @@ app.jinja_env.filters['regex_find'] = lambda val, rgx: re.findall(rgx, val)
 app.register_blueprint(help_app, url_prefix='/help')
 app.register_blueprint(proxy_app, url_prefix='/proxy')
 try:
-    pool = psycopg2.pool.SimpleConnectionPool(1, 100,
+    pool = psycopg2.pool.SimpleConnectionPool(1, 20,
         host = getenv('PGHOST') if getenv('PGHOST') else 'localhost',
         dbname = getenv('PGDATABASE') if getenv('PGDATABASE') else 'kemonodb',
         user = getenv('PGUSER') if getenv('PGUSER') else 'nano',
