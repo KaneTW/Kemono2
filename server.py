@@ -77,16 +77,15 @@ def artists():
             query += "AND service = %s "
             params += (request.args.get('service'),)
         query += "AND service != 'discord-channel' "
-        if request.args.get('sort_by') == 'indexed':
-            query += 'ORDER BY indexed '
-        elif request.args.get('sort_by') == 'name':
-            query += 'ORDER BY name '
-        elif request.args.get('sort_by') == 'service':
-            query += 'ORDER BY service '
-        if request.args.get('order') == 'asc':
-            query += 'asc '
-        elif request.args.get('order') == 'desc':
-            query += 'desc '
+        query += "ORDER BY " + {
+            'indexed': 'indexed',
+            'name': 'name',
+            'service': 'service'
+        }.get(request.args.get('sort_by'), 'indexed')
+        query += {
+            'asc': ' asc ',
+            'desc': ' desc '
+        }.get(request.args.get('order'), 'asc')
         query += "OFFSET %s "
         offset = request.args.get('o') if request.args.get('o') else 0
         params += (offset,)
