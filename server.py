@@ -11,7 +11,6 @@ from flask import Flask, jsonify, render_template, request, redirect, url_for, s
 from flask_caching import Cache
 from markupsafe import Markup
 import psycopg2
-import bjoern
 from psycopg2 import pool
 from psycopg2.extras import RealDictCursor
 app = Flask(
