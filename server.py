@@ -329,6 +329,18 @@ def post(service, id, post):
     response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
     return response
 
+@app.route('/board')
+def board():
+    props = {
+        'currentPage': 'board'
+    }
+    response = make_response(render_template(
+        'board_list.html',
+        props = props
+    ), 200)
+    response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
+    return response
+
 ### API ###
 
 @app.route('/api/bans')
