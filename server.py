@@ -220,6 +220,10 @@ def attachments(path):
 def inline(path):
     return send_from_directory(join(getenv('DB_ROOT'), 'inline'), path)
 
+@app.route('/requests/images/<path>')
+def request_image(path):
+    return send_from_directory(join(getenv('DB_ROOT'), 'requests/images'), path)
+
 # TODO: /:service/user/:id/rss
 
 @app.route('/<service>/user/<id>')
