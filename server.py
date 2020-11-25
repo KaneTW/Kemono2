@@ -341,6 +341,63 @@ def board():
     response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
     return response
 
+@app.route('/requests')
+def requests():
+    props = {
+        'currentPage': 'requests'
+    }
+    base = request.args.to_dict()
+    base.pop('o', None)
+
+    if not request.args.get('commit'):
+        query = "SELECT * FROM requests "
+        query += "WHERE status = 'open' "
+        query += "ORDER BY votes desc "
+        query += "OFFSET %s "
+        offset = request.args.get('o') if request.args.get('o') else 0
+        params = (offset,)
+        query += "LIMIT 25"
+    else:
+        query = "SELECT * FROM requests "
+        query += "WHERE title ILIKE %s "
+        params = ('%' + request.args.get('q') + '%',)
+        if request.args.get('service'):
+            query += "AND service = %s "
+            params += (request.args.get('service'),)
+        query += "AND service != 'discord' "
+        if request.args.get('max_price'):
+            query += "AND price <= %s "
+            params += (request.args.get('max_price'),)
+        query += "AND status = %s "
+        params += (request.args.get('status'),)
+        query += "ORDER BY " + {
+            'votes': 'votes',
+            'created': 'created',
+            'price': 'price'
+        }.get(request.args.get('sort_by'), 'votes')
+        query += {
+            'asc': ' asc ',
+            'desc': ' desc '
+        }.get(request.args.get('order'), 'desc')
+        query += "OFFSET %s "
+        offset = request.args.get('o') if request.args.get('o') else 0
+        params += (offset,)
+        query += "LIMIT 25"
+        print(query)
+
+    cursor = get_cursor()
+    cursor.execute(query, params)
+    results = cursor.fetchall()
+
+    response = make_response(render_template(
+        'requests_list.html',
+        props = props,
+        results = results,
+        base = base
+    ), 200)
+    response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
+    return response
+
 ### API ###
 
 @app.route('/api/bans')
