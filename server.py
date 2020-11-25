@@ -42,7 +42,9 @@ def make_cache_key(*args,**kwargs):
 def clear_trailing():
     rp = request.path
     if rp != '/' and rp.endswith('/'):
-        return redirect(rp[:-1])
+        response = redirect(rp[:-1])
+        response.autocorrect_location_header = False
+        return response
 
 def get_cursor():
     if 'cursor' not in g:
@@ -105,7 +107,9 @@ def artists():
 
 @app.route('/artists')
 def root():
-    return redirect('/', code=308)
+    response = redirect('/', code=308)
+    response.autocorrect_location_header = False
+    return response
 
 @app.route('/artists/random')
 def random_artist():
