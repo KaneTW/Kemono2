@@ -45,7 +45,9 @@ def make_cache_key(*args,**kwargs):
 def clear_trailing():
     rp = request.path
     if rp != '/' and rp.endswith('/'):
-        return redirect(rp[:-1])
+        response = redirect(rp[:-1])
+        response.autocorrect_location_header = False
+        return response
 
 def get_cursor():
     if 'cursor' not in g:
@@ -108,7 +110,9 @@ def artists():
 
 @app.route('/artists')
 def root():
-    return redirect('/', code=308)
+    response = redirect('/', code=308)
+    response.autocorrect_location_header = False
+    return response
 
 @app.route('/artists/random')
 def random_artist():
@@ -218,6 +222,10 @@ def attachments(path):
 @app.route('/inline/<path>')
 def inline(path):
     return send_from_directory(join(getenv('DB_ROOT'), 'inline'), path)
+
+@app.route('/requests/images/<path>')
+def request_image(path):
+    return send_from_directory(join(getenv('DB_ROOT'), 'requests/images'), path)
 
 # TODO: /:service/user/:id/rss
 
@@ -340,6 +348,63 @@ def board():
     response = make_response(render_template(
         'board_list.html',
         props = props
+    ), 200)
+    response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
+    return response
+
+@app.route('/requests')
+def requests():
+    props = {
+        'currentPage': 'requests'
+    }
+    base = request.args.to_dict()
+    base.pop('o', None)
+
+    if not request.args.get('commit'):
+        query = "SELECT * FROM requests "
+        query += "WHERE status = 'open' "
+        query += "ORDER BY votes desc "
+        query += "OFFSET %s "
+        offset = request.args.get('o') if request.args.get('o') else 0
+        params = (offset,)
+        query += "LIMIT 25"
+    else:
+        query = "SELECT * FROM requests "
+        query += "WHERE title ILIKE %s "
+        params = ('%' + request.args.get('q') + '%',)
+        if request.args.get('service'):
+            query += "AND service = %s "
+            params += (request.args.get('service'),)
+        query += "AND service != 'discord' "
+        if request.args.get('max_price'):
+            query += "AND price <= %s "
+            params += (request.args.get('max_price'),)
+        query += "AND status = %s "
+        params += (request.args.get('status'),)
+        query += "ORDER BY " + {
+            'votes': 'votes',
+            'created': 'created',
+            'price': 'price'
+        }.get(request.args.get('sort_by'), 'votes')
+        query += {
+            'asc': ' asc ',
+            'desc': ' desc '
+        }.get(request.args.get('order'), 'desc')
+        query += "OFFSET %s "
+        offset = request.args.get('o') if request.args.get('o') else 0
+        params += (offset,)
+        query += "LIMIT 25"
+        print(query)
+
+    cursor = get_cursor()
+    cursor.execute(query, params)
+    results = cursor.fetchall()
+
+    response = make_response(render_template(
+        'requests_list.html',
+        props = props,
+        results = results,
+        base = base
     ), 200)
     response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
     return response
