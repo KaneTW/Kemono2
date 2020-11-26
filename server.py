@@ -8,6 +8,7 @@ from routes.help import help_app
 from routes.proxy import proxy_app
 
 from flask import Flask, jsonify, render_template, request, redirect, url_for, send_from_directory, make_response, g
+from flask_debugtoolbar import DebugToolbarExtension
 from flask_caching import Cache
 from markupsafe import Markup
 import psycopg2
@@ -18,6 +19,8 @@ app = Flask(
     template_folder='views'
 )
 app.config.from_pyfile('flask.cfg')
+app.config['DEBUG_TB_ENABLED'] = True
+toolbar = DebugToolbarExtension(app)
 cache = Cache(app)
 app.url_map.strict_slashes = False
 app.jinja_env.filters['regex_match'] = lambda val, rgx: re.search(rgx, val)

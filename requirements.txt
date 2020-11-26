@@ -1,5 +1,6 @@
 astroid==2.4.2
 beautifulsoup4==4.9.3
+blinker==1.4
 bs4==0.0.1
 certifi==2020.11.8
 chardet==3.0.4
@@ -8,6 +9,8 @@ cloudscraper==1.2.48
 colorama==0.4.4
 Flask==1.1.2
 Flask-Caching==1.9.0
+Flask-DebugToolbar==0.11.0
+Flask-thumbnails==1.0.6
 idna==2.10
 isort==5.6.4
 itsdangerous==1.1.0
@@ -15,6 +18,7 @@ Jinja2==2.11.2
 lazy-object-proxy==1.4.3
 MarkupSafe==1.1.1
 mccabe==0.6.1
+Pillow==8.0.1
 psycopg2==2.8.6
 pylint==2.6.0
 pyparsing==2.4.7
