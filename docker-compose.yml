@@ -48,12 +48,6 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
 volumes:
   # If you need to store your volumes manually, uncomment the "driver_opts" lines and specify your "device" location.
-  cache-data:
-    driver: local
-    # driver_opts:
-    #   type: 'none'
-    #   o: 'bind'
-    #   device: "/mnt/slab1/kemono-cache"
   db-data:
     driver: local
     # driver_opts:
