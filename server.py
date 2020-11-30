@@ -7,12 +7,14 @@ load_dotenv(join(dirname(__file__), '.env'))
 from routes.help import help_app
 from routes.proxy import proxy_app
 
-from flask import Flask, jsonify, render_template, request, redirect, url_for, send_from_directory, make_response, g
+from flask import Flask, jsonify, render_template, request, redirect, url_for, send_from_directory, make_response, g, abort
 from flask_caching import Cache
 from markupsafe import Markup
 import psycopg2
 from psycopg2 import pool
 from psycopg2.extras import RealDictCursor
+from hashlib import sha256
+
 app = Flask(
     __name__,
     template_folder='views'
@@ -58,6 +60,7 @@ def close(e):
     if cursor is not None:
         cursor.close()
         connection = g.pop('connection', None)
+        connection.commit()
         if connection is not None:
             pool.putconn(connection)
 
@@ -391,7 +394,6 @@ def requests():
         offset = request.args.get('o') if request.args.get('o') else 0
         params += (offset,)
         query += "LIMIT 25"
-        print(query)
 
     cursor = get_cursor()
     cursor.execute(query, params)
@@ -405,6 +407,45 @@ def requests():
     ), 200)
     response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
     return response
+
+@app.route('/requests/<id>/vote_up', methods=['POST'])
+def vote_up(id):
+    ip = request.args.get('CF-Connecting-IP') if request.args.get('CF-Connecting-IP') else request.remote_addr
+    query = "SELECT * FROM requests WHERE id = %s"
+    params = (id,)
+
+    cursor = get_cursor()
+    cursor.execute(query, params)
+    result = cursor.fetchone()
+
+    props = {
+        'currentPage': 'requests',
+        'redirect': request.args.get('Referer') if request.args.get('Referer') else '/requests'
+    }
+
+    if not len(result):
+        abort(404)
+    hash = sha256(ip.encode()).hexdigest()
+    if hash in result.get('ips'):
+        props['message'] = 'You already voted on this request.'
+        return make_response(render_template(
+            'error.html',
+            props = props
+        ), 401)
+    else:
+        record = result.get('ips')
+        record.append(hash)
+        query = "UPDATE requests SET votes = votes + 1,"
+        query += "ips = %s "
+        params = (record,)
+        query += "WHERE id = %s"
+        params += (id,)
+        cursor.execute(query, params)
+
+        return make_response(render_template(
+            'success.html',
+            props = props
+        ))
 
 ### API ###
 
