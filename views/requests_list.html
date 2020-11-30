@@ -118,7 +118,9 @@
                     'dlsite': 'DLsite'
                   }.get(ticket.get('service')) }}</span>
                   <br>
-                  {{ '<small>'|safe ~ ticket.get('description') ~ '</small><br>'|safe if ticket.get('description') }}
+                  {% if ticket.get('description') %}
+                    <small>{{ ticket.get('description')|safe }}</small><br>
+                  {% endif %}
                   <small class="subtitle">{{ ticket.get('created') }}</small>
                 </a>
               </td>
