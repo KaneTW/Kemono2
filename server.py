@@ -211,22 +211,6 @@ def random_post():
     response.autocorrect_location_header = False
     return response
 
-@app.route('/files/<path>')
-def files(path):
-    return send_from_directory(join(getenv('DB_ROOT'), 'files'), path)
-
-@app.route('/attachments/<path>')
-def attachments(path):
-    return send_from_directory(join(getenv('DB_ROOT'), 'attachments'), path)
-
-@app.route('/inline/<path>')
-def inline(path):
-    return send_from_directory(join(getenv('DB_ROOT'), 'inline'), path)
-
-@app.route('/requests/images/<path>')
-def request_image(path):
-    return send_from_directory(join(getenv('DB_ROOT'), 'requests/images'), path)
-
 # TODO: /:service/user/:id/rss
 
 @app.route('/<service>/user/<id>')
