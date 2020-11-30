@@ -1,0 +1,5 @@
+{% extends 'components/shell.html' %}
+{% block content %}
+  <h1 class="subtitle">Success!</h1>
+  {{ '<meta http-equiv="Refresh" content="2; url=\''|safe ~ props.get('redirect') ~ '\'">'|safe if props.get('redirect') }}
+{% endblock %}

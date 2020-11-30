@@ -118,7 +118,9 @@
                     'dlsite': 'DLsite'
                   }.get(ticket.get('service')) }}</span>
                   <br>
-                  {{ '<small>'|safe ~ ticket.get('description') ~ '</small><br>'|safe if ticket.get('description') }}
+                  {% if ticket.get('description') %}
+                    <small>{{ ticket.get('description')|safe }}</small><br>
+                  {% endif %}
                   <small class="subtitle">{{ ticket.get('created') }}</small>
                 </a>
               </td>
@@ -146,10 +148,8 @@
                   onsubmit="return (typeof submitted == 'undefined') ? (submitted = true) : !submitted"
                 >
                   <span>{{ ticket.get('votes') }} {{ 'vote' if ticket.get('votes') == 1 else 'votes' }}</span>
-                  {# Implement form route to enable voting
                   <label class="a" style="cursor:pointer" for="voteup-{{ ticket.get('id') }}">(+)</label>
                   <button type="submit" id="voteup-{{ ticket.get('id') }}" style="display:none"></button>
-                  #}
                 </form>
               </td>
               <td>
