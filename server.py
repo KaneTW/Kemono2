@@ -7,7 +7,9 @@ load_dotenv(join(dirname(__file__), '.env'))
 from routes.help import help_app
 from routes.proxy import proxy_app
 
-from flask import Flask, jsonify, render_template, render_template_string, request, redirect, url_for, send_from_directory, make_response, g, abort, current_app
+from PIL import Image
+from io import StringIO
+from flask import Flask, jsonify, render_template, render_template_string, request, redirect, url_for, send_from_directory, make_response, g, abort, current_app, send_file
 from flask_caching import Cache
 from werkzeug.utils import secure_filename
 from slugify import slugify_filename
@@ -133,6 +135,21 @@ def root():
     response = redirect('/', code=308)
     response.autocorrect_location_header = False
     return response
+
+@app.route('/thumbnail/<path:path>')
+def thumbnail(path):
+    size = request.args.get('size') if request.args.get('size') and request.args.get('size') <= 800 else 800
+    try:
+        image_io = StringIO()
+        image = Image.open(join(getenv('DB_ROOT'), path))
+        image.thumbnail((size, size))
+        image.save(image_io, 'JPEG', quality=60)
+        image_io.seek(0)
+        response = make_response(send_file(image_io, mimetype='image/jpeg'))
+        response.headers['Cache-Control'] = 'max-age=31557600, public'
+        return response
+    except:
+        return "The file you requested could not be converted.", 404
 
 @app.route('/artists/random')
 def random_artist():

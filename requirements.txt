@@ -18,6 +18,7 @@ lazy-object-proxy==1.4.3
 MarkupSafe==1.1.1
 mccabe==0.6.1
 packaging==20.7
+Pillow==8.0.1
 psycopg2==2.8.6
 pylint==2.6.0
 pyparsing==2.4.7
