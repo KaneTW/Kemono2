@@ -1,15 +1,19 @@
 import re
-from os import getenv
-from os.path import join, dirname
+from os import getenv, stat, rename
+from os.path import join, dirname, isfile, splitext
 from dotenv import load_dotenv
 load_dotenv(join(dirname(__file__), '.env'))
 
 from routes.help import help_app
 from routes.proxy import proxy_app
 
-from flask import Flask, jsonify, render_template, request, redirect, url_for, send_from_directory, make_response, g, abort
+from flask import Flask, jsonify, render_template, render_template_string, request, redirect, url_for, send_from_directory, make_response, g, abort, current_app
 from flask_caching import Cache
+from werkzeug.utils import secure_filename
+from slugify import slugify_filename
+import requests
 from markupsafe import Markup
+from bleach.sanitizer import Cleaner
 import psycopg2
 from psycopg2 import pool
 from psycopg2.extras import RealDictCursor
@@ -53,6 +57,22 @@ def get_cursor():
         g.connection = pool.getconn()
         g.cursor = g.connection.cursor()
     return g.cursor
+
+def allowed_file(mime, accepted):
+    return any(x in mime for x in accepted)
+
+@app.errorhandler(413)
+def upload_exceeded(error):
+    props = {
+        'redirect': request.args.get('Referer') if request.args.get('Referer') else '/'
+    }
+    props['message'] = 'Submitted file exceeds the upload limit. {} MB for requests images.'.format(
+        int(getenv('REQUESTS_IMAGES')) / 1024 / 1024
+    )
+    return render_template(
+        'error.html',
+        props = props
+    ), 413
 
 @app.teardown_appcontext
 def close(e):
@@ -429,7 +449,101 @@ def vote_up(id):
         return make_response(render_template(
             'success.html',
             props = props
-        ))
+        ), 200)
+
+@app.route('/requests/new')
+def request_form():
+    props = {
+        'currentPage': 'requests'
+    }
+
+    response = make_response(render_template(
+        'requests_new.html',
+        props = props
+    ), 200)
+    response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
+    return response
+
+@app.route('/requests/new', methods=['POST'])
+def request_submit():
+    props = {
+        'currentPage': 'requests',
+        'redirect': request.args.get('Referer') if request.args.get('Referer') else '/requests'
+    }
+
+    ip = request.args.get('CF-Connecting-IP') if request.args.get('CF-Connecting-IP') else request.remote_addr
+
+    if not request.form.get('user_id'):
+        props['message'] = 'You didn\'t enter a user ID.'
+        return make_response(render_template(
+            'error.html',
+            props = props
+        ), 400)
+
+    if getenv('TELEGRAMTOKEN'):
+        snippet = ''
+        with open('views/requests_new.html', 'r') as file:
+            snippet = file.read()
+
+        requests.post(
+            'https://api.telegram.org/bot' + getenv('TELEGRAMTOKEN') + '/sendMessage',
+            params = {
+                'chat_id': '-' + getenv('TELEGRAMCHANNEL'),
+                'parse_mode': 'HTML',
+                'text': render_template_string(snippet)
+            }
+        )
+
+    filename = ''
+    if 'image' in request.files:
+        image = request.files['image']
+        if image and image.filename and allowed_file(image.content_type, ['png', 'jpeg', 'gif']):
+            filename = original = slugify_filename(secure_filename(image.filename))
+            tmp = join('/tmp', filename)
+            image.save(tmp)
+            if stat(tmp).st_size > int(getenv('REQUESTS_IMAGES')):
+                abort(413)
+            store = join(getenv('DB_ROOT'), 'requests', 'images', filename)
+            copy = 1
+            while isfile(store):
+                filename = splitext(original)[0] + '-' + str(copy) + splitext(original)[1]
+                store = join(getenv('DB_ROOT'), 'requests', 'images', filename)
+                copy += 1
+            rename(tmp, store)
+
+    scrub = Cleaner(tags = [])
+    text = Cleaner(tags = ['br'])
+
+    columns = ['service','"user"','title','description','price','ips']
+    description = request.form.get('description').replace('\n', '<br>\n')
+    params = (
+        scrub.clean(request.form.get('service')),
+        scrub.clean(request.form.get('user_id')),
+        scrub.clean(request.form.get('title')),
+        text.clean(description),
+        scrub.clean(request.form.get('price')),
+        [sha256(ip.encode()).hexdigest()]
+    )
+    if request.form.get('specific_id'):
+        columns.append('post_id')
+        params += (scrub.clean(request.form.get('specific_id')),)
+    if filename:
+        columns.append('image')
+        params += (join('/requests', 'images', filename),)
+    data = ['%s'] * len(params)
+
+    query = "INSERT INTO requests ({fields}) VALUES ({values})".format(
+        fields = ','.join(columns),
+        values = ','.join(data)
+    )
+
+    cursor = get_cursor()
+    cursor.execute(query, params)
+
+    return make_response(render_template(
+        'success.html',
+        props = props
+    ), 200)
 
 ### API ###
 
