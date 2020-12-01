@@ -8,7 +8,7 @@ from routes.help import help_app
 from routes.proxy import proxy_app
 
 from PIL import Image
-from io import StringIO
+from io import BytesIO
 from flask import Flask, jsonify, render_template, render_template_string, request, redirect, url_for, send_from_directory, make_response, g, abort, current_app, send_file
 from flask_caching import Cache
 from werkzeug.utils import secure_filename
@@ -138,9 +138,9 @@ def root():
 
 @app.route('/thumbnail/<path:path>')
 def thumbnail(path):
-    size = request.args.get('size') if request.args.get('size') and int(request.args.get('size')) <= 800 else 800
+    size = int(request.args.get('size')) if request.args.get('size') and int(request.args.get('size')) <= 800 else 800
     try:
-        image_io = StringIO()
+        image_io = BytesIO()
         image = Image.open(join(getenv('DB_ROOT'), path))
         image.thumbnail((size, size))
         image.save(image_io, 'JPEG', quality=60)
