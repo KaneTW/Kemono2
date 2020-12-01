@@ -427,7 +427,6 @@ def requests():
         results = results,
         base = base
     ), 200)
-    response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
     return response
 
 @app.route('/requests/<id>/vote_up', methods=['POST'])
