@@ -138,7 +138,7 @@ def root():
 
 @app.route('/thumbnail/<path:path>')
 def thumbnail(path):
-    size = request.args.get('size') if request.args.get('size') and request.args.get('size') <= 800 else 800
+    size = request.args.get('size') if request.args.get('size') and int(request.args.get('size')) <= 800 else 800
     try:
         image_io = StringIO()
         image = Image.open(join(getenv('DB_ROOT'), path))
