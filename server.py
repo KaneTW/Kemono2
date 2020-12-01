@@ -142,6 +142,7 @@ def thumbnail(path):
     try:
         image_io = BytesIO()
         image = Image.open(join(getenv('DB_ROOT'), path))
+        image = image.convert('RGB')
         image.thumbnail((size, size))
         image.save(image_io, 'JPEG', quality=60)
         image_io.seek(0)
