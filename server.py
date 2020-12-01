@@ -82,8 +82,8 @@ def close(e):
     if cursor is not None:
         cursor.close()
         connection = g.pop('connection', None)
-        connection.commit()
         if connection is not None:
+            connection.commit()
             pool.putconn(connection)
 
 @app.route('/')
