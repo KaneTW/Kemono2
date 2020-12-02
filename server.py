@@ -432,7 +432,7 @@ def requests():
 
 @app.route('/requests/<id>/vote_up', methods=['POST'])
 def vote_up(id):
-    ip = request.args.get('CF-Connecting-IP') if request.args.get('CF-Connecting-IP') else request.remote_addr
+    ip = request.headers.getlist("X-Forwarded-For")[0].rpartition(' ')[-1] if 'X-Forwarded-For' in request.headers else request.remote_addr
     query = "SELECT * FROM requests WHERE id = %s"
     params = (id,)
 
@@ -489,7 +489,7 @@ def request_submit():
         'redirect': request.args.get('Referer') if request.args.get('Referer') else '/requests'
     }
 
-    ip = request.args.get('CF-Connecting-IP') if request.args.get('CF-Connecting-IP') else request.remote_addr
+    ip = request.headers.getlist("X-Forwarded-For")[0].rpartition(' ')[-1] if 'X-Forwarded-For' in request.headers else request.remote_addr
 
     if not request.form.get('user_id'):
         props['message'] = 'You didn\'t enter a user ID.'
