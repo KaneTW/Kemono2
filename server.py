@@ -149,7 +149,7 @@ def thumbnail(path):
         response = make_response(send_file(image_io, mimetype='image/jpeg'))
         response.headers['Cache-Control'] = 'max-age=31557600, public'
         return response
-    except Exception as e:
+    except:
         return f"The file you requested could not be converted.", 404
 
 @app.route('/artists/random')
