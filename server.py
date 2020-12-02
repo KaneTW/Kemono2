@@ -68,8 +68,9 @@ def upload_exceeded(error):
     props = {
         'redirect': request.args.get('Referer') if request.args.get('Referer') else '/'
     }
+    limit = int(getenv('REQUESTS_IMAGES')) if getenv('REQUESTS_IMAGES') else 1048576
     props['message'] = 'Submitted file exceeds the upload limit. {} MB for requests images.'.format(
-        int(getenv('REQUESTS_IMAGES')) / 1024 / 1024
+        limit / 1024 / 1024
     )
     return render_template(
         'error.html',
@@ -518,7 +519,8 @@ def request_submit():
             filename = original = slugify_filename(secure_filename(image.filename))
             tmp = join('/tmp', filename)
             image.save(tmp)
-            if stat(tmp).st_size > int(getenv('REQUESTS_IMAGES')):
+            limit = int(getenv('REQUESTS_IMAGES')) if getenv('REQUESTS_IMAGES') else 1048576
+            if stat(tmp).st_size > limit:
                 abort(413)
             store = join(getenv('DB_ROOT'), 'requests', 'images', filename)
             copy = 1
