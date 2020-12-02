@@ -150,7 +150,7 @@ def thumbnail(path):
         response.headers['Cache-Control'] = 'max-age=31557600, public'
         return response
     except Exception as e:
-        return f"The file you requested could not be converted. Error: {e}", 404
+        return f"The file you requested could not be converted.", 404
 
 @app.route('/artists/random')
 def random_artist():
