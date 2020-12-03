@@ -141,14 +141,11 @@ def root():
 def thumbnail(path):
     size = int(request.args.get('size')) if request.args.get('size') and int(request.args.get('size')) <= 800 else 800
     try:
-        image_io = BytesIO()
         image = Image.open(join(getenv('DB_ROOT'), path))
         image = image.convert('RGB')
         image.thumbnail((size, size))
-        image.save(image_io, 'JPEG', quality=60)
-        image_io.seek(0)
-        response = make_response(send_file(image_io, mimetype='image/jpeg'))
-        response.headers['Cache-Control'] = 'max-age=31557600, public'
+        image.save(join(getenv('DB_ROOT'), 'thumbnail', path), 'JPEG', quality=60)
+        response = redirect(join('/', 'thumbnail', path), code=302)
         return response
     except:
         return f"The file you requested could not be converted.", 404
