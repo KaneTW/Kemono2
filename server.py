@@ -507,6 +507,7 @@ def request_submit():
                 limit = int(getenv('REQUESTS_IMAGES')) if getenv('REQUESTS_IMAGES') else 1048576
                 if stat(tmp).st_size > limit:
                     abort(413)
+                makedirs(join(getenv('DB_ROOT'), 'requests', 'images'), exist_ok=True)
                 store = join(getenv('DB_ROOT'), 'requests', 'images', filename)
                 copy = 1
                 while isfile(store):
