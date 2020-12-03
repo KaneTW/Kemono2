@@ -139,11 +139,10 @@ def root():
 
 @app.route('/thumbnail/<path:path>')
 def thumbnail(path):
-    size = int(request.args.get('size')) if request.args.get('size') and int(request.args.get('size')) <= 800 else 800
     try:
         image = Image.open(join(getenv('DB_ROOT'), path))
         image = image.convert('RGB')
-        image.thumbnail((size, size))
+        image.thumbnail((800, 800))
         makedirs(dirname(join(getenv('DB_ROOT'), 'thumbnail', path)), exist_ok=True)
         image.save(join(getenv('DB_ROOT'), 'thumbnail', path), 'JPEG', quality=60)
         response = redirect(join('/', 'thumbnail', path), code=302)
