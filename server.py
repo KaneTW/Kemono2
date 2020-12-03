@@ -1,5 +1,5 @@
 import re
-from os import getenv, stat, rename
+from os import getenv, stat, rename, makedirs
 from os.path import join, dirname, isfile, splitext
 from dotenv import load_dotenv
 load_dotenv(join(dirname(__file__), '.env'))
@@ -144,6 +144,7 @@ def thumbnail(path):
         image = Image.open(join(getenv('DB_ROOT'), path))
         image = image.convert('RGB')
         image.thumbnail((size, size))
+        makedirs(dirname(join(getenv('DB_ROOT'), 'thumbnail', path)), exist_ok=True)
         image.save(join(getenv('DB_ROOT'), 'thumbnail', path), 'JPEG', quality=60)
         response = redirect(join('/', 'thumbnail', path), code=302)
         return response
