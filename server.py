@@ -513,39 +513,46 @@ def request_submit():
         )
 
     filename = ''
-    if 'image' in request.files:
-        image = request.files['image']
-        if image and image.filename and allowed_file(image.content_type, ['png', 'jpeg', 'gif']):
-            filename = original = slugify_filename(secure_filename(image.filename))
-            tmp = join('/tmp', filename)
-            image.save(tmp)
-            limit = int(getenv('REQUESTS_IMAGES')) if getenv('REQUESTS_IMAGES') else 1048576
-            if stat(tmp).st_size > limit:
-                abort(413)
-            store = join(getenv('DB_ROOT'), 'requests', 'images', filename)
-            copy = 1
-            while isfile(store):
-                filename = splitext(original)[0] + '-' + str(copy) + splitext(original)[1]
+    try:
+        if 'image' in request.files:
+            image = request.files['image']
+            if image and image.filename and allowed_file(image.content_type, ['png', 'jpeg', 'gif']):
+                filename = original = slugify_filename(secure_filename(image.filename))
+                tmp = join('/tmp', filename)
+                image.save(tmp)
+                limit = int(getenv('REQUESTS_IMAGES')) if getenv('REQUESTS_IMAGES') else 1048576
+                if stat(tmp).st_size > limit:
+                    abort(413)
                 store = join(getenv('DB_ROOT'), 'requests', 'images', filename)
-                copy += 1
-            rename(tmp, store)
+                copy = 1
+                while isfile(store):
+                    filename = splitext(original)[0] + '-' + str(copy) + splitext(original)[1]
+                    store = join(getenv('DB_ROOT'), 'requests', 'images', filename)
+                    copy += 1
+                rename(tmp, store)
+    except Exception as error:
+        props['message'] = 'Failed to upload image. Error: {}'.format(error)
+        return make_response(render_template(
+            'error.html',
+            props = props
+        ), 500)
 
     scrub = Cleaner(tags = [])
     text = Cleaner(tags = ['br'])
 
     columns = ['service','"user"','title','description','price','ips']
-    description = request.form.get('description').replace('\n', '<br>\n')
+    description = request.form.get('description').strip().replace('\n', '<br>\n')
     params = (
         scrub.clean(request.form.get('service')),
-        scrub.clean(request.form.get('user_id')),
-        scrub.clean(request.form.get('title')),
+        scrub.clean(request.form.get('user_id').strip()),
+        scrub.clean(request.form.get('title').strip()),
         text.clean(description),
-        scrub.clean(request.form.get('price')),
+        scrub.clean(request.form.get('price').strip()),
         [sha256(ip.encode()).hexdigest()]
     )
     if request.form.get('specific_id'):
         columns.append('post_id')
-        params += (scrub.clean(request.form.get('specific_id')),)
+        params += (scrub.clean(request.form.get('specific_id').strip()),)
     if filename:
         columns.append('image')
         params += (join('/requests', 'images', filename),)
