@@ -534,18 +534,18 @@ def request_submit():
     text = Cleaner(tags = ['br'])
 
     columns = ['service','"user"','title','description','price','ips']
-    description = request.form.get('description').replace('\n', '<br>\n')
+    description = request.form.get('description').strip().replace('\n', '<br>\n')
     params = (
         scrub.clean(request.form.get('service')),
-        scrub.clean(request.form.get('user_id')),
-        scrub.clean(request.form.get('title')),
+        scrub.clean(request.form.get('user_id').strip()),
+        scrub.clean(request.form.get('title').strip()),
         text.clean(description),
-        scrub.clean(request.form.get('price')),
+        scrub.clean(request.form.get('price').strip()),
         [sha256(ip.encode()).hexdigest()]
     )
     if request.form.get('specific_id'):
         columns.append('post_id')
-        params += (scrub.clean(request.form.get('specific_id')),)
+        params += (scrub.clean(request.form.get('specific_id').strip()),)
     if filename:
         columns.append('image')
         params += (join('/requests', 'images', filename),)
