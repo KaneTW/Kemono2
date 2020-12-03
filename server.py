@@ -1,6 +1,7 @@
 import re
 from os import getenv, stat, rename, makedirs
 from os.path import join, dirname, isfile, splitext
+from shutil import move
 from dotenv import load_dotenv
 load_dotenv(join(dirname(__file__), '.env'))
 
@@ -514,7 +515,7 @@ def request_submit():
                     filename = splitext(original)[0] + '-' + str(copy) + splitext(original)[1]
                     store = join(getenv('DB_ROOT'), 'requests', 'images', filename)
                     copy += 1
-                rename(tmp, store)
+                move(tmp, store)
     except Exception as error:
         props['message'] = 'Failed to upload image. Error: {}'.format(error)
         return make_response(render_template(
