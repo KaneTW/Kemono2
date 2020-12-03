@@ -137,19 +137,6 @@ def root():
     response.autocorrect_location_header = False
     return response
 
-@app.route('/thumbnail/<path:path>')
-def thumbnail(path):
-    try:
-        image = Image.open(join(getenv('DB_ROOT'), path))
-        image = image.convert('RGB')
-        image.thumbnail((800, 800))
-        makedirs(dirname(join(getenv('DB_ROOT'), 'thumbnail', path)), exist_ok=True)
-        image.save(join(getenv('DB_ROOT'), 'thumbnail', path), 'JPEG', quality=60)
-        response = redirect(join('/', 'thumbnail', path), code=302)
-        return response
-    except:
-        return f"The file you requested could not be converted.", 404
-
 @app.route('/artists/random')
 def random_artist():
     cursor = get_cursor()
