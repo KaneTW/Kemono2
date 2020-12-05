@@ -2,11 +2,21 @@
   {% if src %}
     <div class="thumb thumb-with-image {{ class if class else 'thumb-standard' }}">
       <img src="{{ src|replace('https://kemono.party', '') }}">
+      <div class="thumb-with-image-overlay">
+        <h3>{{ title }}</h3>
+        <small>{{ published }}</small><br>
+        {% if attachments|length %}
+          <small>{{ attachments|length }} attachments</small>
+        {% endif %}
+      </div>
     </div>
   {% else %}
     <div class="thumb thumb-with-text {{ class if class else 'thumb-standard' }}">
       <h3>{{ title }}</h3>
-      <p>{{ content }}</p>
+      <small>{{ published }}</small><br>
+      {% if attachments|length %}
+        <small>{{ attachments|length }} attachments</small>
+      {% endif %}
     </div>
   {% endif %}
 </a>

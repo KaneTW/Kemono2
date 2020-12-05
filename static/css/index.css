@@ -94,6 +94,10 @@ a:link {
   height: 200px;
 }
 
+.thumb:hover .thumb-with-image-overlay {
+  display: block;
+}
+
 .thumb-with-image {
   display: flex;
   flex-direction: column;
@@ -102,10 +106,23 @@ a:link {
   background-image: url(/static/loading.gif);
   background-position: center;
   background-repeat: no-repeat;
+  position: relative;
+}
+
+.thumb-with-image-overlay {
+  display: none;
+  z-index: 9;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  text-align: center;
+  background-image: linear-gradient(to bottom, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0));
 }
 
 .thumb-with-text {
   overflow-y: auto;
+  text-align: center;
 }
 
 .thumb-with-text * {
