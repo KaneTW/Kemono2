@@ -361,7 +361,7 @@ def board():
     return response
 
 @app.route('/requests')
-def requests():
+def requests_list():
     props = {
         'currentPage': 'requests'
     }
@@ -556,6 +556,65 @@ def request_submit():
         'success.html',
         props = props
     ), 200)
+
+@app.route('/importer')
+def importer():
+    props = {
+        'currentPage': 'import'
+    }
+
+    response = make_response(render_template(
+        'importer_list.html',
+        props = props
+    ), 200)
+    response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
+    return response
+
+@app.route('/importer/tutorial')
+def importer_tutorial():
+    props = {
+        'currentPage': 'import'
+    }
+
+    response = make_response(render_template(
+        'importer_tutorial.html',
+        props = props
+    ), 200)
+    response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
+    return response
+
+@app.route('/importer/ok')
+def importer_ok():
+    props = {
+        'currentPage': 'import'
+    }
+
+    response = make_response(render_template(
+        'importer_ok.html',
+        props = props
+    ), 200)
+    response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
+    return response
+
+@app.route('/importer/status/<id>')
+def importer_status(id):
+    cursor = get_cursor()
+    query = "SELECT FROM logs WHERE to_tsvector(\'english\', log0) @@ websearch_to_tsquery(%s)"
+    params = ('kemono:importer:status:' + id,)
+    cursor.execute(query, params)
+    results = cursor.fetchall()
+
+    props = {
+        'currentPage': 'import'
+    }
+
+    response = make_response(render_template(
+        'importer_status.html',
+        props = props,
+        results = results
+    ), 200)
+    response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
+    return response
 
 ### API ###
 
