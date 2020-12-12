@@ -9,7 +9,6 @@ from routes.help import help_app
 from routes.proxy import proxy_app
 
 from PIL import Image
-from io import BytesIO
 from flask import Flask, jsonify, render_template, render_template_string, request, redirect, url_for, send_from_directory, make_response, g, abort, current_app, send_file
 from flask_caching import Cache
 from werkzeug.utils import secure_filename
@@ -290,6 +289,14 @@ def user(service, id):
         props = props,
         results = results,
         base = base
+    ), 200)
+    response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
+    return response
+
+@app.route('/discord/server/<id>')
+def discord_server(id):
+    response = make_response(render_template(
+        'discord.html'
     ), 200)
     response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
     return response
@@ -632,6 +639,8 @@ def importer_status(id):
 
 ### API ###
 
+# TODO: file sharing api (/api/upload)
+
 @app.route('/api/bans')
 def bans():
     cursor = get_cursor()
@@ -681,8 +690,38 @@ def lookup():
     response = make_response(jsonify(list(map(lambda x: x['id'], results))), 200)
     return response
 
-# @app.route('/api/discord/channels/lookup')
-# def discord_lookup():
+@app.route('/api/discord/channels/lookup')
+def discord_lookup():
+    cursor = get_cursor()
+    query = "SELECT channel FROM discord_posts WHERE server = %s GROUP BY channel"
+    params = (request.args.get('q'),)
+    cursor.execute(query, params)
+    channels = cursor.fetchall()
+    lookup = []
+    for x in channels:
+        cursor = get_cursor()
+        cursor.execute("SELECT * FROM lookup WHERE service = 'discord-channel' AND id = %s", (x['channel'],))
+        lookup_result = cursor.fetchall()
+        lookup.append({ 'id': x['channel'], 'name': lookup_result[0]['name'] if len(lookup_result) else '' })
+    response = make_response(jsonify(lookup))
+    return response
+
+@app.route('/api/discord/channel/<id>')
+def discord_channel(id):
+    cursor = get_cursor()
+    query = "SELECT * FROM discord_posts WHERE channel = %s ORDER BY published desc "
+    params = (id,)
+
+    offset = request.args.get('o') if request.args.get('o') else 0
+    query += "OFFSET %s "
+    params += (offset,)
+    limit = request.args.get('limit') if request.args.get('limit') and int(request.args.get('limit')) <= 150 else 25
+    query += "LIMIT %s"
+    params += (limit,)
+
+    cursor.execute(query, params)
+    results = cursor.fetchall()
+    return jsonify(results)
 
 @app.route('/api/lookup/cache/<id>')
 def lookup_cache(id):
@@ -695,3 +734,99 @@ def lookup_cache(id):
     results = cursor.fetchall()
     response = make_response(jsonify({ "name": results[0]['name'] if results[0]['name'] else '' }))
     return response
+
+@app.route('/api/<service>/user/<user>/lookup')
+def user_search(service, user):
+    if (request.args.get('q') and len(request.args.get('q')) > 35):
+        return make_response('Bad request', 400)
+    cursor = get_cursor()
+    query = "SELECT * FROM booru_posts WHERE \"user\" = %s AND service = %s "
+    params = (user, service)
+    query += "AND to_tsvector(content || ' ' || title) @@ websearch_to_tsquery(%s) "
+    params += (request.args.get('q'),)
+    query += "ORDER BY published desc "
+
+    offset = request.args.get('o') if request.args.get('o') else 0
+    query += "OFFSET %s "
+    params += (offset,)
+    limit = request.args.get('limit') if request.args.get('limit') and int(request.args.get('limit')) <= 150 else 25
+    query += "LIMIT %s"
+    params += (limit,)
+
+    cursor.execute(query, params)
+    results = cursor.fetchall()
+    return jsonify(results)
+
+@app.route('/api/<service>/user/<user>/post/<post>')
+def post_api(service, user, post):
+    cursor = get_cursor()
+    query = "SELECT * FROM booru_posts WHERE id = %s AND \"user\" = %s AND service = %s ORDER BY added asc"
+    params = (post, user, service)
+    cursor.execute(query, params)
+    results = cursor.fetchall()
+    print(results)
+    return jsonify(results)
+
+@app.route('/api/<service>/user/<user>/post/<post>/flag')
+def flag_api(service, user, post):
+    cursor = get_cursor()
+    query = "SELECT * FROM booru_flags WHERE id = %s AND \"user\" = %s AND service = %s"
+    params = (post, user, service)
+    cursor.execute(query, params)
+    results = cursor.fetchall()
+    return "", 200 if len(results) else 404
+
+@app.route('/api/<service>/user/<user>/post/<post>/flag', methods=["POST"])
+def new_flag_api(service, user, post):
+    cursor = get_cursor()
+    query = "SELECT * FROM booru_posts WHERE id = %s AND \"user\" = %s AND service = %s"
+    params = (post, user, service)
+    cursor.execute(query, params)
+    results = cursor.fetchall()
+    if len(results) == 0:
+        return "", 404
+    
+    cursor2 = get_cursor()
+    query2 = "SELECT * FROM booru_flags WHERE id = %s AND \"user\" = %s AND service = %s"
+    params2 = (post, user, service)
+    cursor2.execute(query2, params2)
+    results2 = cursor.fetchall()
+    if len(results2) > 0:
+        # conflict; flag already exists
+        return "", 409
+    
+    scrub = Cleaner(tags = [])
+    columns = ['id','"user"','service']
+    params = (
+        scrub.clean(post),
+        scrub.clean(user),
+        scrub.clean(service)
+    )
+    data = ['%s'] * len(params)
+    query = "INSERT INTO booru_flags ({fields}) VALUES ({values})".format(
+        fields = ','.join(columns),
+        values = ','.join(data)
+    )
+    cursor3 = get_cursor()
+    cursor3.execute(query, params)
+
+    return "", 200
+
+@app.route('/api/<service>/user/<id>')
+@cache.cached(key_prefix=make_cache_key)
+def user_api(service, id):
+    cursor = get_cursor()
+    query = "SELECT * FROM booru_posts WHERE \"user\" = %s AND service = %s ORDER BY published desc "
+    params = (id, service)
+
+    offset = request.args.get('o') if request.args.get('o') else 0
+    query += "OFFSET %s "
+    params += (offset,)
+    limit = request.args.get('limit') if request.args.get('limit') and int(request.args.get('limit')) <= 50 else 25
+    query += "LIMIT %s"
+    params += (limit,)
+
+    cursor.execute(query, params)
+    results = cursor.fetchall()
+
+    return jsonify(results)

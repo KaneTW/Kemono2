@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Kemono</title>
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/normalize.css@8.0.1/normalize.css">
+    <meta name="push_key" content="${process.env.VAPID_PUBLIC_KEY}"/>
+    <link rel="stylesheet" type="text/css" href="/static/css/compatibility.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/discord.css">
+    <meta name="service" content="discord"/>
+  </head>
+  <body>
+    <div class="discord-main">
+      <div class="channels" id="channels"></div>
+      <div class="messages" id="messages">
+        <noscript>
+          <div class="message">
+            <p>You need JavaScript to view archived Discord messages.</p>
+          </div>
+        </noscript>
+      </div>
+    </div>
+    <script src="https://unpkg.com/unfetch@4.1.0/polyfill/index.js"></script>
+    <script src="/static/js/discord.js"></script>
+  </body>
+</html>
