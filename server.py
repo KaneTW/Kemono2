@@ -712,7 +712,7 @@ def discord_channel(id):
     query = "SELECT * FROM discord_posts WHERE channel = %s ORDER BY published desc "
     params = (id,)
 
-    offset = request.args.get('o') if request.args.get('o') else 0
+    offset = request.args.get('skip') if request.args.get('skip') else 0
     query += "OFFSET %s "
     params += (offset,)
     limit = request.args.get('limit') if request.args.get('limit') and int(request.args.get('limit')) <= 150 else 25
