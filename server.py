@@ -327,7 +327,7 @@ def post(service, id, post):
         previews = []
         attachments = []
         if len(post['file']):
-            if re.search("\.(gif|jpe?g|png|webp)$", post['file']['path'], re.IGNORECASE):
+            if re.search("\.(gif|jpe?g|jpe|png|webp)$", post['file']['path'], re.IGNORECASE):
                 previews.append({
                     'type': 'thumbnail',
                     'path': post['file']['path'].replace('https://kemono.party','')
@@ -345,7 +345,7 @@ def post(service, id, post):
                 'description': post['embed']['description']
             })
         for attachment in post['attachments']:
-            if re.search("\.(gif|jpe?g|png|webp)$", attachment['path'], re.IGNORECASE):
+            if re.search("\.(gif|jpe?g|jpe|png|webp)$", attachment['path'], re.IGNORECASE):
                 previews.append({
                     'type': 'thumbnail',
                     'path': attachment['path'].replace('https://kemono.party','')
