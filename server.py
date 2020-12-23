@@ -762,7 +762,7 @@ def lookup_cache(id):
     params = (id, request.args.get('service'))
     cursor.execute(query, params)
     results = cursor.fetchall()
-    response = make_response(jsonify({ "name": results[0]['name'] if results[0]['name'] else '' }))
+    response = make_response(jsonify({ "name": results[0]['name'] if len(results) > 0 else '' }))
     return response
 
 @app.route('/api/<service>/user/<user>/lookup')
