@@ -1,7 +1,19 @@
 TODO: write actual README
 ## Setup
+### With Docker
+```sh
+# cd to kemono directory
+cp .env.example .env # open .env and configure
+cp flask.cfg.example flask.cfg # open flask.cfg and configure
+cp kitsune.py.example kitsune.py # open kitsune.py and configure
+docker-compose build
+docker-compose up -d
+cat database.sql | docker exec -i kemono-db psql -U nano kemonodb # initialize database
+```
+### Manually
 This assumes you have Python 3 installed and a running PostgreSQL server.
 ```sh
+# make sure your database is initialized
 # cd to kemono directory
 pip install virtualenv
 virtualenv venv
