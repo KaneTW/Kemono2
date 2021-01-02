@@ -337,7 +337,7 @@ def post(service, id, post):
             else:
                 attachments.append({
                     'path': post['file']['path'],
-                    'name': post['file']['name']
+                    'name': post['file'].get('name')
                 })
         if len(post['embed']):
             previews.append({
