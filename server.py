@@ -7,6 +7,7 @@ load_dotenv(join(dirname(__file__), '.env'))
 
 from routes.help import help_app
 from routes.proxy import proxy_app
+from routes.support import support_app
 
 from PIL import Image
 from flask import Flask, jsonify, render_template, render_template_string, request, redirect, url_for, send_from_directory, make_response, g, abort, current_app, send_file
@@ -32,6 +33,7 @@ app.jinja_env.filters['regex_match'] = lambda val, rgx: re.search(rgx, val)
 app.jinja_env.filters['regex_find'] = lambda val, rgx: re.findall(rgx, val)
 app.register_blueprint(help_app, url_prefix='/help')
 app.register_blueprint(proxy_app, url_prefix='/proxy')
+app.register_blueprint(support_app, url_prefix='/support')
 try:
     pool = psycopg2.pool.SimpleConnectionPool(1, 20,
         host = getenv('PGHOST') if getenv('PGHOST') else 'localhost',
@@ -148,8 +150,8 @@ def thumbnail(path):
         response = redirect(join('/', 'thumbnail', path), code=302)
         response.autocorrect_location_header = False
         return response
-    except:
-        return f"The file you requested could not be converted.", 404
+    except Exception as e:
+        return f"The file you requested could not be converted. Error: {e}", 404
 
 @app.route('/artists/random')
 def random_artist():
@@ -617,24 +619,30 @@ def importer_ok():
     response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
     return response
 
-@app.route('/importer/status/<id>')
-def importer_status(id):
-    cursor = get_cursor()
-    query = "SELECT FROM logs WHERE to_tsvector(\'english\', log0) @@ websearch_to_tsquery(%s)"
-    params = ('kemono:importer:status:' + id,)
-    cursor.execute(query, params)
-    results = cursor.fetchall()
-
+@app.route('/importer/status/<lgid>')
+def importer_status(lgid):
     props = {
-        'currentPage': 'import'
+        'currentPage': 'import',
+        'id': lgid
     }
 
-    response = make_response(render_template(
-        'importer_status.html',
-        props = props,
-        results = results
-    ), 200)
-    response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
+    try:
+        f = open(join(getenv('DB_ROOT'), 'logs', lgid + '.log'))
+        response = make_response(render_template(
+            'importer_status.html',
+            props = props,
+            log = f.read()
+        ), 200)
+    except IOError:
+        props['message'] = 'That log doesn\'t exist.'
+        response = make_response(render_template(
+            'error.html',
+            props = props
+        ), 401)
+    finally:
+        f.close()
+
+    response.headers['Cache-Control'] = 'max-age=0, private, must-revalidate'
     return response
 
 ### API ###
@@ -661,6 +669,7 @@ def importer_submit():
         # in new importer, return just the id instead of a whole page
         props = {
             'currentPage': 'import',
+            'redirect': f'/importer/status/{r.text}'
         }
         return make_response(render_template(
             'success.html',

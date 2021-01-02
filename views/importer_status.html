@@ -3,11 +3,9 @@
 <div class="info">
   <p>
     <strong>Importer logs</strong><br>
-    For bug reporting purposes, your importer ID is <strong>${props.id}</strong>.
+    For bug reporting purposes, your importer ID is <strong>{{ props.id }}</strong>.
     <div class="logs" id="logs">
-      {% for log in logs %}
-        <span>{{ log }}</span><br>
-      {% endfor %}
+      <p>{{ log | replace('\n', '<br>') }}></p>
     </div>
   </p>
 </div>
