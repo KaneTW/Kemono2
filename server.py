@@ -627,20 +627,18 @@ def importer_status(lgid):
     }
 
     try:
-        f = open(join(getenv('DB_ROOT'), 'logs', lgid + '.log'))
-        response = make_response(render_template(
-            'importer_status.html',
-            props = props,
-            log = f.read()
-        ), 200)
+        with open(join(getenv('DB_ROOT'), 'logs', lgid + '.log')) as f:
+            response = make_response(render_template(
+                'importer_status.html',
+                props = props,
+                log = f.read()
+            ), 200)
     except IOError:
         props['message'] = 'That log doesn\'t exist.'
         response = make_response(render_template(
             'error.html',
             props = props
         ), 401)
-    finally:
-        f.close()
 
     response.headers['Cache-Control'] = 'max-age=0, private, must-revalidate'
     return response
