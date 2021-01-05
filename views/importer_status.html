@@ -5,7 +5,7 @@
     <strong>Importer logs</strong><br>
     For bug reporting purposes, your importer ID is <strong>{{ props.id }}</strong>.
     <div class="logs" id="logs">
-      <p>{{ log }}></p>
+      <p>{{ log | replace('\n', '<br>') | safe }}></p>
     </div>
   </p>
 </div>
