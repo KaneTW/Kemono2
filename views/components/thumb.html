@@ -15,7 +15,9 @@
   {% else %}
     <div class="thumb thumb-with-text {{ class if class else 'thumb-standard' }}">
       <h3>{{ title }}</h3>
-      <small>{{ published }}</small><br>
+      {% if published %}
+        <small>{{ published }}</small><br>
+      {% endif %}
       {% if attachments|length %}
         <small>{{ attachments|length }} {% 'attachment' if attachments|length == 1 else 'attachments' %}</small>
       {% endif %}
