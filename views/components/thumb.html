@@ -8,7 +8,7 @@
           <small>{{ published }}</small><br>
         {% endif %}
         {% if attachments|length %}
-          <small>{{ attachments|length }} attachments</small>
+          <small>{{ attachments|length }} {% 'attachment' if attachments|length == 1 else 'attachments' %}</small>
         {% endif %}
       </div>
     </div>
