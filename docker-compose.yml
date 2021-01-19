@@ -17,8 +17,6 @@ services:
     container_name: kemono
     restart: unless-stopped
     depends_on:
-      kemono-archiver:
-        condition: service_started
       kemono-db:
         condition: service_healthy
     ports:
