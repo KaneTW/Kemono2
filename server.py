@@ -172,7 +172,7 @@ def updated_artists():
     props = {
         'currentPage': 'artists'
     }
-    query = 'WITH "posts" as (select "user", "service", max("added") from "booru_posts" group by "user", "service" order by max(added) desc limit 50) '\
+    query = 'WITH "posts" as (select "user", "service", max("added") from "posts" group by "user", "service" order by max(added) desc limit 50) '\
         'select "user", "posts"."service" as service, "lookup"."name" as name, "max" from "posts" inner join "lookup" on "posts"."user" = "lookup"."id"'
     cursor.execute(query)
     results = cursor.fetchall()
@@ -206,7 +206,7 @@ def posts():
     base = request.args.to_dict()
     base.pop('o', None)
 
-    query = "SELECT * FROM booru_posts ORDER BY added desc "
+    query = "SELECT * FROM posts ORDER BY added desc "
     params = ()
 
     offset = request.args.get('o') if request.args.get('o') else 0
@@ -243,7 +243,7 @@ def upload_post():
 @app.route('/posts/random')
 def random_post():
     cursor = get_cursor()
-    query = "SELECT service, \"user\", id FROM booru_posts WHERE random() < 0.01 LIMIT 1"
+    query = "SELECT service, \"user\", id FROM posts WHERE random() < 0.01 LIMIT 1"
     cursor.execute(query)
     random = cursor.fetchall()
     response = redirect(url_for('post', service = random[0]['service'], id = random[0]['user'], post = random[0]['id']))
@@ -266,7 +266,7 @@ def user(service, id):
     base["service"] = service
     base["id"] = id
 
-    query = "SELECT * FROM booru_posts WHERE \"user\" = %s AND service = %s ORDER BY published desc "
+    query = "SELECT * FROM posts WHERE \"user\" = %s AND service = %s ORDER BY published desc "
     params = (id, service)
 
     offset = request.args.get('o') if request.args.get('o') else 0
@@ -280,7 +280,7 @@ def user(service, id):
     results = cursor.fetchall()
 
     cursor2 = get_cursor()
-    query2 = "SELECT id FROM booru_posts WHERE \"user\" = %s AND service = %s GROUP BY id"
+    query2 = "SELECT id FROM posts WHERE \"user\" = %s AND service = %s GROUP BY id"
     params2 = (id, service)
     cursor2.execute(query2, params2)
     results2 = cursor2.fetchall()
@@ -311,10 +311,10 @@ def post(service, id, post):
         'currentPage': 'posts',
         'service': service if service else 'patreon'
     }
-    query = 'SELECT * FROM booru_posts '
+    query = 'SELECT * FROM posts '
     query += 'WHERE id = %s '
     params = (post,)
-    query += 'AND booru_posts.user = %s '
+    query += 'AND posts.user = %s '
     params += (id,)
     query += 'AND service = %s '
     params += (service,)
@@ -689,7 +689,7 @@ def bans():
 @app.route('/api/recent')
 def recent():
     cursor = get_cursor()
-    query = "SELECT * FROM booru_posts ORDER BY added desc "
+    query = "SELECT * FROM posts ORDER BY added desc "
     params = ()
 
     offset = request.args.get('o') if request.args.get('o') else 0
@@ -777,7 +777,7 @@ def user_search(service, user):
     if (request.args.get('q') and len(request.args.get('q')) > 35):
         return make_response('Bad request', 400)
     cursor = get_cursor()
-    query = "SELECT * FROM booru_posts WHERE \"user\" = %s AND service = %s "
+    query = "SELECT * FROM posts WHERE \"user\" = %s AND service = %s "
     params = (user, service)
     query += "AND to_tsvector(content || ' ' || title) @@ websearch_to_tsquery(%s) "
     params += (request.args.get('q'),)
@@ -797,7 +797,7 @@ def user_search(service, user):
 @app.route('/api/<service>/user/<user>/post/<post>')
 def post_api(service, user, post):
     cursor = get_cursor()
-    query = "SELECT * FROM booru_posts WHERE id = %s AND \"user\" = %s AND service = %s ORDER BY added asc"
+    query = "SELECT * FROM posts WHERE id = %s AND \"user\" = %s AND service = %s ORDER BY added asc"
     params = (post, user, service)
     cursor.execute(query, params)
     results = cursor.fetchall()
@@ -816,7 +816,7 @@ def flag_api(service, user, post):
 @app.route('/api/<service>/user/<user>/post/<post>/flag', methods=["POST"])
 def new_flag_api(service, user, post):
     cursor = get_cursor()
-    query = "SELECT * FROM booru_posts WHERE id = %s AND \"user\" = %s AND service = %s"
+    query = "SELECT * FROM posts WHERE id = %s AND \"user\" = %s AND service = %s"
     params = (post, user, service)
     cursor.execute(query, params)
     results = cursor.fetchall()
@@ -853,7 +853,7 @@ def new_flag_api(service, user, post):
 @cache.cached(key_prefix=make_cache_key)
 def user_api(service, id):
     cursor = get_cursor()
-    query = "SELECT * FROM booru_posts WHERE \"user\" = %s AND service = %s ORDER BY published desc "
+    query = "SELECT * FROM posts WHERE \"user\" = %s AND service = %s ORDER BY published desc "
     params = (id, service)
 
     offset = request.args.get('o') if request.args.get('o') else 0
