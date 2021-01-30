@@ -9,8 +9,9 @@ from routes.help import help_app
 from routes.proxy import proxy_app
 
 from PIL import Image
-from flask import Flask, jsonify, render_template, render_template_string, request, redirect, url_for, send_from_directory, make_response, g, abort, current_app, send_file
+from flask import Flask, jsonify, render_template, render_template_string, request, redirect, url_for, send_from_directory, make_response, g, abort, current_app, send_file, session
 from flask_caching import Cache
+from flask_session import Session
 from werkzeug.utils import secure_filename
 from slugify import slugify_filename
 import requests
@@ -25,6 +26,9 @@ app = Flask(
     __name__,
     template_folder='views'
 )
+app.config["SESSION_TYPE"] = 'sqlalchemy'
+app.config["SQLALCHEMY_DATABASE_URI"] = f"postgresql://{getenv('PGUSER')}:{getenv('PGPASSWORD')}@{getenv('PGHOST')}/{getenv('PGDATABASE')}"
+
 app.config.from_pyfile('flask.cfg')
 cache = Cache(app)
 app.url_map.strict_slashes = False
@@ -34,10 +38,10 @@ app.register_blueprint(help_app, url_prefix='/help')
 app.register_blueprint(proxy_app, url_prefix='/proxy')
 try:
     pool = psycopg2.pool.SimpleConnectionPool(1, 20,
-        host = getenv('PGHOST') if getenv('PGHOST') else 'localhost',
-        dbname = getenv('PGDATABASE') if getenv('PGDATABASE') else 'kemonodb',
-        user = getenv('PGUSER') if getenv('PGUSER') else 'nano',
-        password = getenv('PGPASSWORD') if getenv('PGPASSWORD') else 'shinonome',
+        host = getenv('PGHOST'),
+        dbname = getenv('PGDATABASE'),
+        user = getenv('PGUSER'),
+        password = getenv('PGPASSWORD'),
         cursor_factory = RealDictCursor
     )
 except Exception as error:
@@ -88,6 +92,18 @@ def close(e):
             pool.putconn(connection)
 
 @app.route('/')
+def home():
+    props = {}
+    base = request.args.to_dict()
+    base.pop('o', None)
+    response = make_response(render_template(
+        'home.html',
+        props = props,
+        base = base
+    ), 200)
+    return response
+
+@app.route('/artists')
 @cache.cached(key_prefix=make_cache_key)
 def artists():
     props = {
@@ -122,6 +138,19 @@ def artists():
         cursor = get_cursor()
         cursor.execute(query, params)
         results = cursor.fetchall()
+
+        query2 = "SELECT COUNT(*) FROM lookup "
+        query2 += "WHERE name ILIKE %s "
+        params2 = ('%' + request.args.get('q') + '%',)
+        if request.args.get('service'):
+            query2 += "AND service = %s "
+            params2 += (request.args.get('service'),)
+        query2 += "AND service != 'discord-channel'"
+        cursor2 = get_cursor()
+        cursor2.execute(query2, params2)
+        results2 = cursor.fetchall()
+        props["count"] = int(results2[0]["count"])
+        
     response = make_response(render_template(
         'artists.html',
         props = props,
@@ -129,12 +158,6 @@ def artists():
         base = base
     ), 200)
     response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
-    return response
-
-@app.route('/artists')
-def root():
-    response = redirect('/', code=308)
-    response.autocorrect_location_header = False
     return response
 
 @app.route('/thumbnail/<path:path>')
@@ -257,7 +280,8 @@ def user(service, id):
     props = {
         'currentPage': 'posts',
         'id': id,
-        'service': service
+        'service': service,
+        'session': session
     }
     base = request.args.to_dict()
     base.pop('o', None)
@@ -278,11 +302,18 @@ def user(service, id):
     results = cursor.fetchall()
 
     cursor2 = get_cursor()
-    query2 = "SELECT id FROM posts WHERE \"user\" = %s AND service = %s GROUP BY id"
+    query2 = "SELECT COUNT(*) FROM posts WHERE \"user\" = %s AND service = %s"
     params2 = (id, service)
     cursor2.execute(query2, params2)
     results2 = cursor2.fetchall()
-    props["count"] = len(results2)
+    props["count"] = int(results2[0]["count"])
+
+    cursor3 = get_cursor()
+    query3 = "SELECT * FROM lookup WHERE id = %s AND service = %s"
+    params3 = (id, service)
+    cursor3.execute(query3, params3)
+    results3 = cursor.fetchall()
+    props["name"] = results3[0]['name'] if len(results3) > 0 else ''
 
     response = make_response(render_template(
         'user.html',

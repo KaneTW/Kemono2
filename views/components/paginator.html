@@ -1,16 +1,23 @@
 <menu>
   {% set skip = request.args.get('o')|int if request.args.get('o') else 0 %}
-  {% if skip >= 50 %}
-    <li><a href="{{ url_for(request.endpoint, o = skip - 50, **base) }}" title="-50">«</a></li>
-  {% else %}
-    <li class="subtitle">«</li>
-  {% endif %}
+
   {% if skip >= 25 %}
-    <li><a href="{{ url_for(request.endpoint, o = skip - 25, **base) }}" title="-25">‹</a></li>
+    <li><a href="{{ url_for(request.endpoint, o = skip - 25, **base) }}" title="Previous page">&lt;</a></li>
   {% else %}
-    <li class="subtitle">‹</li>
+    <li class="subtitle">&lt;</li>
   {% endif %}
-  <li>offset: {{ skip }}{{ '/' ~ props.count if props.count}}</li>
-  <li><a href="{{ url_for(request.endpoint, o = skip + 25, **base) }}" title="+25">›</a></li>
-  <li><a href="{{ url_for(request.endpoint, o = skip + 50, **base) }}" title="+50">»</a></li>
+
+  {% for page in range(0, (props.count / 25)|round(0, 'ceil')|int) %}
+    {% if page * 25 == skip %}
+      <li>{{ page + 1 }}</li>
+    {% else %}
+      <li><a href="{{ url_for(request.endpoint, o = page * 25, **base) }}">{{ page + 1 }}</a></li>
+    {% endif %}
+  {% endfor %}
+
+  {% if props.count - skip > 25 %}
+    <li><a href="{{ url_for(request.endpoint, o = skip + 25, **base) }}" title="Next page">&gt;</a></li>
+  {% else %}
+    <li class="subtitle">&gt;</li>
+  {% endif %}
 </menu>
