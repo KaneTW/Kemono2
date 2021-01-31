@@ -56,7 +56,7 @@ html, button, input, select, textarea, .pure-g [class *= "pure-u"] {
   color: #737373;
 }
 
-.content {
+/* .content {
   display: flex;
   flex-wrap: wrap;  
 }
@@ -64,7 +64,7 @@ html, button, input, select, textarea, .pure-g [class *= "pure-u"] {
 .content * {
   max-width: 200px;
   max-height: 200px;
-}
+} */
 
 a:visited {
   text-decoration: none;
@@ -82,6 +82,64 @@ a:link {
   padding: 0.75rem 1.25rem;
   border-radius: 0.25rem;
   background: #3a3d43;
+}
+
+.card {
+  height: 500px;
+  background: #3a3d43;
+  border-radius: 2px;
+  margin: 0.5rem;
+  box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 1px 5px 0 rgba(0,0,0,0.12), 0 3px 1px -2px rgba(0,0,0,0.2);
+  position: relative;
+}
+
+.card-image {
+  overflow: hidden;
+  position: relative;
+  max-height: 330px;
+}
+
+.card-reveal {
+  padding: 20px;
+  position: absolute;
+  background-color: #3a3d43;
+  width: 100%;
+  overflow-y: auto;
+  top: 100%;
+  height: 100%;
+  z-index: 1;
+  display: none;
+}
+
+.card-content {
+  overflow: hidden;
+  padding: 20px;
+  border-radius: 0 0 2px 2px;
+  height: 170px;
+}
+
+.card-title {
+  font-size: 24px;
+  font-weight: 300;
+}
+
+.card-action {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  border-top: 1px solid rgba(160,160,160,0.2);
+  padding: 20px;
+}
+
+.card-image img {
+  border-radius: 2px 2px 0 0;
+  position: relative;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 100%;
 }
 
 .user-header {
@@ -373,10 +431,10 @@ input[type="submit"] {
     width: 160px;
     height: 160px;
   }
-  .content * {
+  /* .content * {
     max-width: 160px;
     max-height: 160px;
-  }
+  } */
   .views {
     flex-direction: column;
   }

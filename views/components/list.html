@@ -6,13 +6,23 @@
   <div class="paginator" id="paginator-top">
     {% include 'components/paginator.html' %}
   </div>
-  <!-- <div class="content" id="content">
+  <div class="content" id="content">
+    <div class="pure-g">
+      {% for post in results %}
+        {% with post=post %}
+          {% include 'components/card.html' %}
+        {% endwith %}
+      {% endfor %}
+    </div>
+  </div>
+  {# <div class="content" id="content">
     {% for post in results %}
       {% with post=post %}
         {% include 'components/preview.html' %}
       {% endwith %}
     {% endfor %}
-  </div> -->
+  </div> #}
+ 
   <div class="paginator" id="paginator-bottom">
     {% include 'components/paginator.html' %}
   </div>

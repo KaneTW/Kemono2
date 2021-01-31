@@ -1,0 +1,20 @@
+<div class="pure-u-1 pure-u-sm-1-2 pure-u-md-1-2 pure-u-lg-1-2 pure-u-xl-1-3 card-container">
+  <div class="card">
+    {% if post['file'].path and post['file'].path|lower|regex_match("\.(gif|jpe?g|png|webp)$") %}
+      <div class="card-image">
+        <img src="https://kemono.party/thumbnail{{ post['file'].path|replace('https://kemono.party', '') }}">
+      </div>
+      <div class="card-content">
+        <span class="card-title">{{ post.title }}</span>
+        <br>
+        <span class="subtitle">{{ post.published }}</span>
+      </div>
+      <div class="card-reveal">
+        <h1>Hi</h1>
+      </div>
+      <div class="card-action">
+        <a href="/thumbnail{{ post['file'].path|replace('https://kemono.party', '') }}">POST IMAGE</a>
+      </div>
+    {% endif %}
+  </div>
+</div>
