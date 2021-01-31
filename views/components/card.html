@@ -1,16 +1,31 @@
 <div class="pure-u-1 pure-u-sm-1-2 pure-u-md-1-2 pure-u-lg-1-2 pure-u-xl-1-3 card-container">
   <div class="card">
     {% if post['file'].path and post['file'].path|lower|regex_match("\.(gif|jpe?g|png|webp)$") %}
+      <style>
+        #toggle-{{ post.id }}:checked ~ .card-reveal {
+          display: block;
+          animation-name: fadeInOpacity;
+	        animation-iteration-count: 1;
+	        animation-timing-function: ease-in;
+	        animation-duration: 100ms;
+        }
+      </style>
+      <input type="checkbox" class="visually-hidden" id="toggle-{{ post.id }}">
       <div class="card-image">
-        <img src="https://kemono.party/thumbnail{{ post['file'].path|replace('https://kemono.party', '') }}">
+        <label for="toggle-{{ post.id }}">
+          <img src="https://kemono.party/thumbnail{{ post['file'].path|replace('https://kemono.party', '') }}">
+        </label>
       </div>
       <div class="card-content">
-        <span class="card-title">{{ post.title }}</span>
+        <label for="toggle-{{ post.id }}" class="card-title">{{ post.title }}</label>
         <br>
-        <span class="subtitle">{{ post.published }}</span>
+        <label for="toggle-{{ post.id }}" class="subtitle">{{ post.published }}</label>
       </div>
       <div class="card-reveal">
-        <h1>Hi</h1>
+        <div class="card-reveal-content">
+          <label for="toggle-{{ post.id }}" class="card-title">{{ post.title }}</label>
+          <label for="toggle-{{ post.id }}" class="subtitle">{{ post.published }}</label>
+        </div>
       </div>
       <div class="card-action">
         <a href="/thumbnail{{ post['file'].path|replace('https://kemono.party', '') }}">POST IMAGE</a>

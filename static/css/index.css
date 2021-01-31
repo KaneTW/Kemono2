@@ -84,6 +84,21 @@ a:link {
   background: #3a3d43;
 }
 
+.visually-hidden {
+  position: absolute;
+  left: -100vw;
+}
+
+@keyframes fadeInOpacity {
+	0% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+
+
 .card {
   height: 500px;
   background: #3a3d43;
@@ -100,15 +115,19 @@ a:link {
 }
 
 .card-reveal {
-  padding: 20px;
+  border-radius: 2px;
   position: absolute;
   background-color: #3a3d43;
   width: 100%;
   overflow-y: auto;
-  top: 100%;
+  top: 0;
   height: 100%;
   z-index: 1;
   display: none;
+}
+
+.card-reveal-content {
+  padding: 20px;
 }
 
 .card-content {
@@ -121,6 +140,7 @@ a:link {
 .card-title {
   font-size: 24px;
   font-weight: 300;
+  cursor: pointer;
 }
 
 .card-action {
@@ -146,7 +166,6 @@ a:link {
   border-radius: 10px;
   background-size: 100% auto;
   background-position: center;
-  background-color: #3a3d43;
   padding: 10px;
   display: flex;
 }
@@ -155,7 +174,6 @@ a:link {
   border-radius: 10px;
   background-size: cover;
   background-position: center;
-  background-color: #4c5058;
   height: 100px;
   width: 100px;
 }
