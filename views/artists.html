@@ -54,7 +54,9 @@
         </div>
       {% endif %}
       {% if results|length == 0 %}
-        <p class="subtitle">No artists found for your query.</p>
+        <div class="no-posts">
+          <p class="subtitle">No artists found for your query.</p>
+        </div>
       {% else %}
         <table class="search-results" width="100%">
           <thead>
