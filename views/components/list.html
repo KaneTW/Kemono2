@@ -9,6 +9,8 @@
   <div class="content" id="content">
     <div class="pure-g">
       {% for post in results %}
+        {% set previews = result_previews[loop.index0] %}
+        {% set attachments = result_attachments[loop.index0] %}
         {% with post=post %}
           {% include 'components/card.html' %}
         {% endwith %}

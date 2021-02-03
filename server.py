@@ -315,11 +315,50 @@ def user(service, id):
     results3 = cursor.fetchall()
     props["name"] = results3[0]['name'] if len(results3) > 0 else ''
 
+    result_previews = []
+    result_attachments = []
+    for post in results:
+        previews = []
+        attachments = []
+        if len(post['file']):
+            if re.search("\.(gif|jpe?g|jpe|png|webp)$", post['file']['path'], re.IGNORECASE):
+                previews.append({
+                    'type': 'thumbnail',
+                    'path': post['file']['path'].replace('https://kemono.party','')
+                })
+            else:
+                attachments.append({
+                    'path': post['file']['path'],
+                    'name': post['file'].get('name')
+                })
+        if len(post['embed']):
+            previews.append({
+                'type': 'embed',
+                'url': post['embed']['url'],
+                'subject': post['embed']['subject'],
+                'description': post['embed']['description']
+            })
+        for attachment in post['attachments']:
+            if re.search("\.(gif|jpe?g|jpe|png|webp)$", attachment['path'], re.IGNORECASE):
+                previews.append({
+                    'type': 'thumbnail',
+                    'path': attachment['path'].replace('https://kemono.party','')
+                })
+            else:
+                attachments.append({
+                    'path': attachment['path'],
+                    'name': attachment['name']
+                })
+        result_previews.append(previews)
+        result_attachments.append(attachments)
+    
     response = make_response(render_template(
         'user.html',
         props = props,
         results = results,
-        base = base
+        base = base,
+        result_previews = result_previews,
+        result_attachments = result_attachments
     ), 200)
     response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
     return response

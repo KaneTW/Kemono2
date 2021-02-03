@@ -25,10 +25,20 @@
         <div class="card-reveal-content">
           <label for="toggle-{{ post.id }}" class="card-title">{{ post.title }}</label>
           <label for="toggle-{{ post.id }}" class="subtitle">{{ post.published }}</label>
+          {% set render_title = False %}
+          {% include 'components/post_view.html' %}
         </div>
       </div>
       <div class="card-action">
-        <a href="/thumbnail{{ post['file'].path|replace('https://kemono.party', '') }}">POST IMAGE</a>
+        <a target="_blank" href="{{ post['file'].path|replace('https://kemono.party', '') }}">POST IMAGE</a>
+        <a target="_blank" href="/{{ post['service'] }}/user/{{ post['user'] }}/post/{{ post['id'] }}">VIEW POST</a>
+      </div>
+    {% else %}
+      <div class="card-reveal-content">
+        {% set render_title = False %}
+        <label class="card-title">{{ post.title }}</label>
+        <label class="subtitle">{{ post.published }}</label>
+        {% include 'components/post_view.html' %}
       </div>
     {% endif %}
   </div>
