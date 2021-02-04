@@ -356,7 +356,7 @@ def post(service, id, post):
         result_previews.append(previews)
         result_attachments.append(attachments)
     
-    props['posts'] = results[0]
+    props['posts'] = results
     response = make_response(render_template(
         'post.html',
         props = props,
