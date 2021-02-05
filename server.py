@@ -797,7 +797,6 @@ def post_api(service, user, post):
     params = (post, user, service)
     cursor.execute(query, params)
     results = cursor.fetchall()
-    print(results)
     return jsonify(results)
 
 @app.route('/api/<service>/user/<user>/post/<post>/flag')
