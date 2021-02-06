@@ -74,7 +74,7 @@
             {% for artist in results %}
               <tr class="artist-row">
                 <td>
-                  <div class="user-icon" data-user="{{ artist['id'] }}" data-service="{{ artist['service'] }}"></div>
+                  <div class="user-icon" style="background-image: url('/icons/{{ artist['service'] }}/{{ artist['id'] }}');"></div>
                 </td>
                 <td>
                   <a href="/{{ artist['service'] }}/{{ 'server' if artist['service'] == 'discord' else 'user' }}/{{ artist['id'] }}">{{ artist['name'] }}</a>
@@ -108,6 +108,5 @@
   {% if results|length %}
     <script src="https://unpkg.com/unfetch@4.1.0/polyfill/index.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js"></script>
-    <script src="{{ url_for('static', filename='js/artists.js') }}"></script>
   {% endif %}
 {% endblock %}
