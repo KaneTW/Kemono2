@@ -24,7 +24,7 @@
           {% for artist in results %}
             <tr class="artist-row">
               <td>
-                <div class="user-icon" style="background-image: url('/icons/{{ artist['service'] }}/{{ artist['id'] }}');"></div>
+                <div class="user-icon" style="background-image: url('/icons/{{ artist['service'] }}/{{ artist['user'] }}');"></div>
               </td>
               <td>
                 <a href="/{{ artist['service'] }}/{{ 'server' if artist['service'] == 'discord' else 'user' }}/{{ artist['user'] }}">{{ artist['name'] }}</a>
