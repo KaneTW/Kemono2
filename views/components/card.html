@@ -17,15 +17,14 @@
         </label>
       </div>
       <div class="card-content">
-        <label for="toggle-{{ post.id }}" class="card-title">{{ post.title }}</label>
+        <label for="toggle-{{ post.id }}" class="card-title" style="cursor:pointer;">{{ post.title }}</label>
         <br>
-        <label for="toggle-{{ post.id }}" class="subtitle">{{ post.published }}</label>
+        {% if post.published %}
+          <label for="toggle-{{ post.id }}" class="subtitle" style="cursor:pointer;">{{ post.published }}</label>
+        {% endif %}
       </div>
       <div class="card-reveal">
         <div class="card-reveal-content">
-          <label for="toggle-{{ post.id }}" class="card-title">{{ post.title }}</label>
-          <label for="toggle-{{ post.id }}" class="subtitle">{{ post.published }}</label>
-          {% set render_title = False %}
           {% include 'components/post_view.html' %}
         </div>
       </div>
@@ -37,9 +36,6 @@
   {% else %}
     <div class="text-card">
       <div class="card-reveal-content">
-        {% set render_title = False %}
-        <label class="card-title">{{ post.title }}</label>
-        <label class="subtitle">{{ post.published }}</label>
         {% include 'components/post_view.html' %}
       </div>
     </div>

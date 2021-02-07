@@ -7,7 +7,13 @@
   </p>
 {% endif %}
 {# title hidden with subscribestar posts to prevent redundancy #}
-<h1>{{ post.title if post.service != 'subscribestar' and render_title }}</h1>
+{% if post.service != 'subscribestar' %}
+  <label for="toggle-{{ post.id }}" class="card-title">{{ post.title }}</label>
+{% endif %}
+{% if post.published %}
+  <label for="toggle-{{ post.id }}" class="subtitle">{{ post.published }}</label>
+{% endif %}
+<br>
 {% for attachment in attachments %}
   <a href="{{ attachment.path }}" target="_blank">
     Download {{ attachment.name }}

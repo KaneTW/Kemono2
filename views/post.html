@@ -1,24 +1,33 @@
 {% extends 'components/shell.html' %}
 {% block content %}
-<div class="views">
-  <div class="sidebar" style="margin-right: 20px;">
-    <span class="subtitle">Click on the thumbnails to reveal the original resolution image.</span>
-    <h1>Information</h1>
-    <div class="results" id="results"></div>
-    <script src="https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js"></script>
-    <script src="https://unpkg.com/unfetch@4.1.0/polyfill/index.js"></script>
-    <script src="{{ url_for('static', filename='js/post.js') }}"></script>
-  </div>
-  <div class="page" id="page">
-    {% for post in results %}
-      {% set previews = result_previews[loop.index0] %}
-      {% set attachments = result_attachments[loop.index0] %}
-      {% with post=post %}
-        {% set render_title = True %}
-        {% include 'components/post_view.html' %}
-      {% endwith %}
-    {% endfor %}
-  </div>
+<div class="page" id="page">
+  {% if results|length %}
+    <div class="pure-g">
+      <div class="pure-u-1 pure-u-sm-1 pure-u-md-1-5">
+        <a href="/{{ results[0].service }}/user/{{ results[0].user }}">
+          <div class="jumbo">
+            <div class="jumbo-user">
+              <div class="jumbo-user-avatar" style="background-image: url('/icons/{{ results[0].service }}/{{ results[0].user }}');"></div>
+              <span>View all posts</span>
+            </div>
+          </div>
+        </a>
+      </div>
+      <div class="pure-u-1 pure-u-sm-1 pure-u-md-4-5">
+        {% for post in results %}
+          {% set previews = result_previews[loop.index0] %}
+          {% set attachments = result_attachments[loop.index0] %}
+          {% with post=post %}
+            {% include 'components/post_view.html' %}
+          {% endwith %}
+        {% endfor %}
+      </div>
+    </div>
+  {% else %}
+    <div class="no-posts">
+      <h1 class="subtitle">Nobody here but us chickens!</h1>
+    </div>
+  {% endif %}
 </div>
 <script src="{{ url_for('static', filename='js/expander.js') }}"></script>
 {% endblock %}

@@ -79,9 +79,23 @@ a:link {
 }
 
 .jumbo {
-  padding: 0.75rem 1.25rem;
+  padding: 10px;
+  margin: 0.5rem;
   border-radius: 0.25rem;
   background: #3a3d43;
+}
+
+.jumbo-user {
+  text-align: center;
+}
+
+.jumbo-user-avatar {
+  margin: 0 auto;
+  border-radius: 0.25rem;
+  background-size: cover;
+  background-position: center;
+  width: 50px;
+  height: 50px;
 }
 
 .visually-hidden {
@@ -154,7 +168,6 @@ a:link {
 .card-title {
   font-size: 24px;
   font-weight: 300;
-  cursor: pointer;
 }
 
 .card-action {
