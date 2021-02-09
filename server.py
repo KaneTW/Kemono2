@@ -494,6 +494,13 @@ def requests_list():
         offset = request.args.get('o') if request.args.get('o') else 0
         params = (offset,)
         query += "LIMIT 25"
+
+        cursor2 = get_cursor()
+        query2 = "SELECT COUNT(*) FROM requests "
+        query2 += "WHERE status = 'open'"
+        cursor2.execute(query2)
+        results2 = cursor2.fetchall()
+        props["count"] = int(results2[0]["count"])
     else:
         query = "SELECT * FROM requests "
         query += "WHERE title ILIKE %s "
@@ -520,6 +527,23 @@ def requests_list():
         offset = request.args.get('o') if request.args.get('o') else 0
         params += (offset,)
         query += "LIMIT 25"
+
+        cursor2 = get_cursor()
+        query2 = "SELECT COUNT(*) FROM requests "
+        query2 += "WHERE title ILIKE %s "
+        params2 = ('%' + request.args.get('q') + '%',)
+        if request.args.get('service'):
+            query2 += "AND service = %s "
+            params2 += (request.args.get('service'),)
+        query2 += "AND service != 'discord' "
+        if request.args.get('max_price'):
+            query2 += "AND price <= %s "
+            params2 += (request.args.get('max_price'),)
+        query2 += "AND status = %s"
+        params2 += (request.args.get('status'),)
+        cursor2.execute(query2, params2)
+        results2 = cursor2.fetchall()
+        props["count"] = int(results2[0]["count"])
 
     cursor = get_cursor()
     cursor.execute(query, params)
