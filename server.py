@@ -271,8 +271,15 @@ def random_post():
 
 # TODO: /:service/user/:id/rss
 
+@app.route('/config/set', methods=["POST"])
+def config():
+    for key in request.form.keys():
+        session[key] = request.form[key]
+    response = redirect(request.headers.get('Referer') if request.headers.get('Referer') else '/')
+    response.autocorrect_location_header = False
+    return response
+
 @app.route('/<service>/user/<id>')
-@cache.cached(key_prefix=make_cache_key)
 def user(service, id):
     cursor = get_cursor()
     props = {
@@ -366,9 +373,10 @@ def user(service, id):
         base = base,
         result_previews = result_previews,
         result_attachments = result_attachments,
-        result_flagged = result_flagged
+        result_flagged = result_flagged,
+        session = session
     ), 200)
-    response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
+    response.headers['Cache-Control'] = 'no-store, max-age=0'
     return response
 
 @app.route('/discord/server/<id>')
@@ -452,7 +460,8 @@ def post(service, id, post):
         results = results,
         result_previews = result_previews,
         result_attachments = result_attachments,
-        result_flagged = result_flagged
+        result_flagged = result_flagged,
+        session = session
     ), 200)
     response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
     return response

@@ -56,15 +56,16 @@ html, button, input, select, textarea, .pure-g [class *= "pure-u"] {
   color: #737373;
 }
 
-/* .content {
+.content-grid {
   display: flex;
-  flex-wrap: wrap;  
+  flex-wrap: wrap;
+  justify-content: center; 
 }
 
-.content * {
+.content-grid * {
   max-width: 200px;
   max-height: 200px;
-} */
+}
 
 a:visited {
   text-decoration: none;
@@ -96,6 +97,17 @@ a:link {
   background-position: center;
   width: 50px;
   height: 50px;
+}
+
+.opts {
+  float: right;
+  position: relative;
+}
+
+.opts select {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
 }
 
 .flag {
@@ -489,10 +501,10 @@ input[type="submit"] {
     width: 160px;
     height: 160px;
   }
-  /* .content * {
+  .content-grid * {
     max-width: 160px;
     max-height: 160px;
-  } */
+  }
   .views {
     flex-direction: column;
   }

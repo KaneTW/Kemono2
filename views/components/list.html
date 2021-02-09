@@ -3,29 +3,46 @@
     <h1 class="subtitle">Nobody here but us chickens!</h1>
   </div>
 {% else %}
+  <div class="opts">
+    <form
+      action="/config/set"
+      method="POST"
+      enctype="multipart/form-data"
+    >
+      <select name="posts_layout" onchange="javascript:this.form.submit()">
+        <option value="cards" {{ 'selected' if session.get('posts_layout') == 'cards' }}>Cards</option>
+        <option value="grid" {{ 'selected' if session.get('posts_layout') == 'grid' }}>Grid</option>
+      </select>
+      <input type="submit" name="commit" value="Submit" class="visually-hidden">
+    </form>
+  </div>
   <div class="paginator" id="paginator-top">
     {% include 'components/paginator.html' %}
   </div>
-  <div class="content" id="content">
-    <div class="pure-g">
-      {% for post in results %}
-        {% set flagged = result_flagged[loop.index0] %}
-        {% set previews = result_previews[loop.index0] %}
-        {% set attachments = result_attachments[loop.index0] %}
-        {% with post=post %}
-          {% include 'components/card.html' %}
-        {% endwith %}
-      {% endfor %}
+  {% if session.get('posts_layout') == 'cards' or not session.get('posts_layout') %}
+    <div class="content" id="content">
+      <div class="pure-g">
+        {% for post in results %}
+          {% set flagged = result_flagged[loop.index0] %}
+          {% set previews = result_previews[loop.index0] %}
+          {% set attachments = result_attachments[loop.index0] %}
+          {% with post=post %}
+            {% include 'components/card.html' %}
+          {% endwith %}
+        {% endfor %}
+      </div>
     </div>
-  </div>
-  {# <div class="content" id="content">
-    {% for post in results %}
-      {% with post=post %}
-        {% include 'components/preview.html' %}
-      {% endwith %}
-    {% endfor %}
-  </div> #}
- 
+  {% elif session.get('posts_layout') == 'grid' %}
+    <div class="content" id="content">
+      <div class="content-grid">
+        {% for post in results %}
+          {% with post=post %}
+            {% include 'components/preview.html' %}
+          {% endwith %}
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
   <div class="paginator" id="paginator-bottom">
     {% include 'components/paginator.html' %}
   </div>
