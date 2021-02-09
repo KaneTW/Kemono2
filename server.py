@@ -68,7 +68,7 @@ def allowed_file(mime, accepted):
 @app.errorhandler(413)
 def upload_exceeded(error):
     props = {
-        'redirect': request.args.get('Referer') if request.args.get('Referer') else '/'
+        'redirect': request.headers.get('Referer') if request.headers.get('Referer') else '/'
     }
     limit = int(getenv('REQUESTS_IMAGES')) if getenv('REQUESTS_IMAGES') else 1048576
     props['message'] = 'Submitted file exceeds the upload limit. {} MB for requests images.'.format(
@@ -569,7 +569,7 @@ def vote_up(id):
 
     props = {
         'currentPage': 'requests',
-        'redirect': request.args.get('Referer') if request.args.get('Referer') else '/requests'
+        'redirect': request.headers.get('Referer') if request.headers.get('Referer') else '/requests'
     }
 
     if not len(result):
@@ -613,7 +613,7 @@ def request_form():
 def request_submit():
     props = {
         'currentPage': 'requests',
-        'redirect': request.args.get('Referer') if request.args.get('Referer') else '/requests'
+        'redirect': request.headers.get('Referer') if request.headers.get('Referer') else '/requests'
     }
 
     ip = request.headers.getlist("X-Forwarded-For")[0].rpartition(' ')[-1] if 'X-Forwarded-For' in request.headers else request.remote_addr
