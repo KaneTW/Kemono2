@@ -98,6 +98,15 @@ a:link {
   height: 50px;
 }
 
+.flag {
+  color: #ff6961;
+  cursor: pointer;
+}
+
+.flag-disabled {
+  color: #737373;
+}
+
 .visually-hidden {
   position: absolute;
   left: -100vw;

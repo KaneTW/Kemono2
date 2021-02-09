@@ -9,6 +9,7 @@
   <div class="content" id="content">
     <div class="pure-g">
       {% for post in results %}
+        {% set flagged = result_flagged[loop.index0] %}
         {% set previews = result_previews[loop.index0] %}
         {% set attachments = result_attachments[loop.index0] %}
         {% with post=post %}

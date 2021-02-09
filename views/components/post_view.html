@@ -13,6 +13,11 @@
 {% if post.published %}
   <label for="toggle-{{ post.id }}" class="subtitle">{{ post.published }}</label>
 {% endif %}
+{% if flagged %}
+  <span class="flag-disabled" title="This post has been flagged.">⚑</span>
+{% else %}
+  <span class="flag" title="Flag post" id="flag-button" data-service="{{ post.service }}" data-user="{{ post.user }}" data-post="{{ post.id }}">⚑</span>
+{% endif %}
 <br>
 {% for attachment in attachments %}
   <a href="{{ attachment.path }}" target="_blank">
@@ -23,7 +28,7 @@
 <p>{{ post.content|safe }}</p>
 {% for preview in previews %}
   {% if preview.type == 'thumbnail' %}
-    <a class="fileThumb" href="https://kemono.party/{{ preview.path }}">
+    <a class="fileThumb" href="https://kemono.party{{ preview.path }}">
       <img
         data-src="https://kemono.party/thumbnail{{ preview.path }}"
         src="https://kemono.party/thumbnail{{ preview.path }}"

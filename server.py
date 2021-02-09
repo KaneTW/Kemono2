@@ -317,6 +317,7 @@ def user(service, id):
 
     result_previews = []
     result_attachments = []
+    result_flagged = []
     for post in results:
         previews = []
         attachments = []
@@ -349,6 +350,14 @@ def user(service, id):
                     'path': attachment['path'],
                     'name': attachment['name']
                 })
+
+        cursor4 = get_cursor()
+        query4 = "SELECT * FROM booru_flags WHERE id = %s AND \"user\" = %s AND service = %s"
+        params4 = (post['id'], id, service)
+        cursor4.execute(query4, params4)
+        results4 = cursor4.fetchall()
+
+        result_flagged.append(True if len(results4) > 0 else False)
         result_previews.append(previews)
         result_attachments.append(attachments)
     
@@ -358,7 +367,8 @@ def user(service, id):
         results = results,
         base = base,
         result_previews = result_previews,
-        result_attachments = result_attachments
+        result_attachments = result_attachments,
+        result_flagged = result_flagged
     ), 200)
     response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
     return response
@@ -393,6 +403,7 @@ def post(service, id, post):
 
     result_previews = []
     result_attachments = []
+    result_flagged = []
     for post in results:
         previews = []
         attachments = []
@@ -425,6 +436,14 @@ def post(service, id, post):
                     'path': attachment['path'],
                     'name': attachment['name']
                 })
+        
+        cursor4 = get_cursor()
+        query4 = "SELECT * FROM booru_flags WHERE id = %s AND \"user\" = %s AND service = %s"
+        params4 = (service, id, post['id'])
+        cursor4.execute(query4, params4)
+        results4 = cursor4.fetchall()
+
+        result_flagged.append(True if len(results4) > 0 else False)
         result_previews.append(previews)
         result_attachments.append(attachments)
     
@@ -434,7 +453,8 @@ def post(service, id, post):
         props = props,
         results = results,
         result_previews = result_previews,
-        result_attachments = result_attachments
+        result_attachments = result_attachments,
+        result_flagged = result_flagged
     ), 200)
     response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
     return response
