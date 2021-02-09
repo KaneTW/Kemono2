@@ -13,7 +13,7 @@
         <option value="cards" {{ 'selected' if session.get('posts_layout') == 'cards' }}>Cards</option>
         <option value="grid" {{ 'selected' if session.get('posts_layout') == 'grid' }}>Grid</option>
       </select>
-      <input type="submit" name="commit" value="Submit" class="visually-hidden">
+      <input type="submit" name="commit" value="Submit" class="visually-hidden" style="visibility: hidden;">
     </form>
   </div>
   <div class="paginator" id="paginator-top">
