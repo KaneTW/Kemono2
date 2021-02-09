@@ -11,7 +11,6 @@ from routes.proxy import proxy_app
 from PIL import Image
 from flask import Flask, jsonify, render_template, render_template_string, request, redirect, url_for, send_from_directory, make_response, g, abort, current_app, send_file, session
 from flask_caching import Cache
-from flask_session import Session
 from werkzeug.utils import secure_filename
 from slugify import slugify_filename
 import requests
@@ -26,8 +25,6 @@ app = Flask(
     __name__,
     template_folder='views'
 )
-app.config["SESSION_TYPE"] = 'sqlalchemy'
-app.config["SQLALCHEMY_DATABASE_URI"] = f"postgresql://{getenv('PGUSER')}:{getenv('PGPASSWORD')}@{getenv('PGHOST')}/{getenv('PGDATABASE')}"
 
 app.config.from_pyfile('flask.cfg')
 cache = Cache(app)
@@ -36,6 +33,7 @@ app.jinja_env.filters['regex_match'] = lambda val, rgx: re.search(rgx, val)
 app.jinja_env.filters['regex_find'] = lambda val, rgx: re.findall(rgx, val)
 app.register_blueprint(help_app, url_prefix='/help')
 app.register_blueprint(proxy_app, url_prefix='/proxy')
+
 try:
     pool = psycopg2.pool.SimpleConnectionPool(1, 20,
         host = getenv('PGHOST'),
