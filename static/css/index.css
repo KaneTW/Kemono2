@@ -551,7 +551,7 @@ input[type="submit"] {
 
 /* search results */
 .search-results {
-  border-collapse: collapse;
+  border-spacing: 5px;
 }
 
 .search-results thead tr {
@@ -572,6 +572,7 @@ thead th {
 .user-icon {
   width: 45px;
   height: 45px;
+  border-radius: 4px;
   background-size: cover;
   background-position: center;
 }
