@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Kemono</title>
+    <title>{{ props.name ~ " | Kemono" if props.name else "Kemono" }}</title>
     <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.5/build/base-min.css">
     <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.5/build/grids-min.css">
     <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.5/build/grids-responsive-min.css">
