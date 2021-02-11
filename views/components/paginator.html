@@ -30,7 +30,7 @@
   {% endfor %}
 
   {% for page in range(0, (props.count / 25)|round(0, 'ceil')|int) %}
-    {% if loop.last and props.count - skip >= 100 %}
+    {% if loop.last and props.count - skip >= 100 and props.count > 175 %}
       <li>...</li>
       <li><a href="{{ url_for(request.endpoint, o = page * 25, **base) }}">{{ (props.count / 25)|round(0, 'ceil')|int }}</a></li>
     {% endif %}
