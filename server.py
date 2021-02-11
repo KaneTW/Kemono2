@@ -211,7 +211,6 @@ def favorites():
     return response
 
 @app.route('/posts')
-@cache.cached(key_prefix=make_cache_key)
 def posts():
     cursor = get_cursor()
     props = {
@@ -233,11 +232,66 @@ def posts():
     cursor.execute(query, params)
     results = cursor.fetchall()
 
+    cursor2 = get_cursor()
+    query2 = "SELECT COUNT(*) FROM posts"
+    cursor2.execute(query2)
+    results2 = cursor2.fetchall()
+    props["count"] = int(results2[0]["count"])
+
+    result_previews = []
+    result_attachments = []
+    result_flagged = []
+    for post in results:
+        previews = []
+        attachments = []
+        if len(post['file']):
+            if re.search("\.(gif|jpe?g|jpe|png|webp)$", post['file']['path'], re.IGNORECASE):
+                previews.append({
+                    'type': 'thumbnail',
+                    'path': post['file']['path'].replace('https://kemono.party','')
+                })
+            else:
+                attachments.append({
+                    'path': post['file']['path'],
+                    'name': post['file'].get('name')
+                })
+        if len(post['embed']):
+            previews.append({
+                'type': 'embed',
+                'url': post['embed']['url'],
+                'subject': post['embed']['subject'],
+                'description': post['embed']['description']
+            })
+        for attachment in post['attachments']:
+            if re.search("\.(gif|jpe?g|jpe|png|webp)$", attachment['path'], re.IGNORECASE):
+                previews.append({
+                    'type': 'thumbnail',
+                    'path': attachment['path'].replace('https://kemono.party','')
+                })
+            else:
+                attachments.append({
+                    'path': attachment['path'],
+                    'name': attachment['name']
+                })
+
+        cursor4 = get_cursor()
+        query4 = "SELECT * FROM booru_flags WHERE id = %s AND \"user\" = %s AND service = %s"
+        params4 = (post['id'], post['id'], post['service'])
+        cursor4.execute(query4, params4)
+        results4 = cursor4.fetchall()
+
+        result_flagged.append(True if len(results4) > 0 else False)
+        result_previews.append(previews)
+        result_attachments.append(attachments)
+    
     response = make_response(render_template(
         'posts.html',
         props = props,
         results = results,
-        base = base
+        base = base,
+        result_previews = result_previews,
+        result_attachments = result_attachments,
+        result_flagged = result_flagged
     ), 200)
     response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
     return response
