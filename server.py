@@ -1,4 +1,5 @@
 import re
+from datetime import datetime
 from os import getenv, stat, rename, makedirs
 from os.path import join, dirname, isfile, splitext
 from shutil import move
@@ -42,6 +43,52 @@ except Exception as error:
 
 def make_cache_key(*args,**kwargs):
     return request.full_path
+
+def delta_key(e):
+    return e['delta_date']
+
+def relative_time(date):
+    """Take a datetime and return its "age" as a string.
+    The age can be in second, minute, hour, day, month or year. Only the
+    biggest unit is considered, e.g. if it's 2 days and 3 hours, "2 days" will
+    be returned.
+    Make sure date is not in the future, or else it won't work.
+    Original Gist by 'zhangsen' @ https://gist.github.com/zhangsen/1199964
+    """
+
+    def formatn(n, s):
+        """Add "s" if it's plural"""
+
+        if n == 1:
+            return "1 %s" % s
+        elif n > 1:
+            return "%d %ss" % (n, s)
+
+    def qnr(a, b):
+        """Return quotient and remaining"""
+
+        return a / b, a % b
+
+    class FormatDelta:
+
+        def __init__(self, dt):
+            now = datetime.now()
+            delta = now - dt
+            self.day = delta.days
+            self.second = delta.seconds
+            self.year, self.day = qnr(self.day, 365)
+            self.month, self.day = qnr(self.day, 30)
+            self.hour, self.second = qnr(self.second, 3600)
+            self.minute, self.second = qnr(self.second, 60)
+
+        def format(self):
+            for period in ['year', 'month', 'day', 'hour', 'minute', 'second']:
+                n = getattr(self, period)
+                if n >= 1:
+                    return '{0} ago'.format(formatn(n, period))
+            return "just now"
+
+    return FormatDelta(date).format()
 
 @app.before_request
 def clear_trailing():
@@ -203,11 +250,54 @@ def favorites():
     props = {
         'currentPage': 'artists'
     }
+
+    results = []
+    if session.get('favorites'):
+        for user in session['favorites']:
+            service = user.split(':')[0]
+            user_id = user.split(':')[1]
+
+            cursor = get_cursor()
+            if session.get('favorites_sort') == 'published' or not session.get('favorites_sort'):
+                query = "SELECT * FROM posts WHERE \"user\" = %s AND service = %s ORDER BY published desc LIMIT 1"
+            elif session.get('favorites_sort') == 'added':
+                query = "SELECT * FROM posts WHERE \"user\" = %s AND service = %s ORDER BY added desc LIMIT 1"
+            params = (user_id, service)
+            cursor.execute(query, params)
+            latest_post = cursor.fetchone()
+
+            cursor2 = get_cursor()
+            query2 = "SELECT * FROM lookup WHERE id = %s AND service = %s"
+            params2 = (user_id, service)
+            cursor2.execute(query2, params2)
+            results2 = cursor2.fetchone()
+
+            if not latest_post.get('published') and session.get('favorites_sort') == 'published':
+                results.append({
+                    "name": results2['name'] if results2 else "",
+                    "service": service,
+                    "user": user_id,
+                    "delta_date": 0,
+                    "relative_date": "N/A"
+                })
+            else:
+                results.append({
+                    "name": results2['name'] if results2 else "",
+                    "service": service,
+                    "user": user_id,
+                    "delta_date": ((latest_post['published'] if session.get('favorites_sort') == 'published' else latest_post['added']) - datetime.now()).total_seconds(),
+                    "relative_date": relative_time(latest_post['published'] if session.get('favorites_sort') == 'published' else latest_post['added'])
+                })
+    
+    props['phrase'] = "Last posted" if session.get('favorites_sort') == 'published' or not session.get('favorites_sort') else "Last imported"
+    results.sort(key=delta_key, reverse=True)
     response = make_response(render_template(
         'favorites.html',
-        props = props
+        props = props,
+        results = results,
+        session = session
     ), 200)
-    response.headers['Cache-Control'] = 'max-age=300, public, stale-while-revalidate=2592000'
+    response.headers['Cache-Control'] = 'no-store, max-age=0'
     return response
 
 @app.route('/posts')
@@ -321,9 +411,27 @@ def random_post():
 # TODO: /:service/user/:id/rss
 
 @app.route('/config/set', methods=["POST"])
-def config():
+def config_set():
     for key in request.form.keys():
         session[key] = request.form[key]
+    response = redirect(request.headers.get('Referer') if request.headers.get('Referer') else '/')
+    response.autocorrect_location_header = False
+    return response
+
+@app.route('/config/add', methods=["POST"])
+def config_add():
+    for key in request.form.keys():
+        session[key] = session[key] + [request.form[key]] if session.get(key) and isinstance(session[key], list) else [request.form[key]]
+    response = redirect(request.headers.get('Referer') if request.headers.get('Referer') else '/')
+    response.autocorrect_location_header = False
+    return response
+
+@app.route('/config/remove', methods=["POST"])
+def config_remove():
+    for key in request.form.keys():
+        if session.get(key) and isinstance(session[key], list):
+            session[key].remove(request.form[key])
+    session.modified = True
     response = redirect(request.headers.get('Referer') if request.headers.get('Referer') else '/')
     response.autocorrect_location_header = False
     return response
