@@ -273,13 +273,7 @@ def favorites():
             results2 = cursor2.fetchone()
 
             if not latest_post.get('published') and session.get('favorites_sort') == 'published':
-                results.append({
-                    "name": results2['name'] if results2 else "",
-                    "service": service,
-                    "user": user_id,
-                    "delta_date": 0,
-                    "relative_date": "N/A"
-                })
+                continue
             else:
                 results.append({
                     "name": results2['name'] if results2 else "",
