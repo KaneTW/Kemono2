@@ -18,7 +18,7 @@
       {% endif %}
         <div class="user-header-info-{{ props.service }}"></div>
       </a>
-      {% if session.get('favorites') and props.service ~ ':' ~props.id in session.get('favorites') %}
+      {% if session.get('favorites') and props.service ~ ':' ~ props.id in session.get('favorites') %}
         <form
           action="/config/remove"
           method="POST"
