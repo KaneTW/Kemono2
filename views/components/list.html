@@ -13,11 +13,26 @@
         <option value="cards" {{ 'selected' if session.get('posts_layout') == 'cards' }}>Cards</option>
         <option value="grid" {{ 'selected' if session.get('posts_layout') == 'grid' }}>Grid</option>
       </select>
-      <input type="submit" name="commit" value="Submit" class="visually-hidden" style="visibility: hidden;">
+      <input type="submit" style="display: none;">
     </form>
   </div>
   <div class="paginator" id="paginator-top">
     {% include 'components/paginator.html' %}
+    <form
+      action="{{ request.path }}"
+      method="GET"
+      enctype="application/x-www-form-urlencoded"
+    >
+      <input
+        type="text"
+        name="q"
+        id="q"
+        autocomplete="off"
+        value="{{ request.args.get('q') if request.args.get('q') }}"
+        placeholder="search for posts..."
+      >
+      <input type="submit" style="display: none;">
+    </form>
   </div>
   {% if session.get('posts_layout') == 'cards' or not session.get('posts_layout') %}
     <div class="content" id="content">

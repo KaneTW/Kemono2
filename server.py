@@ -303,22 +303,41 @@ def posts():
     base = request.args.to_dict()
     base.pop('o', None)
 
-    query = "SELECT * FROM posts ORDER BY added desc "
-    params = ()
+    if not request.args.get('q'):
+        query = "SELECT * FROM posts "
+        params = ()
 
-    offset = request.args.get('o') if request.args.get('o') else 0
-    query += "OFFSET %s "
-    params += (offset,)
-    limit = request.args.get('limit') if request.args.get('limit') and request.args.get('limit') <= 50 else 25
-    query += "LIMIT %s"
-    params += (limit,)
+        query += "ORDER BY added desc "
+        offset = request.args.get('o') if request.args.get('o') else 0
+        query += "OFFSET %s "
+        params += (offset,)
+        limit = request.args.get('limit') if request.args.get('limit') and request.args.get('limit') <= 50 else 25
+        query += "LIMIT %s"
+        params += (limit,)
+    else:
+        query = "WITH searched_posts as (SELECT * FROM posts WHERE to_tsvector('english', content || ' ' || title) @@ websearch_to_tsquery(%s)) "
+        params = (request.args.get('q'),)
 
+        query += "SELECT * FROM searched_posts "
+        query += "ORDER BY searched_posts.added desc "
+        offset = request.args.get('o') if request.args.get('o') else 0
+        query += "OFFSET %s "
+        params += (offset,)
+        limit = request.args.get('limit') if request.args.get('limit') and request.args.get('limit') <= 50 else 25
+        query += "LIMIT %s"
+        params += (limit,)
+    
+        print(query)
     cursor.execute(query, params)
     results = cursor.fetchall()
 
     cursor2 = get_cursor()
-    query2 = "SELECT COUNT(*) FROM posts"
-    cursor2.execute(query2)
+    query2 = "SELECT COUNT(*) FROM posts "
+    params2 = ()
+    if request.args.get('q'):
+        query2 += "WHERE to_tsvector('english', content || ' ' || title) @@ websearch_to_tsquery(%s)"
+        params2 += (request.args.get('q'),)
+    cursor2.execute(query2, params2)
     results2 = cursor2.fetchall()
     props["count"] = int(results2[0]["count"])
 
@@ -377,7 +396,7 @@ def posts():
         result_attachments = result_attachments,
         result_flagged = result_flagged
     ), 200)
-    response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
+    response.headers['Cache-Control'] = 'no-store, max-age=0'
     return response
 
 @app.route('/posts/upload')
@@ -444,9 +463,14 @@ def user(service, id):
     base["service"] = service
     base["id"] = id
 
-    query = "SELECT * FROM posts WHERE \"user\" = %s AND service = %s ORDER BY published desc "
+    query = "SELECT * FROM posts WHERE \"user\" = %s AND service = %s "
     params = (id, service)
 
+    if request.args.get('q'):
+        query += "AND to_tsvector('english', content || ' ' || title) @@ websearch_to_tsquery(%s) "
+        params += (request.args.get('q'),)
+    
+    query += "ORDER BY published desc "
     offset = request.args.get('o') if request.args.get('o') else 0
     query += "OFFSET %s "
     params += (offset,)
@@ -458,8 +482,11 @@ def user(service, id):
     results = cursor.fetchall()
 
     cursor2 = get_cursor()
-    query2 = "SELECT COUNT(*) FROM posts WHERE \"user\" = %s AND service = %s"
+    query2 = "SELECT COUNT(*) FROM posts WHERE \"user\" = %s AND service = %s "
     params2 = (id, service)
+    if request.args.get('q'):
+        query2 += "AND to_tsvector('english', content || ' ' || title) @@ websearch_to_tsquery(%s)"
+        params2 += (request.args.get('q'),)
     cursor2.execute(query2, params2)
     results2 = cursor2.fetchall()
     props["count"] = int(results2[0]["count"])

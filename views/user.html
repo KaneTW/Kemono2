@@ -4,7 +4,7 @@
   <div class="user-header-avatar" style="background-image: url('/icons/{{ props.service }}/{{ props.id }}');"></div>
   <div class="user-header-info">
     <div class="user-header-info-top">
-      <span class="user-header-info-title">{{ props.name }}</span>
+      <a href="/{{ props.service }}/user/{{ props.id }}"><span class="user-header-info-title">{{ props.name }}</span></a>
       {% if props.service == "patreon" %}
       <a target="_blank" rel="noreferrer" href="https://www.patreon.com/user?u={{ props.id }}">
       {% elif props.service == "fanbox" %}

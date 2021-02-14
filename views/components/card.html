@@ -10,12 +10,12 @@
 	        animation-duration: 100ms;
         }
       </style>
-      <input type="checkbox" class="visually-hidden" id="toggle-{{ post.id }}">
       <div class="card-image">
         <label for="toggle-{{ post.id }}">
           <img src="https://kemono.party/thumbnail{{ post['file'].path|replace('https://kemono.party', '') }}">
         </label>
       </div>
+      <input type="checkbox" class="visually-hidden" id="toggle-{{ post.id }}">
       <div class="card-content">
         <label for="toggle-{{ post.id }}" class="card-title" style="cursor:pointer;">{{ post.title }}</label>
         <br>
