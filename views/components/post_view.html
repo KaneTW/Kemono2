@@ -28,10 +28,10 @@
 <p>{{ post.content|safe }}</p>
 {% for preview in previews %}
   {% if preview.type == 'thumbnail' %}
-    <a class="fileThumb" href="https://kemono.party{{ preview.path }}">
+    <a class="fileThumb" href="{{ preview.path }}">
       <img
-        data-src="https://kemono.party/thumbnail{{ preview.path }}"
-        src="https://kemono.party/thumbnail{{ preview.path }}"
+        data-src="/thumbnail{{ preview.path }}"
+        src="/thumbnail{{ preview.path }}"
         loading="lazy"
       >
     </a>
