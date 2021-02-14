@@ -13,13 +13,9 @@
       </thead>
       <tbody>
         {% if results|length == 0 %}
-          <tr>
-            <td></td>
-            <td class="subtitle">No artists found for your query.</td>
-            <td></td>
-            <td></td>
-            <td></td>
-          </tr>
+          <div class="no-posts">
+            <p class="subtitle">No artists found for your query.</p>
+          </div>
         {% else %}
           {% for artist in results %}
             <tr class="artist-row">
