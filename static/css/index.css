@@ -611,14 +611,6 @@ input[type="submit"] {
 }
 
 /* search results */
-.search-results {
-  border-collapse: collapse;
-}
-
-.search-results thead tr {
-  border-bottom: 2px solid #111;
-}
-
 .search-results tbody td {
   height: 2.25em;
   padding-right: 10px;
@@ -631,10 +623,11 @@ thead th {
 }
 
 .user-icon {
-  width: 45px;
-  height: 45px;
+  width: 40px;
+  height: 40px;
   background-size: cover;
   background-position: center;
+  border-radius: 0.25rem;
 }
 
 /* Info pages */
