@@ -565,6 +565,82 @@ def discord_server(id):
     response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
     return response
 
+@app.route('/<service>/user/<id>/post/<post>/prev')
+def post_prev(service, id, post):
+    cursor = get_cursor()
+    query = 'SELECT * FROM posts '
+    query += 'WHERE id = %s '
+    params = (post,)
+    query += 'AND posts.user = %s '
+    params += (id,)
+    query += 'AND service = %s '
+    params += (service,)
+
+    cursor.execute(query, params)
+    result = cursor.fetchone()
+    if not result:
+        return "Not found", 404
+    
+    cursor2 = get_cursor()
+    query2 = 'SELECT * FROM posts '
+    params2 = ()
+    query2 += 'WHERE posts.user = %s '
+    params2 += (id,)
+    query2 += 'AND service = %s '
+    params2 += (service,)
+    query2 += 'AND published > %s '
+    params2 += (result['published'],)
+    query2 += 'ORDER BY published desc '
+    query2 += 'LIMIT 1'
+    cursor2.execute(query2, params2)
+    prev_result = cursor.fetchone()
+
+    if not prev_result:
+        response = redirect(request.headers.get('Referer') if request.headers.get('Referer') else '/')
+    else:
+        response = redirect(url_for('post', service = prev_result['service'], id = prev_result['user'], post = prev_result['id']))
+        response.autocorrect_location_header = False
+
+    return response
+
+@app.route('/<service>/user/<id>/post/<post>/next')
+def post_next(service, id, post):
+    cursor = get_cursor()
+    query = 'SELECT * FROM posts '
+    query += 'WHERE id = %s '
+    params = (post,)
+    query += 'AND posts.user = %s '
+    params += (id,)
+    query += 'AND service = %s '
+    params += (service,)
+
+    cursor.execute(query, params)
+    result = cursor.fetchone()
+    if not result:
+        return "Not found", 404
+    
+    cursor2 = get_cursor()
+    query2 = 'SELECT * FROM posts '
+    params2 = ()
+    query2 += 'WHERE posts.user = %s '
+    params2 += (id,)
+    query2 += 'AND service = %s '
+    params2 += (service,)
+    query2 += 'AND published < %s '
+    params2 += (result['published'],)
+    query2 += 'ORDER BY published desc '
+    query2 += 'LIMIT 1'
+    cursor2.execute(query2, params2)
+    prev_result = cursor.fetchone()
+
+    if not prev_result:
+        response = redirect(request.headers.get('Referer') if request.headers.get('Referer') else '/')
+    else:
+        response = redirect(url_for('post', service = prev_result['service'], id = prev_result['user'], post = prev_result['id']))
+        response.autocorrect_location_header = False
+
+    return response
+
 @app.route('/<service>/user/<id>/post/<post>')
 @cache.cached(key_prefix=make_cache_key)
 def post(service, id, post):

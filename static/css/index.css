@@ -79,6 +79,19 @@ a:link {
   text-align: center;
 }
 
+.nav-links ul {
+  list-style: none;
+  margin: 0.5rem;
+  padding: 0;
+}
+
+.nav-links li {
+  display: flex;
+  height: 2rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .activity-view {
   padding: 5px;
   margin: 0.5rem;
