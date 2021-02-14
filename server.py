@@ -622,7 +622,7 @@ def post_prev(service, id, post):
     params2 += (service,)
     query2 += 'AND published > %s '
     params2 += (result['published'],)
-    query2 += 'ORDER BY published desc '
+    query2 += 'ORDER BY published '
     query2 += 'LIMIT 1'
     cursor2.execute(query2, params2)
     prev_result = cursor.fetchone()
