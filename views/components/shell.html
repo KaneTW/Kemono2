@@ -26,12 +26,12 @@
     {% if props.count %}
       <meta name="count" content="{{ props.count }}"/>
     {% endif %}
-    {% if props.posts %}
-      {% if props.posts.published %}
-        <meta name="published" content="{{ props.posts.published }}"/>
+    {% if props.posts|length %}
+      {% if props.posts[0].published %}
+        <meta name="published" content="{{ props.posts[0].published }}"/>
       {% endif %}
-      <meta name="added" content="{{ props.posts.added }}"/>
-      <meta name="id" content="{{ props.posts.id }}"/>
+      <meta name="added" content="{{ props.posts[0].added }}"/>
+      <meta name="id" content="{{ props.posts[0].id }}"/>
     {% endif %}
   </head>
   <body>

@@ -18,6 +18,7 @@ import psycopg2
 from psycopg2 import pool
 from psycopg2.extras import RealDictCursor
 from hashlib import sha256
+import datetime
 
 app = Flask(
     __name__,
@@ -29,7 +30,6 @@ cache = Cache(app)
 app.url_map.strict_slashes = False
 app.jinja_env.filters['regex_match'] = lambda val, rgx: re.search(rgx, val)
 app.jinja_env.filters['regex_find'] = lambda val, rgx: re.findall(rgx, val)
-
 try:
     pool = psycopg2.pool.SimpleConnectionPool(1, 20,
         host = getenv('PGHOST'),
@@ -697,6 +697,8 @@ def post(service, id, post):
     result_attachments = []
     result_flagged = []
     for post in results:
+        if post['added'] > datetime.datetime(2021, 1, 9, 0, 0, 0, 0):
+            props['after_kitsune'] = True
         previews = []
         attachments = []
         if len(post['file']):
@@ -1206,7 +1208,6 @@ def post_api(service, user, post):
     params = (post, user, service)
     cursor.execute(query, params)
     results = cursor.fetchall()
-    print(results)
     return jsonify(results)
 
 @app.route('/api/<service>/user/<user>/post/<post>/flag')
