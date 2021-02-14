@@ -233,14 +233,46 @@ def updated_artists():
     props = {
         'currentPage': 'artists'
     }
-    query = 'WITH "posts" as (select "user", "service", max("added") from "posts" group by "user", "service" order by max(added) desc limit 50) '\
-        'select "user", "posts"."service" as service, "lookup"."name" as name, "max" from "posts" inner join "lookup" on "posts"."user" = "lookup"."id"'
-    cursor.execute(query)
-    results = cursor.fetchall()
+    query = 'SELECT posts.user, service, max(added) FROM posts GROUP BY posts.user, service ORDER BY max(added) desc '
+    params = ()
+    query += "OFFSET %s "
+    offset = request.args.get('o') if request.args.get('o') else 0
+    params += (offset,)
+    query += "LIMIT 25"
+    cursor.execute(query, params)
+    posts_results = cursor.fetchall()
+
+    count_query = "SELECT COUNT(*) FROM lookup "
+    count_query += "WHERE service != 'discord-channel'"
+    count_cursor = get_cursor()
+    count_cursor.execute(count_query)
+    results2 = cursor.fetchall()
+    props["count"] = int(results2[0]["count"])
+
+    base = request.args.to_dict()
+    base.pop('o', None)
+
+    results = []
+    for post in posts_results:
+        cursor2 = get_cursor()
+        query2 = "SELECT * FROM lookup WHERE id = %s AND service = %s"
+        params2 = (post['user'], post['service'])
+        cursor2.execute(query2, params2)
+        user_result = cursor2.fetchone()
+        if not user_result:
+            continue
+        results.append({
+            "id": post['user'],
+            "name": user_result['name'],
+            "service": post['service'],
+            "updated": post['max']
+        })
+
     response = make_response(render_template(
         'updated.html',
         props = props,
-        results = results
+        results = results,
+        base = base
     ), 200)
     response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
     return response
