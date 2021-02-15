@@ -18,7 +18,6 @@ import psycopg2
 from psycopg2 import pool
 from psycopg2.extras import RealDictCursor
 from hashlib import sha256
-import datetime
 
 app = Flask(
     __name__,
@@ -697,7 +696,7 @@ def post(service, id, post):
     result_attachments = []
     result_flagged = []
     for post in results:
-        if post['added'] > datetime.datetime(2021, 1, 9, 0, 0, 0, 0):
+        if post['added'] > datetime(2021, 1, 9, 0, 0, 0, 0):
             props['after_kitsune'] = True
         previews = []
         attachments = []
