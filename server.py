@@ -244,12 +244,11 @@ def updated_artists():
     cursor.execute(query, params)
     posts_results = cursor.fetchall()
 
-    count_query = "SELECT COUNT(*) FROM lookup "
-    count_query += "WHERE service != 'discord-channel'"
+    count_query = "SELECT posts.user, service, max(added) FROM posts GROUP BY posts.user, service"
     count_cursor = get_cursor()
     count_cursor.execute(count_query)
     results2 = cursor.fetchall()
-    props["count"] = int(results2[0]["count"])
+    props["count"] = len(results2)
 
     base = request.args.to_dict()
     base.pop('o', None)
