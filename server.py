@@ -764,6 +764,7 @@ def post(service, id, post):
         result_previews = result_previews,
         result_attachments = result_attachments,
         result_flagged = result_flagged,
+        result_after_kitsune = result_after_kitsune,
         session = session
     ), 200)
     response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
