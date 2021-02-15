@@ -378,7 +378,7 @@ def posts():
     result_flagged = []
     result_after_kitsune = []
     for post in results:
-        if post['added'] > datetime(2021, 1, 9, 0, 0, 0, 0):
+        if post['added'] > datetime(2021, 1, 3, 0, 0, 0, 0):
             result_after_kitsune.append(True)
         previews = []
         attachments = []
@@ -539,7 +539,7 @@ def user(service, id):
     result_flagged = []
     result_after_kitsune = []
     for post in results:
-        if post['added'] > datetime(2021, 1, 9, 0, 0, 0, 0):
+        if post['added'] > datetime(2021, 1, 3, 0, 0, 0, 0):
             result_after_kitsune.append(True)
         previews = []
         attachments = []
@@ -705,7 +705,7 @@ def post(service, id, post):
     result_attachments = []
     result_flagged = []
     for post in results:
-        if post['added'] > datetime(2021, 1, 9, 0, 0, 0, 0):
+        if post['added'] > datetime(2021, 1, 3, 0, 0, 0, 0):
             props['after_kitsune'] = True
         previews = []
         attachments = []
