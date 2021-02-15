@@ -1,5 +1,5 @@
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 from os import getenv, stat, rename, makedirs
 from os.path import join, dirname, isfile, splitext
 from shutil import move
@@ -90,7 +90,10 @@ def relative_time(date):
     return FormatDelta(date).format()
 
 @app.before_request
-def clear_trailing():
+def do_init_stuff():
+    session.permanent = True
+    app.permanent_session_lifetime = timedelta(days=9999)
+
     rp = request.path
     if rp != '/' and rp.endswith('/'):
         response = redirect(rp[:-1])
