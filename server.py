@@ -348,11 +348,11 @@ def posts():
         query += "LIMIT %s"
         params += (limit,)
     else:
-        query = "WITH searched_posts as (SELECT * FROM posts WHERE to_tsvector('english', content || ' ' || title) @@ websearch_to_tsquery(%s)) "
+        query = "SET LOCAL enable_indexscan = off; "
+        query += "SELECT * FROM posts WHERE to_tsvector('english', content || ' ' || title) @@ websearch_to_tsquery(%s) "
         params = (request.args.get('q'),)
 
-        query += "SELECT * FROM searched_posts "
-        query += "ORDER BY searched_posts.added desc "
+        query += "ORDER BY added desc "
         offset = request.args.get('o') if request.args.get('o') else 0
         query += "OFFSET %s "
         params += (offset,)
@@ -360,7 +360,6 @@ def posts():
         query += "LIMIT %s"
         params += (limit,)
     
-        print(query)
     cursor.execute(query, params)
     results = cursor.fetchall()
 
