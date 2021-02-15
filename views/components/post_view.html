@@ -26,7 +26,7 @@
   <br>
 {% endfor %}
 <p>
-  {% if props.service == "subscribestar" and props.get('after_kitsune') %}
+  {% if props.service == "subscribestar" and (props.get('after_kitsune') or after_kitsune) %}
     <div>
   {% endif %}
   {{ post.content|safe }}
