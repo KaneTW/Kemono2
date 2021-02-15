@@ -380,6 +380,8 @@ def posts():
     for post in results:
         if post['added'] > datetime(2021, 1, 9, 0, 0, 0, 0):
             result_after_kitsune.append(True)
+        else:
+            result_after_kitsune.append(False)
         previews = []
         attachments = []
         if len(post['file']):
@@ -541,6 +543,8 @@ def user(service, id):
     for post in results:
         if post['added'] > datetime(2021, 1, 9, 0, 0, 0, 0):
             result_after_kitsune.append(True)
+        else:
+            result_after_kitsune.append(False)
         previews = []
         attachments = []
         if len(post['file']):
@@ -704,9 +708,12 @@ def post(service, id, post):
     result_previews = []
     result_attachments = []
     result_flagged = []
+    result_after_kitsune = []
     for post in results:
         if post['added'] > datetime(2021, 1, 9, 0, 0, 0, 0):
-            props['after_kitsune'] = True
+            result_after_kitsune.append(True)
+        else:
+            result_after_kitsune.append(False)
         previews = []
         attachments = []
         if len(post['file']):
