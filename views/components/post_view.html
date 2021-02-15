@@ -25,7 +25,12 @@
   </a>
   <br>
 {% endfor %}
-<p>{{ post.content|safe }}</p>
+<p>
+  {% if props.service == "subscribestar" and props.get('after_kitsune') %}
+    <div>
+  {% endif %}
+  {{ post.content|safe }}
+</p>
 {% for preview in previews %}
   {% if preview.type == 'thumbnail' %}
     <a class="fileThumb" href="{{ preview.path }}">
