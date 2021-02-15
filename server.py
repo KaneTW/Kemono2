@@ -323,7 +323,7 @@ def post(service, id, post):
     result_previews = []
     result_attachments = []
     for post in results:
-        if post['added'] > datetime.datetime(2021, 1, 3, 0, 0, 0, 0):
+        if post['added'] > datetime.datetime(2021, 1, 9, 0, 0, 0, 0):
             props['after_kitsune'] = True
         previews = []
         attachments = []
