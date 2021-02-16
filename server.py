@@ -291,7 +291,8 @@ def favorites():
             user_id = user.split(':')[1]
 
             cursor = get_cursor()
-            if session.get('favorites_sort') == 'published' or not session.get('favorites_sort'):
+
+            if session.get('favorites_sort') == 'published' or not session or not session.get('favorites_sort'):
                 query = "SELECT * FROM posts WHERE \"user\" = %s AND service = %s ORDER BY published desc LIMIT 1"
             elif session.get('favorites_sort') == 'added':
                 query = "SELECT * FROM posts WHERE \"user\" = %s AND service = %s ORDER BY added desc LIMIT 1"
