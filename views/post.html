@@ -26,6 +26,7 @@
           {% set flagged = result_flagged[loop.index0] %}
           {% set previews = result_previews[loop.index0] %}
           {% set attachments = result_attachments[loop.index0] %}
+          {% set after_kitsune = result_after_kitsune[loop.index0] %}
           {% with post=post %}
             {% include 'components/post_view.html' %}
           {% endwith %}
