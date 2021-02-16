@@ -8,7 +8,11 @@
 {% endif %}
 {# title hidden with subscribestar posts to prevent redundancy #}
 {% if post.service != 'subscribestar' %}
-  <label for="toggle-{{ post.id }}" class="card-title">{{ post.title }}</label>
+  {% if post_link_in_title %}
+    <a href="/{{ post['service'] }}/user/{{ post['user'] }}/post/{{ post['id'] }}"><label class="card-title">{{ post.title }}</label></a>
+  {% else %}
+    <label for="toggle-{{ post.id }}" class="card-title">{{ post.title }}</label>
+  {% endif %}
 {% endif %}
 {% if post.published %}
   <label for="toggle-{{ post.id }}" class="subtitle">{{ post.published }}</label>
