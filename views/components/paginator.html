@@ -15,7 +15,6 @@
   {% if skip >= 100 %}
     {% set rng = range((skip / 25)|round(0, 'ceil')|int - 2, (skip / 25)|round(0, 'ceil')|int + 3) %}
   {% else %}
-    <!-- set rng = range(0, (skip / 25)|round(0, 'ceil')|int + 5) -->
     {% set rng = range(0, 7) %}
   {% endif %}
   
