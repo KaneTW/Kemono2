@@ -276,6 +276,16 @@ a:link {
   width: 100px;
 }
 
+.user-header-blocked {
+  color: rgb(255, 255, 255);
+  font-size: 32px;
+  font-weight: bold;
+  box-sizing: border-box;
+  cursor: pointer;
+  text-shadow: rgb(0, 0, 0) 0px 0px 3px, rgb(0, 0, 0) -1px -1px 0px, rgb(0, 0, 0) 1px 1px 0px;
+  user-select: none;
+}
+
 .user-header-favorite {
   color: rgb(255, 255, 255);
   font-size: 32px;
@@ -289,6 +299,7 @@ a:link {
   text-shadow: rgb(0, 0, 0) 0px 0px 3px, rgb(0, 0, 0) -1px -1px 0px, rgb(0, 0, 0) 1px 1px 0px;
   user-select: none;
 }
+
 .user-header-info {
   margin-left: 10px;
   border-radius: 10px;

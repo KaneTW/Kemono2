@@ -26,8 +26,8 @@
           style="display: inline;"
         >
           <input type="hidden" name="favorites" value="{{ props.service ~ ':' ~props.id }}">
-          <label for="submit" class="user-header-favorite"><span style="color: #FFD700;">★</span></label>
-          <input id="submit" type="submit" style="display: none;">
+          <label for="submit-favorite" class="user-header-favorite"><span style="color: #FFD700;">★</span></label>
+          <input id="submit-favorite" type="submit" style="display: none;">
         </form>
       {% else %}
         <form
@@ -37,8 +37,31 @@
           style="display: inline;"
         >
           <input type="hidden" name="favorites" value="{{ props.service ~ ':' ~props.id }}">
-          <label for="submit" class="user-header-favorite">☆</label>
-          <input id="submit" type="submit" style="display: none;">
+          <label for="submit-favorite" class="user-header-favorite">☆</label>
+          <input id="submit-favorite" type="submit" style="display: none;">
+        </form>
+      {% endif %}
+      {% if session.get('blocked') and props.service ~ ':' ~ props.id in session.get('blocked') %}
+        <form
+          action="/config/remove"
+          method="POST"
+          enctype="multipart/form-data"
+          style="display: inline;"
+        >
+          <input type="hidden" name="blocked" value="{{ props.service ~ ':' ~props.id }}">
+          <label for="submit-block" class="user-header-blocked"><span style="color: #ff6961;">×</span></label>
+          <input id="submit-block" type="submit" style="display: none;">
+        </form>
+      {% else %}
+        <form
+          action="/config/add"
+          method="POST"
+          enctype="multipart/form-data"
+          style="display: inline;"
+        >
+          <input type="hidden" name="blocked" value="{{ props.service ~ ':' ~props.id }}">
+          <label for="submit-block" class="user-header-blocked">×</label>
+          <input id="submit-block" type="submit" style="display: none;">
         </form>
       {% endif %}
     </div>
