@@ -379,7 +379,7 @@ def posts():
     result_flagged = []
     result_after_kitsune = []
     for post in results:
-        if post['added'] > datetime(2021, 1, 9, 0, 0, 0, 0):
+        if post['added'] > datetime(2020, 12, 22, 0, 0, 0, 0):
             result_after_kitsune.append(True)
         else:
             result_after_kitsune.append(False)
@@ -542,7 +542,7 @@ def user(service, id):
     result_flagged = []
     result_after_kitsune = []
     for post in results:
-        if post['added'] > datetime(2021, 1, 9, 0, 0, 0, 0):
+        if post['added'] > datetime(2020, 12, 22, 0, 0, 0, 0):
             result_after_kitsune.append(True)
         else:
             result_after_kitsune.append(False)
@@ -711,7 +711,7 @@ def post(service, id, post):
     result_flagged = []
     result_after_kitsune = []
     for post in results:
-        if post['added'] > datetime(2021, 1, 9, 0, 0, 0, 0):
+        if post['added'] > datetime(2020, 12, 22, 0, 0, 0, 0):
             result_after_kitsune.append(True)
         else:
             result_after_kitsune.append(False)
