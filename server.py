@@ -306,7 +306,7 @@ def favorites():
             cursor2.execute(query2, params2)
             results2 = cursor2.fetchone()
 
-            if not latest_post.get('published') and session and session.get('favorites_sort') == 'published':
+            if not latest_post.get('published') and session is not None and session.get('favorites_sort') == 'published':
                 continue
             else:
                 results.append({
