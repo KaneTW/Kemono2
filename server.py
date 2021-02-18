@@ -417,7 +417,7 @@ def posts():
 
         cursor4 = get_cursor()
         query4 = "SELECT * FROM booru_flags WHERE id = %s AND \"user\" = %s AND service = %s"
-        params4 = (post['id'], post['id'], post['service'])
+        params4 = (post['id'], post['user'], post['service'])
         cursor4.execute(query4, params4)
         results4 = cursor4.fetchall()
 
@@ -580,7 +580,7 @@ def user(service, id):
 
         cursor4 = get_cursor()
         query4 = "SELECT * FROM booru_flags WHERE id = %s AND \"user\" = %s AND service = %s"
-        params4 = (post['id'], id, service)
+        params4 = (post['id'], post['user'], post['service'])
         cursor4.execute(query4, params4)
         results4 = cursor4.fetchall()
 
@@ -749,7 +749,7 @@ def post(service, id, post):
         
         cursor4 = get_cursor()
         query4 = "SELECT * FROM booru_flags WHERE id = %s AND \"user\" = %s AND service = %s"
-        params4 = (post['id'], id, service)
+        params4 = (post['id'], post['user'], post['service'])
         cursor4.execute(query4, params4)
         results4 = cursor4.fetchall()
 
