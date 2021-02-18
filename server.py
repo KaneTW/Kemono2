@@ -749,7 +749,7 @@ def post(service, id, post):
         
         cursor4 = get_cursor()
         query4 = "SELECT * FROM booru_flags WHERE id = %s AND \"user\" = %s AND service = %s"
-        params4 = (service, id, post['id'])
+        params4 = (post['id'], id, service)
         cursor4.execute(query4, params4)
         results4 = cursor4.fetchall()
 
