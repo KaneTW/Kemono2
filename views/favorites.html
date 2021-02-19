@@ -24,7 +24,11 @@
             <div class="activity-view-main">
               <div class="activity-view-p">
                 <span class="activity-view-name">{{ user.name }}</span>
-                <span class="activity-view-update">{{ props.phrase }} {{ user.relative_date }}</span>
+                {% if user.relative_date %}
+                  <span class="activity-view-update">{{ props.phrase }} {{ user.relative_date }}</span>
+                {% else %}
+                  <span class="activity-view-update subtitle">{{ user.error_msg }}</span>
+                {% endif %}
               </div>
             </div>
           </div>

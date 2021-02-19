@@ -306,15 +306,38 @@ def favorites():
             cursor2.execute(query2, params2)
             results2 = cursor2.fetchone()
 
-            if not latest_post.get('published') and session and session.get('favorites_sort') == 'published':
-                continue
+            if latest_post:
+                if latest_post.get('published') and (session.get('favorites_sort') == 'published' or not session or not session.get('favorites_sort')):
+                    results.append({
+                        "name": results2['name'] if results2 else "",
+                        "service": service,
+                        "user": user_id,
+                        "delta_date": (latest_post['published'] - datetime.now()).total_seconds(),
+                        "relative_date": relative_time(latest_post['published'])
+                    })
+                elif session.get('favorites_sort') == 'added':
+                    results.append({
+                        "name": results2['name'] if results2 else "",
+                        "service": service,
+                        "user": user_id,
+                        "delta_date": (latest_post['added'] - datetime.now()).total_seconds(),
+                        "relative_date": relative_time(latest_post['added'])
+                    })
+                else:
+                    results.append({
+                        "name": results2['name'] if results2 else "",
+                        "service": service,
+                        "user": user_id,
+                        "delta_date": 99999999,
+                        "error_msg": "Service unsupported."
+                    })
             else:
                 results.append({
                     "name": results2['name'] if results2 else "",
                     "service": service,
                     "user": user_id,
-                    "delta_date": ((latest_post['published'] if session.get('favorites_sort') == 'published' else latest_post['added']) - datetime.now()).total_seconds(),
-                    "relative_date": relative_time(latest_post['published'] if session.get('favorites_sort') == 'published' else latest_post['added'])
+                    "delta_date": 99999999,
+                    "error_msg": "Never imported."
                 })
     
     props['phrase'] = "Last posted" if session.get('favorites_sort') == 'published' or not session.get('favorites_sort') else "Last imported"
