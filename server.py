@@ -1,14 +1,13 @@
 import re
+from datetime import datetime, timedelta
 from os import getenv, stat, rename, makedirs
 from os.path import join, dirname, isfile, splitext
 from shutil import move
 from dotenv import load_dotenv
 load_dotenv(join(dirname(__file__), '.env'))
 
-from routes.help import help_app
-
 from PIL import Image
-from flask import Flask, jsonify, render_template, render_template_string, request, redirect, url_for, send_from_directory, make_response, g, abort, current_app, send_file
+from flask import Flask, jsonify, render_template, render_template_string, request, redirect, url_for, send_from_directory, make_response, g, abort, current_app, send_file, session
 from flask_caching import Cache
 from werkzeug.utils import secure_filename
 from slugify import slugify_filename
@@ -19,24 +18,23 @@ import psycopg2
 from psycopg2 import pool
 from psycopg2.extras import RealDictCursor
 from hashlib import sha256
-import datetime
 
 app = Flask(
     __name__,
     template_folder='views'
 )
+
 app.config.from_pyfile('flask.cfg')
 cache = Cache(app)
 app.url_map.strict_slashes = False
 app.jinja_env.filters['regex_match'] = lambda val, rgx: re.search(rgx, val)
 app.jinja_env.filters['regex_find'] = lambda val, rgx: re.findall(rgx, val)
-app.register_blueprint(help_app, url_prefix='/help')
 try:
     pool = psycopg2.pool.SimpleConnectionPool(1, 20,
-        host = getenv('PGHOST') if getenv('PGHOST') else 'localhost',
-        dbname = getenv('PGDATABASE') if getenv('PGDATABASE') else 'kemonodb',
-        user = getenv('PGUSER') if getenv('PGUSER') else 'nano',
-        password = getenv('PGPASSWORD') if getenv('PGPASSWORD') else 'shinonome',
+        host = getenv('PGHOST'),
+        dbname = getenv('PGDATABASE'),
+        user = getenv('PGUSER'),
+        password = getenv('PGPASSWORD'),
         cursor_factory = RealDictCursor
     )
 except Exception as error:
@@ -45,8 +43,57 @@ except Exception as error:
 def make_cache_key(*args,**kwargs):
     return request.full_path
 
+def delta_key(e):
+    return e['delta_date']
+
+def relative_time(date):
+    """Take a datetime and return its "age" as a string.
+    The age can be in second, minute, hour, day, month or year. Only the
+    biggest unit is considered, e.g. if it's 2 days and 3 hours, "2 days" will
+    be returned.
+    Make sure date is not in the future, or else it won't work.
+    Original Gist by 'zhangsen' @ https://gist.github.com/zhangsen/1199964
+    """
+
+    def formatn(n, s):
+        """Add "s" if it's plural"""
+
+        if n == 1:
+            return "1 %s" % s
+        elif n > 1:
+            return "%d %ss" % (n, s)
+
+    def qnr(a, b):
+        """Return quotient and remaining"""
+
+        return a / b, a % b
+
+    class FormatDelta:
+
+        def __init__(self, dt):
+            now = datetime.now()
+            delta = now - dt
+            self.day = delta.days
+            self.second = delta.seconds
+            self.year, self.day = qnr(self.day, 365)
+            self.month, self.day = qnr(self.day, 30)
+            self.hour, self.second = qnr(self.second, 3600)
+            self.minute, self.second = qnr(self.second, 60)
+
+        def format(self):
+            for period in ['year', 'month', 'day', 'hour', 'minute', 'second']:
+                n = getattr(self, period)
+                if n >= 1:
+                    return '{0} ago'.format(formatn(n, period))
+            return "just now"
+
+    return FormatDelta(date).format()
+
 @app.before_request
-def clear_trailing():
+def do_init_stuff():
+    session.permanent = True
+    app.permanent_session_lifetime = timedelta(days=9999)
+
     rp = request.path
     if rp != '/' and rp.endswith('/'):
         response = redirect(rp[:-1])
@@ -65,7 +112,7 @@ def allowed_file(mime, accepted):
 @app.errorhandler(413)
 def upload_exceeded(error):
     props = {
-        'redirect': request.args.get('Referer') if request.args.get('Referer') else '/'
+        'redirect': request.headers.get('Referer') if request.headers.get('Referer') else '/'
     }
     limit = int(getenv('REQUESTS_IMAGES')) if getenv('REQUESTS_IMAGES') else 1048576
     props['message'] = 'Submitted file exceeds the upload limit. {} MB for requests images.'.format(
@@ -87,6 +134,18 @@ def close(e):
             pool.putconn(connection)
 
 @app.route('/')
+def home():
+    props = {}
+    base = request.args.to_dict()
+    base.pop('o', None)
+    response = make_response(render_template(
+        'home.html',
+        props = props,
+        base = base
+    ), 200)
+    return response
+
+@app.route('/artists')
 @cache.cached(key_prefix=make_cache_key)
 def artists():
     props = {
@@ -121,6 +180,19 @@ def artists():
         cursor = get_cursor()
         cursor.execute(query, params)
         results = cursor.fetchall()
+
+        query2 = "SELECT COUNT(*) FROM lookup "
+        query2 += "WHERE name ILIKE %s "
+        params2 = ('%' + request.args.get('q') + '%',)
+        if request.args.get('service'):
+            query2 += "AND service = %s "
+            params2 += (request.args.get('service'),)
+        query2 += "AND service != 'discord-channel'"
+        cursor2 = get_cursor()
+        cursor2.execute(query2, params2)
+        results2 = cursor.fetchall()
+        props["count"] = int(results2[0]["count"])
+        
     response = make_response(render_template(
         'artists.html',
         props = props,
@@ -128,12 +200,6 @@ def artists():
         base = base
     ), 200)
     response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
-    return response
-
-@app.route('/artists')
-def root():
-    response = redirect('/', code=308)
-    response.autocorrect_location_header = False
     return response
 
 @app.route('/thumbnail/<path:path>')
@@ -169,14 +235,45 @@ def updated_artists():
     props = {
         'currentPage': 'artists'
     }
-    query = 'WITH "posts" as (select "user", "service", max("added") from "posts" group by "user", "service" order by max(added) desc limit 50) '\
-        'select "user", "posts"."service" as service, "lookup"."name" as name, "max" from "posts" inner join "lookup" on "posts"."user" = "lookup"."id"'
-    cursor.execute(query)
-    results = cursor.fetchall()
+    query = 'SELECT posts.user, service, max(added) FROM posts GROUP BY posts.user, service ORDER BY max(added) desc '
+    params = ()
+    query += "OFFSET %s "
+    offset = request.args.get('o') if request.args.get('o') else 0
+    params += (offset,)
+    query += "LIMIT 25"
+    cursor.execute(query, params)
+    posts_results = cursor.fetchall()
+
+    count_query = "SELECT posts.user, service, max(added) FROM posts GROUP BY posts.user, service"
+    count_cursor = get_cursor()
+    count_cursor.execute(count_query)
+    results2 = cursor.fetchall()
+    props["count"] = len(results2)
+
+    base = request.args.to_dict()
+    base.pop('o', None)
+
+    results = []
+    for post in posts_results:
+        cursor2 = get_cursor()
+        query2 = "SELECT * FROM lookup WHERE id = %s AND service = %s"
+        params2 = (post['user'], post['service'])
+        cursor2.execute(query2, params2)
+        user_result = cursor2.fetchone()
+        if not user_result:
+            continue
+        results.append({
+            "id": post['user'],
+            "name": user_result['name'],
+            "service": post['service'],
+            "updated": post['max']
+        })
+
     response = make_response(render_template(
         'updated.html',
         props = props,
-        results = results
+        results = results,
+        base = base
     ), 200)
     response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
     return response
@@ -186,15 +283,75 @@ def favorites():
     props = {
         'currentPage': 'artists'
     }
+
+    results = []
+    if session.get('favorites'):
+        for user in session['favorites']:
+            service = user.split(':')[0]
+            user_id = user.split(':')[1]
+
+            cursor = get_cursor()
+
+            if session.get('favorites_sort') == 'published' or not session or not session.get('favorites_sort'):
+                query = "SELECT * FROM posts WHERE \"user\" = %s AND service = %s ORDER BY published desc LIMIT 1"
+            elif session.get('favorites_sort') == 'added':
+                query = "SELECT * FROM posts WHERE \"user\" = %s AND service = %s ORDER BY added desc LIMIT 1"
+            params = (user_id, service)
+            cursor.execute(query, params)
+            latest_post = cursor.fetchone()
+
+            cursor2 = get_cursor()
+            query2 = "SELECT * FROM lookup WHERE id = %s AND service = %s"
+            params2 = (user_id, service)
+            cursor2.execute(query2, params2)
+            results2 = cursor2.fetchone()
+
+            if latest_post:
+                if latest_post.get('published') and (session.get('favorites_sort') == 'published' or not session or not session.get('favorites_sort')):
+                    results.append({
+                        "name": results2['name'] if results2 else "",
+                        "service": service,
+                        "user": user_id,
+                        "delta_date": (latest_post['published'] - datetime.now()).total_seconds(),
+                        "relative_date": relative_time(latest_post['published'])
+                    })
+                elif session.get('favorites_sort') == 'added':
+                    results.append({
+                        "name": results2['name'] if results2 else "",
+                        "service": service,
+                        "user": user_id,
+                        "delta_date": (latest_post['added'] - datetime.now()).total_seconds(),
+                        "relative_date": relative_time(latest_post['added'])
+                    })
+                else:
+                    results.append({
+                        "name": results2['name'] if results2 else "",
+                        "service": service,
+                        "user": user_id,
+                        "delta_date": 99999999,
+                        "error_msg": "Service unsupported."
+                    })
+            else:
+                results.append({
+                    "name": results2['name'] if results2 else "",
+                    "service": service,
+                    "user": user_id,
+                    "delta_date": 99999999,
+                    "error_msg": "Never imported."
+                })
+    
+    props['phrase'] = "Last posted" if session.get('favorites_sort') == 'published' or not session.get('favorites_sort') else "Last imported"
+    results.sort(key=delta_key, reverse=True)
     response = make_response(render_template(
         'favorites.html',
-        props = props
+        props = props,
+        results = results,
+        session = session
     ), 200)
-    response.headers['Cache-Control'] = 'max-age=300, public, stale-while-revalidate=2592000'
+    response.headers['Cache-Control'] = 'no-store, max-age=0'
     return response
 
 @app.route('/posts')
-@cache.cached(key_prefix=make_cache_key)
 def posts():
     cursor = get_cursor()
     props = {
@@ -203,128 +360,52 @@ def posts():
     base = request.args.to_dict()
     base.pop('o', None)
 
-    query = "SELECT * FROM posts ORDER BY added desc "
-    params = ()
+    if not request.args.get('q'):
+        query = "SELECT * FROM posts "
+        params = ()
 
-    offset = request.args.get('o') if request.args.get('o') else 0
-    query += "OFFSET %s "
-    params += (offset,)
-    limit = request.args.get('limit') if request.args.get('limit') and request.args.get('limit') <= 50 else 25
-    query += "LIMIT %s"
-    params += (limit,)
+        query += "ORDER BY added desc "
+        offset = request.args.get('o') if request.args.get('o') else 0
+        query += "OFFSET %s "
+        params += (offset,)
+        limit = request.args.get('limit') if request.args.get('limit') and request.args.get('limit') <= 50 else 25
+        query += "LIMIT %s"
+        params += (limit,)
+    else:
+        query = "SET LOCAL enable_indexscan = off; "
+        query += "SELECT * FROM posts WHERE to_tsvector('english', content || ' ' || title) @@ websearch_to_tsquery(%s) "
+        params = (request.args.get('q'),)
 
-    cursor.execute(query, params)
-    results = cursor.fetchall()
-
-    response = make_response(render_template(
-        'posts.html',
-        props = props,
-        results = results,
-        base = base
-    ), 200)
-    response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
-    return response
-
-@app.route('/posts/upload')
-def upload_post():
-    props = {
-        'currentPage': 'posts'
-    }
-    response = make_response(render_template(
-        'upload.html',
-        props=props
-    ), 200)
-    response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
-    return response
-
-@app.route('/posts/random')
-def random_post():
-    cursor = get_cursor()
-    query = "SELECT service, \"user\", id FROM posts WHERE random() < 0.01 LIMIT 1"
-    cursor.execute(query)
-    random = cursor.fetchall()
-    response = redirect(url_for('post', service = random[0]['service'], id = random[0]['user'], post = random[0]['id']))
-    response.autocorrect_location_header = False
-    return response
-
-# TODO: /:service/user/:id/rss
-
-@app.route('/<service>/user/<id>')
-@cache.cached(key_prefix=make_cache_key)
-def user(service, id):
-    cursor = get_cursor()
-    props = {
-        'currentPage': 'posts',
-        'id': id,
-        'service': service
-    }
-    base = request.args.to_dict()
-    base.pop('o', None)
-    base["service"] = service
-    base["id"] = id
-
-    query = "SELECT * FROM posts WHERE \"user\" = %s AND service = %s ORDER BY published desc "
-    params = (id, service)
-
-    offset = request.args.get('o') if request.args.get('o') else 0
-    query += "OFFSET %s "
-    params += (offset,)
-    limit = request.args.get('limit') if request.args.get('limit') and int(request.args.get('limit')) <= 50 else 25
-    query += "LIMIT %s"
-    params += (limit,)
-
+        query += "ORDER BY added desc "
+        offset = request.args.get('o') if request.args.get('o') else 0
+        query += "OFFSET %s "
+        params += (offset,)
+        limit = request.args.get('limit') if request.args.get('limit') and request.args.get('limit') <= 50 else 25
+        query += "LIMIT %s"
+        params += (limit,)
+    
     cursor.execute(query, params)
     results = cursor.fetchall()
 
     cursor2 = get_cursor()
-    query2 = "SELECT id FROM posts WHERE \"user\" = %s AND service = %s GROUP BY id"
-    params2 = (id, service)
+    query2 = "SELECT COUNT(*) FROM posts "
+    params2 = ()
+    if request.args.get('q'):
+        query2 += "WHERE to_tsvector('english', content || ' ' || title) @@ websearch_to_tsquery(%s)"
+        params2 += (request.args.get('q'),)
     cursor2.execute(query2, params2)
     results2 = cursor2.fetchall()
-    props["count"] = len(results2)
-
-    response = make_response(render_template(
-        'user.html',
-        props = props,
-        results = results,
-        base = base
-    ), 200)
-    response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
-    return response
-
-@app.route('/discord/server/<id>')
-def discord_server(id):
-    response = make_response(render_template(
-        'discord.html'
-    ), 200)
-    response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
-    return response
-
-@app.route('/<service>/user/<id>/post/<post>')
-@cache.cached(key_prefix=make_cache_key)
-def post(service, id, post):
-    cursor = get_cursor()
-    props = {
-        'currentPage': 'posts',
-        'service': service if service else 'patreon'
-    }
-    query = 'SELECT * FROM posts '
-    query += 'WHERE id = %s '
-    params = (post,)
-    query += 'AND posts.user = %s '
-    params += (id,)
-    query += 'AND service = %s '
-    params += (service,)
-    query += 'ORDER BY added asc'
-
-    cursor.execute(query, params)
-    results = cursor.fetchall()
+    props["count"] = int(results2[0]["count"])
 
     result_previews = []
     result_attachments = []
+    result_flagged = []
+    result_after_kitsune = []
     for post in results:
-        if post['added'] > datetime.datetime(2021, 1, 9, 0, 0, 0, 0):
-            props['after_kitsune'] = True
+        if post['added'] > datetime(2020, 12, 22, 0, 0, 0, 0):
+            result_after_kitsune.append(True)
+        else:
+            result_after_kitsune.append(False)
         previews = []
         attachments = []
         if len(post['file']):
@@ -356,6 +437,346 @@ def post(service, id, post):
                     'path': attachment['path'],
                     'name': attachment['name']
                 })
+
+        cursor4 = get_cursor()
+        query4 = "SELECT * FROM booru_flags WHERE id = %s AND \"user\" = %s AND service = %s"
+        params4 = (post['id'], post['user'], post['service'])
+        cursor4.execute(query4, params4)
+        results4 = cursor4.fetchall()
+
+        result_flagged.append(True if len(results4) > 0 else False)
+        result_previews.append(previews)
+        result_attachments.append(attachments)
+    
+    response = make_response(render_template(
+        'posts.html',
+        props = props,
+        results = results,
+        base = base,
+        result_previews = result_previews,
+        result_attachments = result_attachments,
+        result_flagged = result_flagged,
+        result_after_kitsune = result_after_kitsune
+    ), 200)
+    response.headers['Cache-Control'] = 'no-store, max-age=0'
+    return response
+
+@app.route('/posts/upload')
+def upload_post():
+    props = {
+        'currentPage': 'posts'
+    }
+    response = make_response(render_template(
+        'upload.html',
+        props=props
+    ), 200)
+    response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
+    return response
+
+@app.route('/posts/random')
+def random_post():
+    cursor = get_cursor()
+    query = "SELECT service, \"user\", id FROM posts WHERE random() < 0.01 LIMIT 1"
+    cursor.execute(query)
+    random = cursor.fetchall()
+    response = redirect(url_for('post', service = random[0]['service'], id = random[0]['user'], post = random[0]['id']))
+    response.autocorrect_location_header = False
+    return response
+
+# TODO: /:service/user/:id/rss
+
+@app.route('/config/set', methods=["POST"])
+def config_set():
+    for key in request.form.keys():
+        session[key] = request.form[key]
+    response = redirect(request.headers.get('Referer') if request.headers.get('Referer') else '/')
+    response.autocorrect_location_header = False
+    return response
+
+@app.route('/config/add', methods=["POST"])
+def config_add():
+    for key in request.form.keys():
+        session[key] = session[key] + [request.form[key]] if session.get(key) and isinstance(session[key], list) else [request.form[key]]
+    response = redirect(request.headers.get('Referer') if request.headers.get('Referer') else '/')
+    response.autocorrect_location_header = False
+    return response
+
+@app.route('/config/remove', methods=["POST"])
+def config_remove():
+    for key in request.form.keys():
+        if session.get(key) and isinstance(session[key], list):
+            session[key].remove(request.form[key])
+    session.modified = True
+    response = redirect(request.headers.get('Referer') if request.headers.get('Referer') else '/')
+    response.autocorrect_location_header = False
+    return response
+
+@app.route('/<service>/user/<id>')
+def user(service, id):
+    cursor = get_cursor()
+    props = {
+        'currentPage': 'posts',
+        'id': id,
+        'service': service,
+        'session': session
+    }
+    base = request.args.to_dict()
+    base.pop('o', None)
+    base["service"] = service
+    base["id"] = id
+
+    query = "SELECT * FROM posts WHERE \"user\" = %s AND service = %s "
+    params = (id, service)
+
+    if request.args.get('q'):
+        query += "AND to_tsvector('english', content || ' ' || title) @@ websearch_to_tsquery(%s) "
+        params += (request.args.get('q'),)
+    
+    query += "ORDER BY published desc "
+    offset = request.args.get('o') if request.args.get('o') else 0
+    query += "OFFSET %s "
+    params += (offset,)
+    limit = request.args.get('limit') if request.args.get('limit') and int(request.args.get('limit')) <= 50 else 25
+    query += "LIMIT %s"
+    params += (limit,)
+
+    cursor.execute(query, params)
+    results = cursor.fetchall()
+
+    cursor2 = get_cursor()
+    query2 = "SELECT COUNT(*) FROM posts WHERE \"user\" = %s AND service = %s "
+    params2 = (id, service)
+    if request.args.get('q'):
+        query2 += "AND to_tsvector('english', content || ' ' || title) @@ websearch_to_tsquery(%s)"
+        params2 += (request.args.get('q'),)
+    cursor2.execute(query2, params2)
+    results2 = cursor2.fetchall()
+    props["count"] = int(results2[0]["count"])
+
+    cursor3 = get_cursor()
+    query3 = "SELECT * FROM lookup WHERE id = %s AND service = %s"
+    params3 = (id, service)
+    cursor3.execute(query3, params3)
+    results3 = cursor.fetchall()
+    props["name"] = results3[0]['name'] if len(results3) > 0 else ''
+
+    result_previews = []
+    result_attachments = []
+    result_flagged = []
+    result_after_kitsune = []
+    for post in results:
+        if post['added'] > datetime(2020, 12, 22, 0, 0, 0, 0):
+            result_after_kitsune.append(True)
+        else:
+            result_after_kitsune.append(False)
+        previews = []
+        attachments = []
+        if len(post['file']):
+            if re.search("\.(gif|jpe?g|jpe|png|webp)$", post['file']['path'], re.IGNORECASE):
+                previews.append({
+                    'type': 'thumbnail',
+                    'path': post['file']['path'].replace('https://kemono.party','')
+                })
+            else:
+                attachments.append({
+                    'path': post['file']['path'],
+                    'name': post['file'].get('name')
+                })
+        if len(post['embed']):
+            previews.append({
+                'type': 'embed',
+                'url': post['embed']['url'],
+                'subject': post['embed']['subject'],
+                'description': post['embed']['description']
+            })
+        for attachment in post['attachments']:
+            if re.search("\.(gif|jpe?g|jpe|png|webp)$", attachment['path'], re.IGNORECASE):
+                previews.append({
+                    'type': 'thumbnail',
+                    'path': attachment['path'].replace('https://kemono.party','')
+                })
+            else:
+                attachments.append({
+                    'path': attachment['path'],
+                    'name': attachment['name']
+                })
+
+        cursor4 = get_cursor()
+        query4 = "SELECT * FROM booru_flags WHERE id = %s AND \"user\" = %s AND service = %s"
+        params4 = (post['id'], post['user'], post['service'])
+        cursor4.execute(query4, params4)
+        results4 = cursor4.fetchall()
+
+        result_flagged.append(True if len(results4) > 0 else False)
+        result_previews.append(previews)
+        result_attachments.append(attachments)
+    
+    response = make_response(render_template(
+        'user.html',
+        props = props,
+        results = results,
+        base = base,
+        result_previews = result_previews,
+        result_attachments = result_attachments,
+        result_flagged = result_flagged,
+        result_after_kitsune = result_after_kitsune,
+        session = session
+    ), 200)
+    response.headers['Cache-Control'] = 'no-store, max-age=0'
+    return response
+
+@app.route('/discord/server/<id>')
+def discord_server(id):
+    response = make_response(render_template(
+        'discord.html'
+    ), 200)
+    response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
+    return response
+
+@app.route('/<service>/user/<id>/post/<post>/prev')
+def post_prev(service, id, post):
+    cursor = get_cursor()
+    query = 'SELECT * FROM posts '
+    query += 'WHERE id = %s '
+    params = (post,)
+    query += 'AND posts.user = %s '
+    params += (id,)
+    query += 'AND service = %s '
+    params += (service,)
+
+    cursor.execute(query, params)
+    result = cursor.fetchone()
+    if not result:
+        return "Not found", 404
+    
+    cursor2 = get_cursor()
+    query2 = 'SELECT * FROM posts '
+    params2 = ()
+    query2 += 'WHERE posts.user = %s '
+    params2 += (id,)
+    query2 += 'AND service = %s '
+    params2 += (service,)
+    query2 += 'AND published > %s '
+    params2 += (result['published'],)
+    query2 += 'ORDER BY published '
+    query2 += 'LIMIT 1'
+    cursor2.execute(query2, params2)
+    prev_result = cursor.fetchone()
+
+    if not prev_result:
+        response = redirect(request.headers.get('Referer') if request.headers.get('Referer') else '/')
+    else:
+        response = redirect(url_for('post', service = prev_result['service'], id = prev_result['user'], post = prev_result['id']))
+        response.autocorrect_location_header = False
+
+    return response
+
+@app.route('/<service>/user/<id>/post/<post>/next')
+def post_next(service, id, post):
+    cursor = get_cursor()
+    query = 'SELECT * FROM posts '
+    query += 'WHERE id = %s '
+    params = (post,)
+    query += 'AND posts.user = %s '
+    params += (id,)
+    query += 'AND service = %s '
+    params += (service,)
+
+    cursor.execute(query, params)
+    result = cursor.fetchone()
+    if not result:
+        return "Not found", 404
+    
+    cursor2 = get_cursor()
+    query2 = 'SELECT * FROM posts '
+    params2 = ()
+    query2 += 'WHERE posts.user = %s '
+    params2 += (id,)
+    query2 += 'AND service = %s '
+    params2 += (service,)
+    query2 += 'AND published < %s '
+    params2 += (result['published'],)
+    query2 += 'ORDER BY published desc '
+    query2 += 'LIMIT 1'
+    cursor2.execute(query2, params2)
+    prev_result = cursor.fetchone()
+
+    if not prev_result:
+        response = redirect(request.headers.get('Referer') if request.headers.get('Referer') else '/')
+    else:
+        response = redirect(url_for('post', service = prev_result['service'], id = prev_result['user'], post = prev_result['id']))
+        response.autocorrect_location_header = False
+
+    return response
+
+@app.route('/<service>/user/<id>/post/<post>')
+@cache.cached(key_prefix=make_cache_key)
+def post(service, id, post):
+    cursor = get_cursor()
+    props = {
+        'currentPage': 'posts',
+        'service': service if service else 'patreon'
+    }
+    query = 'SELECT * FROM posts '
+    query += 'WHERE id = %s '
+    params = (post,)
+    query += 'AND posts.user = %s '
+    params += (id,)
+    query += 'AND service = %s '
+    params += (service,)
+    query += 'ORDER BY added asc'
+
+    cursor.execute(query, params)
+    results = cursor.fetchall()
+
+    result_previews = []
+    result_attachments = []
+    result_flagged = []
+    result_after_kitsune = []
+    for post in results:
+        if post['added'] > datetime(2020, 12, 22, 0, 0, 0, 0):
+            result_after_kitsune.append(True)
+        else:
+            result_after_kitsune.append(False)
+        previews = []
+        attachments = []
+        if len(post['file']):
+            if re.search("\.(gif|jpe?g|jpe|png|webp)$", post['file']['path'], re.IGNORECASE):
+                previews.append({
+                    'type': 'thumbnail',
+                    'path': post['file']['path'].replace('https://kemono.party','')
+                })
+            else:
+                attachments.append({
+                    'path': post['file']['path'],
+                    'name': post['file'].get('name')
+                })
+        if len(post['embed']):
+            previews.append({
+                'type': 'embed',
+                'url': post['embed']['url'],
+                'subject': post['embed']['subject'],
+                'description': post['embed']['description']
+            })
+        for attachment in post['attachments']:
+            if re.search("\.(gif|jpe?g|jpe|png|webp)$", attachment['path'], re.IGNORECASE):
+                previews.append({
+                    'type': 'thumbnail',
+                    'path': attachment['path'].replace('https://kemono.party','')
+                })
+            else:
+                attachments.append({
+                    'path': attachment['path'],
+                    'name': attachment['name']
+                })
+        
+        cursor4 = get_cursor()
+        query4 = "SELECT * FROM booru_flags WHERE id = %s AND \"user\" = %s AND service = %s"
+        params4 = (post['id'], post['user'], post['service'])
+        cursor4.execute(query4, params4)
+        results4 = cursor4.fetchall()
+
+        result_flagged.append(True if len(results4) > 0 else False)
         result_previews.append(previews)
         result_attachments.append(attachments)
     
@@ -365,7 +786,10 @@ def post(service, id, post):
         props = props,
         results = results,
         result_previews = result_previews,
-        result_attachments = result_attachments
+        result_attachments = result_attachments,
+        result_flagged = result_flagged,
+        result_after_kitsune = result_after_kitsune,
+        session = session
     ), 200)
     response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
     return response
@@ -398,6 +822,13 @@ def requests_list():
         offset = request.args.get('o') if request.args.get('o') else 0
         params = (offset,)
         query += "LIMIT 25"
+
+        cursor2 = get_cursor()
+        query2 = "SELECT COUNT(*) FROM requests "
+        query2 += "WHERE status = 'open'"
+        cursor2.execute(query2)
+        results2 = cursor2.fetchall()
+        props["count"] = int(results2[0]["count"])
     else:
         query = "SELECT * FROM requests "
         query += "WHERE title ILIKE %s "
@@ -425,6 +856,23 @@ def requests_list():
         params += (offset,)
         query += "LIMIT 25"
 
+        cursor2 = get_cursor()
+        query2 = "SELECT COUNT(*) FROM requests "
+        query2 += "WHERE title ILIKE %s "
+        params2 = ('%' + request.args.get('q') + '%',)
+        if request.args.get('service'):
+            query2 += "AND service = %s "
+            params2 += (request.args.get('service'),)
+        query2 += "AND service != 'discord' "
+        if request.args.get('max_price'):
+            query2 += "AND price <= %s "
+            params2 += (request.args.get('max_price'),)
+        query2 += "AND status = %s"
+        params2 += (request.args.get('status'),)
+        cursor2.execute(query2, params2)
+        results2 = cursor2.fetchall()
+        props["count"] = int(results2[0]["count"])
+
     cursor = get_cursor()
     cursor.execute(query, params)
     results = cursor.fetchall()
@@ -449,7 +897,7 @@ def vote_up(id):
 
     props = {
         'currentPage': 'requests',
-        'redirect': request.args.get('Referer') if request.args.get('Referer') else '/requests'
+        'redirect': request.headers.get('Referer') if request.headers.get('Referer') else '/requests'
     }
 
     if not len(result):
@@ -493,7 +941,7 @@ def request_form():
 def request_submit():
     props = {
         'currentPage': 'requests',
-        'redirect': request.args.get('Referer') if request.args.get('Referer') else '/requests'
+        'redirect': request.headers.get('Referer') if request.headers.get('Referer') else '/requests'
     }
 
     ip = request.headers.getlist("X-Forwarded-For")[0].rpartition(' ')[-1] if 'X-Forwarded-For' in request.headers else request.remote_addr

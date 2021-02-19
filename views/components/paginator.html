@@ -1,16 +1,44 @@
+{% set skip = request.args.get('o')|int if request.args.get('o') else 0 %}
+<small>Showing {{ skip + 1 }} - {{ skip + 25 }} of {{ props.count }}</small>
 <menu>
-  {% set skip = request.args.get('o')|int if request.args.get('o') else 0 %}
-  {% if skip >= 50 %}
-    <li><a href="{{ url_for(request.endpoint, o = skip - 50, **base) }}" title="-50">«</a></li>
-  {% else %}
-    <li class="subtitle">«</li>
-  {% endif %}
   {% if skip >= 25 %}
-    <li><a href="{{ url_for(request.endpoint, o = skip - 25, **base) }}" title="-25">‹</a></li>
+    <li><a href="{{ url_for(request.endpoint, o = skip - 25, **base) }}" title="Previous page">&lt;</a></li>
   {% else %}
-    <li class="subtitle">‹</li>
+    <li class="subtitle">&lt;</li>
   {% endif %}
-  <li>offset: {{ skip }}{{ '/' ~ props.count if props.count}}</li>
-  <li><a href="{{ url_for(request.endpoint, o = skip + 25, **base) }}" title="+25">›</a></li>
-  <li><a href="{{ url_for(request.endpoint, o = skip + 50, **base) }}" title="+50">»</a></li>
+
+  {% if skip >= 100 %}
+    <li><a href="{{ url_for(request.endpoint, o = 0, **base) }}">1</a></li>
+    <li>...</li>
+  {% endif %}
+
+  {% if skip >= 100 %}
+    {% set rng = range((skip / 25)|round(0, 'ceil')|int - 2, (skip / 25)|round(0, 'ceil')|int + 3) %}
+  {% else %}
+    {% set rng = range(0, 7) %}
+  {% endif %}
+  
+  {% for page in rng %}
+    {% if props.count > page * 25 %}
+      {% if page * 25 == skip %}
+        <li>{{ page + 1 }}</li>
+      {% else %}
+        <li><a href="{{ url_for(request.endpoint, o = page * 25, **base) }}">{{ page + 1 }}</a></li>
+      {% endif %}
+    {% endif %}
+  {% endfor %}
+
+  {% for page in range(0, (props.count / 25)|round(0, 'ceil')|int) %}
+    {% if loop.last and props.count - skip >= 100 and props.count > 175 %}
+      <li>...</li>
+      <li><a href="{{ url_for(request.endpoint, o = page * 25, **base) }}">{{ (props.count / 25)|round(0, 'ceil')|int }}</a></li>
+    {% endif %}
+  {% endfor %}
+  
+
+  {% if props.count - skip > 25 %}
+    <li><a href="{{ url_for(request.endpoint, o = skip + 25, **base) }}" title="Next page">&gt;</a></li>
+  {% else %}
+    <li class="subtitle">&gt;</li>
+  {% endif %}
 </menu>
