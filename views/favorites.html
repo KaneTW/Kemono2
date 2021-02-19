@@ -40,7 +40,9 @@
     <div class="no-posts">
       <h1 class="subtitle">You haven't favorited anyone!</h1>
       <span class="subtitle">Go find some creators and come back.</span>
+      <div id="migrations"></div>
     </div>
+    <script src="{{ url_for('static', filename='js/migrate-favorites.js') }}"></script>
   {% endif %}
 </div>
 {% endblock %}
