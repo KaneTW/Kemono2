@@ -11,6 +11,5 @@ if (localStorage.getItem("favorites")) {
     xhr.send(fmd)
   });
 
-  localStorage.removeItem("favorites");
   migrations_div.innerHTML = '<span class="subtitle">Done migrating. Please refresh the page.</span>';
 }
