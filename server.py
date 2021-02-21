@@ -45,11 +45,12 @@ def make_cache_key(*args,**kwargs):
     # register session-stored state of page
     if request.endpoint == 'user':
         state = {
-            "favorited": session.get('favorites') and request.view_args['service'] + ':' + request.view_args['id'] in session.get('favorites'),
+            "favorited": True if session.get('favorites') and request.view_args['service'] + ':' + request.view_args['id'] in session.get('favorites') else False,
             "layout": session.get('posts_layout') or 'cards',
-            "blocked": session.get('blocked') and request.view_args['service'] + ':' + request.view_args['id'] in session.get('blocked')
+            "blocked": True if session.get('blocked') and request.view_args['service'] + ':' + request.view_args['id'] in session.get('blocked') else False
         }
         state_with_args = {**request.args, **state}
+        print(urlencode(state_with_args))
         return request.path + '?' + urlencode(state_with_args)
     else:
         # not a stateful page; just use the url path
