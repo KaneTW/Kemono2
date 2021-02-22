@@ -156,6 +156,7 @@ def home():
         props = props,
         base = base
     ), 200)
+    response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
     return response
 
 @app.route('/artists')
