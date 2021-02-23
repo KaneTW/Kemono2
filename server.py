@@ -106,7 +106,8 @@ def relative_time(date):
 def do_init_stuff():
     session.permanent = True
     app.permanent_session_lifetime = timedelta(days=9999)
-
+    session.modified = False
+    
     rp = request.path
     if rp != '/' and rp.endswith('/'):
         response = redirect(rp[:-1])
