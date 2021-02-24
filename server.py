@@ -145,7 +145,7 @@ def home():
         props = props,
         base = base
     ), 200)
-    response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
+    response.headers['Cache-Control'] = 's-maxage=60'
     return response
 
 @app.route('/artists')
@@ -202,7 +202,7 @@ def artists():
         results = results,
         base = base
     ), 200)
-    response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
+    response.headers['Cache-Control'] = 's-maxage=60'
     return response
 
 @app.route('/thumbnail/<path:path>')
@@ -278,7 +278,7 @@ def updated_artists():
         results = results,
         base = base
     ), 200)
-    response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
+    response.headers['Cache-Control'] = 's-maxage=60'
     return response
 
 @app.route('/artists/favorites')
@@ -473,7 +473,7 @@ def upload_post():
         'upload.html',
         props=props
     ), 200)
-    response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
+    response.headers['Cache-Control'] = 's-maxage=60'
     return response
 
 @app.route('/posts/random')
@@ -633,7 +633,7 @@ def discord_server(id):
     response = make_response(render_template(
         'discord.html'
     ), 200)
-    response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
+    response.headers['Cache-Control'] = 's-maxage=60'
     return response
 
 @app.route('/<service>/user/<id>/post/<post>/prev')
@@ -805,7 +805,7 @@ def board():
         'board_list.html',
         props = props
     ), 200)
-    response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
+    response.headers['Cache-Control'] = 's-maxage=60'
     return response
 
 @app.route('/requests')
@@ -936,7 +936,7 @@ def request_form():
         'requests_new.html',
         props = props
     ), 200)
-    response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
+    response.headers['Cache-Control'] = 's-maxage=60'
     return response
 
 @app.route('/requests/new', methods=['POST'])
@@ -1039,7 +1039,7 @@ def importer():
         'importer_list.html',
         props = props
     ), 200)
-    response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
+    response.headers['Cache-Control'] = 's-maxage=60'
     return response
 
 @app.route('/importer/tutorial')
@@ -1052,7 +1052,7 @@ def importer_tutorial():
         'importer_tutorial.html',
         props = props
     ), 200)
-    response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
+    response.headers['Cache-Control'] = 's-maxage=60'
     return response
 
 @app.route('/importer/ok')
@@ -1065,7 +1065,7 @@ def importer_ok():
         'importer_ok.html',
         props = props
     ), 200)
-    response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
+    response.headers['Cache-Control'] = 's-maxage=60'
     return response
 
 @app.route('/importer/status/<lgid>')
@@ -1152,7 +1152,7 @@ def recent():
     results = cursor.fetchall()
 
     response = make_response(jsonify(results), 200)
-    response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
+    response.headers['Cache-Control'] = 's-maxage=60'
     return response
 
 @app.route('/api/lookup')
