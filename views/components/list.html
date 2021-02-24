@@ -4,17 +4,10 @@
   </div>
 {% else %}
   <div class="opts">
-    <form
-      action="/config/set"
-      method="POST"
-      enctype="multipart/form-data"
-    >
-      <select name="posts_layout" onchange="javascript:this.form.submit()">
-        <option value="cards" {{ 'selected' if session.get('posts_layout') == 'cards' }}>Cards</option>
-        <option value="grid" {{ 'selected' if session.get('posts_layout') == 'grid' }}>Grid</option>
-      </select>
-      <input type="submit" style="display: none;">
-    </form>
+    <select id="posts_layout" name="posts_layout">
+      <option value="card" {{ 'selected' if request.cookies.get('layout') == 'card' }}>Cards</option>
+      <option value="grid" {{ 'selected' if request.cookies.get('layout') == 'grid' }}>Grid</option>
+    </select>
   </div>
   <div class="paginator" id="paginator-top">
     {% include 'components/paginator.html' %}
@@ -34,7 +27,7 @@
       <input type="submit" style="display: none;">
     </form>
   </div>
-  {% if session.get('posts_layout') == 'cards' or not session.get('posts_layout') %}
+  {% if request.cookies.get('layout') == 'card' or not request.cookies.get('layout') %}
     <div class="content" id="content">
       <div class="pure-g">
         {% for post in results %}
@@ -50,7 +43,7 @@
         {% endfor %}
       </div>
     </div>
-  {% elif session.get('posts_layout') == 'grid' %}
+  {% elif request.cookies.get('layout') == 'grid' %}
     <div class="content" id="content">
       <div class="content-grid">
         {% for post in results %}
@@ -66,4 +59,5 @@
   <div class="paginator" id="paginator-bottom">
     {% include 'components/paginator.html' %}
   </div>
+  <script src="{{ url_for('static', filename='js/layout.js') }}"></script>
 {% endif %}

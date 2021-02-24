@@ -42,19 +42,7 @@ except Exception as error:
     print("Failed to connect to the database: ",error)
 
 def make_cache_key(*args,**kwargs):
-    # register session-stored state of page
-    if request.endpoint == 'user':
-        state = {
-            "favorited": True if session.get('favorites') and request.view_args['service'] + ':' + request.view_args['id'] in session.get('favorites') else False,
-            "layout": session.get('posts_layout') or 'cards',
-            "blocked": True if session.get('blocked') and request.view_args['service'] + ':' + request.view_args['id'] in session.get('blocked') else False
-        }
-        state_with_args = {**request.args, **state}
-        print(urlencode(state_with_args))
-        return request.path + '?' + urlencode(state_with_args)
-    else:
-        # not a stateful page; just use the url path
-        return request.full_path
+    return request.full_path
 
 def delta_key(e):
     return e['delta_date']
@@ -527,7 +515,6 @@ def config_remove():
     return response
 
 @app.route('/<service>/user/<id>')
-@cache.cached(key_prefix=make_cache_key)
 def user(service, id):
     cursor = get_cursor()
     props = {
@@ -638,7 +625,7 @@ def user(service, id):
         result_after_kitsune = result_after_kitsune,
         session = session
     ), 200)
-    response.headers['Cache-Control'] = 'no-store, max-age=0'
+    response.headers['Cache-Control'] = 's-maxage=60'
     return response
 
 @app.route('/discord/server/<id>')
@@ -806,7 +793,7 @@ def post(service, id, post):
         result_flagged = result_flagged,
         result_after_kitsune = result_after_kitsune
     ), 200)
-    response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
+    response.headers['Cache-Control'] = 's-maxage=60'
     return response
 
 @app.route('/board')
