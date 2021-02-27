@@ -18,32 +18,6 @@
       {% endif %}
         <div class="user-header-info-{{ props.service }}"></div>
       </a>
-      <a href="/posts/upload?service={{ props.service }}&user={{ props.id }}">
-        <div class="user-header-upload"></div>
-      </a>
-      {#{% if session.get('blocked') and props.service ~ ':' ~ props.id in session.get('blocked') %}
-        <form
-          action="/config/remove"
-          method="POST"
-          enctype="multipart/form-data"
-          style="display: inline;"
-        >
-          <input type="hidden" name="blocked" value="{{ props.service ~ ':' ~props.id }}">
-          <label for="submit-block" class="user-header-blocked"><span style="color: #ff6961;">×</span></label>
-          <input id="submit-block" type="submit" style="display: none;">
-        </form>
-      {% else %}
-        <form
-          action="/config/add"
-          method="POST"
-          enctype="multipart/form-data"
-          style="display: inline;"
-        >
-          <input type="hidden" name="blocked" value="{{ props.service ~ ':' ~props.id }}">
-          <label for="submit-block" class="user-header-blocked">×</label>
-          <input id="submit-block" type="submit" style="display: none;">
-        </form>
-      {% endif %}#}
     </div>
   </div>
 </div>
