@@ -354,6 +354,39 @@ def favorites():
     response.headers['Cache-Control'] = 'no-store, max-age=0'
     return response
 
+@app.route('/artists/blocked')
+def blocked():
+    props = {
+        'currentPage': 'artists'
+    }
+
+    results = []
+    if session.get('blocked'):
+        for user in session['blocked']:
+            service = user.split(':')[0]
+            user_id = user.split(':')[1]
+            
+            cursor2 = get_cursor()
+            query2 = "SELECT * FROM lookup WHERE id = %s AND service = %s"
+            params2 = (user_id, service)
+            cursor2.execute(query2, params2)
+            results2 = cursor2.fetchone()
+            
+            results.append({
+                "name": results2['name'] if results2 else "",
+                "service": service,
+                "user": user_id
+            })
+    
+    response = make_response(render_template(
+        'blocked.html',
+        props = props,
+        results = results,
+        session = session
+    ), 200)
+    response.headers['Cache-Control'] = 'no-store, max-age=0'
+    return response
+
 @app.route('/posts')
 def posts():
     cursor = get_cursor()

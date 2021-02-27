@@ -2,17 +2,16 @@
 {% block content %}
 <div class="page" id="page">
   {% if results|length %}
-    <div class="favorites-opts">
-      <form
-        action="/config/set"
-        method="POST"
-        enctype="multipart/form-data"
-      >
-        <select name="favorites_sort" onchange="javascript:this.form.submit()">
-          <option value="published" {{ 'selected' if session.get('favorites_sort') == 'published' }}>Date posted</option>
-          <option value="added" {{ 'selected' if session.get('favorites_sort') == 'added' }}>Date imported</option>
-        </select>
-      </form>
+  <div class="favorites-opts">
+    <form
+      action="/config/set"
+      method="POST"
+      enctype="multipart/form-data"
+    >
+      <select name="favorites_sort" onchange="javascript:this.form.submit()">
+        <option value="published" {{ 'selected' if session.get('favorites_sort') == 'published' }}>Date posted</option>
+        <option value="added" {{ 'selected' if session.get('favorites_sort') == 'added' }}>Date imported</option>
+      </select>
     </form>
   </div>
   <div class="pure-g">
