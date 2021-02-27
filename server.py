@@ -1,4 +1,7 @@
 import re
+import random
+import string
+import json
 from urllib.parse import urlencode
 from datetime import datetime, timedelta
 from os import getenv, stat, rename, makedirs
@@ -8,6 +11,7 @@ from dotenv import load_dotenv
 load_dotenv(join(dirname(__file__), '.env'))
 
 from PIL import Image
+from python_resumable import UploaderFlask
 from flask import Flask, jsonify, render_template, render_template_string, request, redirect, url_for, send_from_directory, make_response, g, abort, current_app, send_file, session
 from flask_caching import Cache
 from werkzeug.utils import secure_filename
@@ -1126,6 +1130,76 @@ def importer_status(lgid):
     return response
 
 ### API ###
+@app.route('/api/upload', methods=['POST'])
+def upload_file():
+    resumable_dict = {
+        'resumableIdentifier': request.form.get('resumableIdentifier'),
+        'resumableFilename': request.form.get('resumableFilename'),
+        'resumableTotalSize': request.form.get('resumableTotalSize'),
+        'resumableTotalChunks': request.form.get('resumableTotalChunks'),
+        'resumableChunkNumber': request.form.get('resumableChunkNumber')
+    }
+
+    if int(request.form.get('resumableTotalSize')) > int(getenv('UPLOAD_LIMIT')):
+        return "File too large.", 415
+
+    makedirs(join(getenv('DB_ROOT'), 'uploads'), exist_ok=True)
+    makedirs(join(getenv('DB_ROOT'), 'uploads', 'temp'), exist_ok=True)
+
+    resumable = UploaderFlask(
+        resumable_dict,
+        join(getenv('DB_ROOT'), 'uploads'),
+        join(getenv('DB_ROOT'), 'uploads', 'temp'),
+        request.files['file']
+    )
+
+    resumable.upload_chunk()
+
+    if resumable.check_status() is True:
+        resumable.assemble_chunks()
+        resumable.cleanup()
+
+        post_model = {
+            'id': ''.join(random.choice(string.ascii_letters) for x in range(8)),
+            '"user"': request.form.get('user'),
+            'service': request.form.get('service'),
+            'title': request.form.get('title'),
+            'content': request.form.get('content') or "",
+            'embed': {},
+            'shared_file': True,
+            'added': datetime.now(),
+            'published': datetime.now(),
+            'edited': None,
+            'file': {
+                "name": request.form.get('resumableFilename'),
+                "path": f"/uploads/{request.form.get('resumableFilename')}"
+            },
+            'attachments': []
+        }
+
+        post_model['embed'] = json.dumps(post_model['embed'])
+        post_model['file'] = json.dumps(post_model['file'])
+        
+        columns = post_model.keys()
+        data = ['%s'] * len(post_model.values())
+        data[-1] = '%s::jsonb[]' # attachments
+        query = "INSERT INTO posts ({fields}) VALUES ({values})".format(
+            fields = ','.join(columns),
+            values = ','.join(data)
+        )
+        cursor = get_cursor()
+        cursor.execute(query, list(post_model.values()))
+        
+        return jsonify({
+            "fileUploadStatus": True,
+            "resumableIdentifier": resumable.repo.file_id
+        })
+
+    return jsonify({
+        "chunkUploadStatus": True,
+        "resumableIdentifier": resumable.repo.file_id
+    })
+
 @app.route('/api/import', methods=['POST'])
 def importer_submit():
     host = getenv('ARCHIVERHOST')
