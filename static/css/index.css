@@ -287,13 +287,13 @@ a:link {
 }
 
 .user-header-upload {
-  color: rgb(255, 255, 255);
-  font-size: 32px;
-  font-weight: bold;
-  box-sizing: border-box;
-  cursor: pointer;
-  text-shadow: rgb(0, 0, 0) 0px 0px 3px, rgb(0, 0, 0) -1px -1px 0px, rgb(0, 0, 0) 1px 1px 0px;
-  user-select: none;
+  background-image: url(/static/upload.svg);
+  display: inline-block;
+  margin-left: 10px;
+  width: 36px;
+  height: 30px;
+  background-size: cover;
+  background-repeat: no-repeat;
 }
 
 .user-header-blocked {

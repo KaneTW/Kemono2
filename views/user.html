@@ -18,7 +18,9 @@
       {% endif %}
         <div class="user-header-info-{{ props.service }}"></div>
       </a>
-      <a class="user-header-upload" href="/posts/upload?service={{ props.service }}&user={{ props.id }}">⇪</a>
+      <a href="/posts/upload?service={{ props.service }}&user={{ props.id }}">
+        <div class="user-header-upload"></div>
+      </a>
       {#{% if session.get('blocked') and props.service ~ ':' ~ props.id in session.get('blocked') %}
         <form
           action="/config/remove"
