@@ -1159,19 +1159,22 @@ def upload_file():
         resumable.assemble_chunks()
         resumable.cleanup()
 
+        scrub = Cleaner(tags = [])
+        text = Cleaner(tags = ['br'])
+
         post_model = {
             'id': ''.join(random.choice(string.ascii_letters) for x in range(8)),
-            '"user"': request.form.get('user'),
-            'service': request.form.get('service'),
-            'title': request.form.get('title'),
-            'content': request.form.get('content') or "",
+            '"user"': scrub.clean(request.form.get('user')),
+            'service': scrub.clean(request.form.get('service')),
+            'title': scrub.clean(request.form.get('title')),
+            'content': text.clean(request.form.get('content')) or "",
             'embed': {},
             'shared_file': True,
             'added': datetime.now(),
             'published': datetime.now(),
             'edited': None,
             'file': {
-                "name": request.form.get('resumableFilename'),
+                "name": scrub.clean(request.form.get('resumableFilename')),
                 "path": f"/uploads/{request.form.get('resumableFilename')}"
             },
             'attachments': []
