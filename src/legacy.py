@@ -105,7 +105,7 @@ def random_artist():
     random = cursor.fetchall()
     if len(random) == 0:
         return redirect('back')
-    response = redirect(url_for('user', service = random[0]['service'], id = random[0]['id']))
+    response = redirect(url_for('legacy.user', service = random[0]['service'], id = random[0]['id']))
     response.autocorrect_location_header = False
     return response
 
