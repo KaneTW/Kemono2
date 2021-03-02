@@ -18,6 +18,9 @@ def make_pool():
         print("Failed to connect to the database: ", error)
     return pool
 
+def get_pool():
+    return current_app.config['DATABASE_POOL']
+
 def get_cursor():
     pool = current_app.config['DATABASE_POOL']
     if 'cursor' not in g:

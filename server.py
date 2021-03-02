@@ -5,7 +5,8 @@ from dotenv import load_dotenv
 load_dotenv(join(dirname(__file__), '.env'))
 from flask import Flask, render_template, request, redirect, g, abort, session
 
-from src.internals.database.database import make_pool
+import src.internals.database.database as database
+import src.internals.redis.redis as redis
 from src.internals.utils.flask_cache import cache
 
 from src.home import Home
@@ -31,7 +32,8 @@ def do_init_stuff():
     app.permanent_session_lifetime = timedelta(days=9999)
     session.modified = False
 
-    app.config['DATABASE_POOL'] = make_pool()
+    app.config['DATABASE_POOL'] = database.make_pool()
+    app.config['REDIS_POOL'] = redis.make_pool()
     
     rp = request.path
     if rp != '/' and rp.endswith('/'):
@@ -60,5 +62,6 @@ def close(e):
         cursor.close()
         connection = g.pop('connection', None)
         if connection is not None:
+            pool = database.get_pool()
             connection.commit()
             pool.putconn(connection)

@@ -2,6 +2,7 @@ from flask import Blueprint, request, make_response, render_template
 
 from .internals.utils.utils import make_cache_key
 from .internals.utils.flask_cache import cache
+from .internals.redis.redis import get_conn
 
 Home = Blueprint('Home', __name__)
 
