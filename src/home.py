@@ -1,14 +1,13 @@
 from flask import Blueprint, request, make_response, render_template
 
-from .internals.utils.utils import make_cache_key
-from .internals.utils.flask_cache import cache
-from .internals.redis.redis import get_conn
+from .utils.utils import make_cache_key
+from .internals.cache.flask_cache import cache
 
-Home = Blueprint('Home', __name__)
+home = Blueprint('home', __name__)
 
-@Home.route('/')
+@home.route('/')
 @cache.cached(key_prefix=make_cache_key)
-def home():
+def get_home():
     props = {}
     base = request.args.to_dict()
     base.pop('o', None)

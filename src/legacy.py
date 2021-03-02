@@ -21,8 +21,8 @@ from bleach.sanitizer import Cleaner
 from hashlib import sha256
 
 from .internals.database.database import get_cursor
-from .internals.utils.flask_cache import cache
-from .internals.utils.utils import make_cache_key, relative_time, delta_key, allowed_file
+from .internals.cache.flask_cache import cache
+from .utils.utils import make_cache_key, relative_time, delta_key, allowed_file
 
 legacy = Blueprint('legacy', __name__)
 
@@ -768,7 +768,7 @@ def requests_list():
 
     if not request.args.get('commit'):
         query = "SELECT * FROM requests "
-        query += "WHERE ]us = 'open' "
+        query += "WHERE status = 'open' "
         query += "ORDER BY votes desc "
         query += "OFFSET %s "
         offset = request.args.get('o') if request.args.get('o') else 0

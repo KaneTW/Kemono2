@@ -79,4 +79,3 @@ volumes:
     #   type: 'none'
     #   o: 'bind'
     #   device: "/mnt/slab1/kemono"
-    

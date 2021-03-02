@@ -6,17 +6,17 @@ load_dotenv(join(dirname(__file__), '.env'))
 from flask import Flask, render_template, request, redirect, g, abort, session
 
 import src.internals.database.database as database
-import src.internals.redis.redis as redis
-from src.internals.utils.flask_cache import cache
+import src.internals.cache.redis as redis
+from src.internals.cache.flask_cache import cache
 
-from src.home import Home
+from src.home import home
 from src.legacy import legacy
 
 app = Flask(
     __name__,
     template_folder='views'
 )
-app.register_blueprint(Home)
+app.register_blueprint(home)
 app.register_blueprint(legacy)
 
 app.config.from_pyfile('flask.cfg')
