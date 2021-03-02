@@ -2,6 +2,7 @@ from flask import g, current_app
 import psycopg2
 from psycopg2 import pool
 from psycopg2.extras import RealDictCursor
+from os import getenv
 
 def make_pool():
     pool = None

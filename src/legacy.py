@@ -9,8 +9,6 @@ from datetime import datetime, timedelta
 from os import getenv, stat, rename, makedirs
 from os.path import join, dirname, isfile, splitext
 from shutil import move
-from dotenv import load_dotenv
-load_dotenv(join(dirname(__file__), '.env'))
 
 from PIL import Image
 from python_resumable import UploaderFlask
@@ -20,17 +18,13 @@ from slugify import slugify_filename
 import requests
 from markupsafe import Markup
 from bleach.sanitizer import Cleaner
-import psycopg2
-from psycopg2 import pool
-from psycopg2.extras import RealDictCursor
 from hashlib import sha256
 
-from internals.database.database import get_cursor
+from .internals.database.database import get_cursor
+from .internals.utils.flask_cache import cache
+from .internals.utils.utils import make_cache_key
 
-old_app = Blueprint('old_app', __name__)
-
-def make_cache_key(*args,**kwargs):
-    return request.full_path
+legacy = Blueprint('legacy', __name__)
 
 def delta_key(e):
     return e['delta_date']
@@ -81,7 +75,8 @@ def relative_time(date):
 def allowed_file(mime, accepted):
     return any(x in mime for x in accepted)
 
-@app.route('/artists')
+@legacy.route('/artists')
+@cache.cached(key_prefix=make_cache_key)
 def artists():
     props = {
         'currentPage': 'artists'
@@ -137,7 +132,7 @@ def artists():
     response.headers['Cache-Control'] = 's-maxage=60'
     return response
 
-@app.route('/thumbnail/<path:path>')
+@legacy.route('/thumbnail/<path:path>')
 def thumbnail(path):
     try:
         image = Image.open(join(getenv('DB_ROOT'), path))
@@ -151,7 +146,7 @@ def thumbnail(path):
     except Exception as e:
         return f"The file you requested could not be converted. Error: {e}", 404
 
-@app.route('/artists/random')
+@legacy.route('/artists/random')
 def random_artist():
     cursor = get_cursor()
     query = "SELECT id, service FROM lookup WHERE service != 'discord-channel' ORDER BY random() LIMIT 1"
@@ -163,7 +158,8 @@ def random_artist():
     response.autocorrect_location_header = False
     return response
 
-@app.route('/artists/updated')
+@legacy.route('/artists/updated')
+@cache.cached(key_prefix=make_cache_key)
 def updated_artists():
     cursor = get_cursor()
     props = {
@@ -212,7 +208,7 @@ def updated_artists():
     response.headers['Cache-Control'] = 's-maxage=300'
     return response
 
-@app.route('/artists/favorites')
+@legacy.route('/artists/favorites')
 def favorites():
     props = {
         'currentPage': 'artists'
@@ -285,7 +281,7 @@ def favorites():
     response.headers['Cache-Control'] = 'no-store, max-age=0'
     return response
 
-@app.route('/artists/blocked')
+@legacy.route('/artists/blocked')
 def blocked():
     props = {
         'currentPage': 'artists'
@@ -318,7 +314,7 @@ def blocked():
     response.headers['Cache-Control'] = 'no-store, max-age=0'
     return response
 
-@app.route('/posts')
+@legacy.route('/posts')
 def posts():
     cursor = get_cursor()
     props = {
@@ -428,7 +424,7 @@ def posts():
     response.headers['Cache-Control'] = 'no-store, max-age=0'
     return response
 
-@app.route('/posts/upload')
+@legacy.route('/posts/upload')
 def upload_post():
     props = {
         'currentPage': 'posts'
@@ -440,7 +436,7 @@ def upload_post():
     response.headers['Cache-Control'] = 's-maxage=60'
     return response
 
-@app.route('/posts/random')
+@legacy.route('/posts/random')
 def random_post():
     cursor = get_cursor()
     query = "SELECT service, \"user\", id FROM posts WHERE random() < 0.01 LIMIT 1"
@@ -452,7 +448,7 @@ def random_post():
 
 # TODO: /:service/user/:id/rss
 
-@app.route('/config/set', methods=["POST"])
+@legacy.route('/config/set', methods=["POST"])
 def config_set():
     for key in request.form.keys():
         session[key] = request.form[key]
@@ -460,7 +456,7 @@ def config_set():
     response.autocorrect_location_header = False
     return response
 
-@app.route('/config/add', methods=["POST"])
+@legacy.route('/config/add', methods=["POST"])
 def config_add():
     for key in request.form.keys():
         session[key] = session[key] + [request.form[key]] if session.get(key) and isinstance(session[key], list) else [request.form[key]]
@@ -468,7 +464,7 @@ def config_add():
     response.autocorrect_location_header = False
     return response
 
-@app.route('/config/remove', methods=["POST"])
+@legacy.route('/config/remove', methods=["POST"])
 def config_remove():
     for key in request.form.keys():
         if session.get(key) and isinstance(session[key], list):
@@ -478,7 +474,7 @@ def config_remove():
     response.autocorrect_location_header = False
     return response
 
-@app.route('/<service>/user/<id>')
+@legacy.route('/<service>/user/<id>')
 def user(service, id):
     cursor = get_cursor()
     props = {
@@ -592,7 +588,7 @@ def user(service, id):
     response.headers['Cache-Control'] = 's-maxage=60'
     return response
 
-@app.route('/<service>/user/<id>/rss')
+@legacy.route('/<service>/user/<id>/rss')
 def user_rss(service, id):
     cursor = get_cursor()
     query = "SELECT * FROM posts WHERE \"user\" = %s AND service = %s "
@@ -631,7 +627,7 @@ def user_rss(service, id):
     response.headers['Content-Type'] = 'application/rss+xml'
     return response
 
-@app.route('/discord/server/<id>')
+@legacy.route('/discord/server/<id>')
 def discord_server(id):
     response = make_response(render_template(
         'discord.html'
@@ -639,7 +635,7 @@ def discord_server(id):
     response.headers['Cache-Control'] = 's-maxage=60'
     return response
 
-@app.route('/<service>/user/<id>/post/<post>/prev')
+@legacy.route('/<service>/user/<id>/post/<post>/prev')
 def post_prev(service, id, post):
     cursor = get_cursor()
     query = 'SELECT * FROM posts '
@@ -677,7 +673,7 @@ def post_prev(service, id, post):
 
     return response
 
-@app.route('/<service>/user/<id>/post/<post>/next')
+@legacy.route('/<service>/user/<id>/post/<post>/next')
 def post_next(service, id, post):
     cursor = get_cursor()
     query = 'SELECT * FROM posts '
@@ -715,7 +711,8 @@ def post_next(service, id, post):
 
     return response
 
-@app.route('/<service>/user/<id>/post/<post>')
+@legacy.route('/<service>/user/<id>/post/<post>')
+@cache.cached(key_prefix=make_cache_key)
 def post(service, id, post):
     cursor = get_cursor()
     props = {
@@ -798,7 +795,7 @@ def post(service, id, post):
     response.headers['Cache-Control'] = 's-maxage=60'
     return response
 
-@app.route('/board')
+@legacy.route('/board')
 def board():
     props = {
         'currentPage': 'board'
@@ -810,7 +807,7 @@ def board():
     response.headers['Cache-Control'] = 's-maxage=60'
     return response
 
-@app.route('/requests')
+@legacy.route('/requests')
 def requests_list():
     props = {
         'currentPage': 'requests'
@@ -889,7 +886,7 @@ def requests_list():
     ), 200)
     return response
 
-@app.route('/requests/<id>/vote_up', methods=['POST'])
+@legacy.route('/requests/<id>/vote_up', methods=['POST'])
 def vote_up(id):
     ip = request.headers.getlist("X-Forwarded-For")[0].rpartition(' ')[-1] if 'X-Forwarded-For' in request.headers else request.remote_addr
     query = "SELECT * FROM requests WHERE id = %s"
@@ -928,7 +925,7 @@ def vote_up(id):
             props = props
         ), 200)
 
-@app.route('/requests/new')
+@legacy.route('/requests/new')
 def request_form():
     props = {
         'currentPage': 'requests'
@@ -941,7 +938,7 @@ def request_form():
     response.headers['Cache-Control'] = 's-maxage=60'
     return response
 
-@app.route('/requests/new', methods=['POST'])
+@legacy.route('/requests/new', methods=['POST'])
 def request_submit():
     props = {
         'currentPage': 'requests',
@@ -1031,7 +1028,7 @@ def request_submit():
         props = props
     ), 200)
 
-@app.route('/importer')
+@legacy.route('/importer')
 def importer():
     props = {
         'currentPage': 'import'
@@ -1044,7 +1041,7 @@ def importer():
     response.headers['Cache-Control'] = 's-maxage=60'
     return response
 
-@app.route('/importer/tutorial')
+@legacy.route('/importer/tutorial')
 def importer_tutorial():
     props = {
         'currentPage': 'import'
@@ -1057,7 +1054,7 @@ def importer_tutorial():
     response.headers['Cache-Control'] = 's-maxage=60'
     return response
 
-@app.route('/importer/ok')
+@legacy.route('/importer/ok')
 def importer_ok():
     props = {
         'currentPage': 'import'
@@ -1070,7 +1067,7 @@ def importer_ok():
     response.headers['Cache-Control'] = 's-maxage=60'
     return response
 
-@app.route('/importer/status/<lgid>')
+@legacy.route('/importer/status/<lgid>')
 def importer_status(lgid):
     props = {
         'currentPage': 'import',
@@ -1095,7 +1092,7 @@ def importer_status(lgid):
     return response
 
 ### API ###
-@app.route('/api/upload', methods=['POST'])
+@legacy.route('/api/upload', methods=['POST'])
 def upload_file():
     resumable_dict = {
         'resumableIdentifier': request.form.get('resumableIdentifier'),
@@ -1168,7 +1165,7 @@ def upload_file():
         "resumableIdentifier": resumable.repo.file_id
     })
 
-@app.route('/api/import', methods=['POST'])
+@legacy.route('/api/import', methods=['POST'])
 def importer_submit():
     host = getenv('ARCHIVERHOST')
     port = getenv('ARCHIVERPORT') if getenv('ARCHIVERPORT') else '8000'
@@ -1202,7 +1199,7 @@ def importer_submit():
     
 # TODO: file sharing api (/api/upload)
 
-@app.route('/api/bans')
+@legacy.route('/api/bans')
 def bans():
     cursor = get_cursor()
     query = "SELECT * FROM dnp"
@@ -1210,7 +1207,7 @@ def bans():
     results = cursor.fetchall()
     return make_response(jsonify(results), 200)
 
-@app.route('/api/recent')
+@legacy.route('/api/recent')
 def recent():
     cursor = get_cursor()
     query = "SELECT * FROM posts ORDER BY added desc "
@@ -1230,7 +1227,7 @@ def recent():
     response.headers['Cache-Control'] = 's-maxage=60'
     return response
 
-@app.route('/api/lookup')
+@legacy.route('/api/lookup')
 def lookup():
     if (request.args.get('q') is None):
         return make_response('Bad request', 400)
@@ -1251,7 +1248,7 @@ def lookup():
     response = make_response(jsonify(list(map(lambda x: x['id'], results))), 200)
     return response
 
-@app.route('/api/discord/channels/lookup')
+@legacy.route('/api/discord/channels/lookup')
 def discord_lookup():
     cursor = get_cursor()
     query = "SELECT channel FROM discord_posts WHERE server = %s GROUP BY channel"
@@ -1267,7 +1264,7 @@ def discord_lookup():
     response = make_response(jsonify(lookup))
     return response
 
-@app.route('/api/discord/channel/<id>')
+@legacy.route('/api/discord/channel/<id>')
 def discord_channel(id):
     cursor = get_cursor()
     query = "SELECT * FROM discord_posts WHERE channel = %s ORDER BY published desc "
@@ -1284,7 +1281,7 @@ def discord_channel(id):
     results = cursor.fetchall()
     return jsonify(results)
 
-@app.route('/api/lookup/cache/<id>')
+@legacy.route('/api/lookup/cache/<id>')
 def lookup_cache(id):
     if (request.args.get('service') is None):
         return make_response('Bad request', 400)
@@ -1296,7 +1293,7 @@ def lookup_cache(id):
     response = make_response(jsonify({ "name": results[0]['name'] if len(results) > 0 else '' }))
     return response
 
-@app.route('/api/<service>/user/<user>/lookup')
+@legacy.route('/api/<service>/user/<user>/lookup')
 def user_search(service, user):
     if (request.args.get('q') and len(request.args.get('q')) > 35):
         return make_response('Bad request', 400)
@@ -1318,7 +1315,7 @@ def user_search(service, user):
     results = cursor.fetchall()
     return jsonify(results)
 
-@app.route('/api/<service>/user/<user>/post/<post>')
+@legacy.route('/api/<service>/user/<user>/post/<post>')
 def post_api(service, user, post):
     cursor = get_cursor()
     query = "SELECT * FROM posts WHERE id = %s AND \"user\" = %s AND service = %s ORDER BY added asc"
@@ -1327,7 +1324,7 @@ def post_api(service, user, post):
     results = cursor.fetchall()
     return jsonify(results)
 
-@app.route('/api/<service>/user/<user>/post/<post>/flag')
+@legacy.route('/api/<service>/user/<user>/post/<post>/flag')
 def flag_api(service, user, post):
     cursor = get_cursor()
     query = "SELECT * FROM booru_flags WHERE id = %s AND \"user\" = %s AND service = %s"
@@ -1336,7 +1333,7 @@ def flag_api(service, user, post):
     results = cursor.fetchall()
     return "", 200 if len(results) else 404
 
-@app.route('/api/<service>/user/<user>/post/<post>/flag', methods=["POST"])
+@legacy.route('/api/<service>/user/<user>/post/<post>/flag', methods=["POST"])
 def new_flag_api(service, user, post):
     cursor = get_cursor()
     query = "SELECT * FROM posts WHERE id = %s AND \"user\" = %s AND service = %s"
@@ -1372,7 +1369,8 @@ def new_flag_api(service, user, post):
 
     return "", 200
 
-@app.route('/api/<service>/user/<id>')
+@legacy.route('/api/<service>/user/<id>')
+@cache.cached(key_prefix=make_cache_key)
 def user_api(service, id):
     cursor = get_cursor()
     query = "SELECT * FROM posts WHERE \"user\" = %s AND service = %s ORDER BY published desc "
