@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 load_dotenv(join(dirname(__file__), '.env'))
 from flask import Flask, render_template, request, redirect, g, abort, session
 
+import re
 import src.internals.database.database as database
 import src.internals.cache.redis as redis
 from src.internals.cache.flask_cache import cache
