@@ -284,7 +284,7 @@ def updated_artists():
         results = results,
         base = base
     ), 200)
-    response.headers['Cache-Control'] = 's-maxage=300'
+    response.headers['Cache-Control'] = 's-maxage=60'
     return response
 
 @app.route('/artists/favorites')
