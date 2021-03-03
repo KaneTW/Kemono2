@@ -33,7 +33,6 @@ services:
     volumes:
       - ./flask.cfg:/app/flask.cfg
       - data:/storage
-      - .:/app
     sysctls:
       net.core.somaxconn: 40000
     healthcheck:
