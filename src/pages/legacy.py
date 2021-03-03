@@ -20,9 +20,9 @@ from markupsafe import Markup
 from bleach.sanitizer import Cleaner
 from hashlib import sha256
 
-from .internals.database.database import get_cursor
-from .internals.cache.flask_cache import cache
-from .utils.utils import make_cache_key, relative_time, delta_key, allowed_file
+from ..internals.database.database import get_cursor
+from ..internals.cache.flask_cache import cache
+from ..utils.utils import make_cache_key, relative_time, delta_key, allowed_file
 
 legacy = Blueprint('legacy', __name__)
 
@@ -393,7 +393,7 @@ def random_post():
     query = "SELECT service, \"user\", id FROM posts WHERE random() < 0.01 LIMIT 1"
     cursor.execute(query)
     random = cursor.fetchall()
-    response = redirect(url_for('post', service = random[0]['service'], id = random[0]['user'], post = random[0]['id']))
+    response = redirect(url_for('legacy.post', service = random[0]['service'], id = random[0]['user'], post = random[0]['id']))
     response.autocorrect_location_header = False
     return response
 
@@ -619,7 +619,7 @@ def post_prev(service, id, post):
     if not prev_result:
         response = redirect(request.headers.get('Referer') if request.headers.get('Referer') else '/')
     else:
-        response = redirect(url_for('post', service = prev_result['service'], id = prev_result['user'], post = prev_result['id']))
+        response = redirect(url_for('legacy.post', service = prev_result['service'], id = prev_result['user'], post = prev_result['id']))
         response.autocorrect_location_header = False
 
     return response
@@ -657,7 +657,7 @@ def post_next(service, id, post):
     if not prev_result:
         response = redirect(request.headers.get('Referer') if request.headers.get('Referer') else '/')
     else:
-        response = redirect(url_for('post', service = prev_result['service'], id = prev_result['user'], post = prev_result['id']))
+        response = redirect(url_for('legacy.post', service = prev_result['service'], id = prev_result['user'], post = prev_result['id']))
         response.autocorrect_location_header = False
 
     return response

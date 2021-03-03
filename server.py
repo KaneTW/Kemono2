@@ -10,8 +10,8 @@ import src.internals.database.database as database
 import src.internals.cache.redis as redis
 from src.internals.cache.flask_cache import cache
 
-from src.home import home
-from src.legacy import legacy
+from src.pages.home import home
+from src.pages.legacy import legacy
 
 app = Flask(
     __name__,
