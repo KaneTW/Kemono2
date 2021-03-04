@@ -33,7 +33,7 @@ def do_init_stuff():
     app.permanent_session_lifetime = timedelta(days=9999)
     session.modified = False
 
-    app.config['DATABASE_POOL'] = database.make_pool()
+    database.init()
     app.config['REDIS_POOL'] = redis.make_pool()
     
     rp = request.path

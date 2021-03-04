@@ -4,10 +4,12 @@ from psycopg2 import pool
 from psycopg2.extras import RealDictCursor
 from os import getenv
 
-def make_pool():
-    pool = None
+pool = None
+
+def init():
+    global pool
     try:
-        pool = psycopg2.pool.SimpleConnectionPool(1, 2000,
+        pool = psycopg2.pool.ThreadedConnectionPool(1, 2000,
             host = getenv('PGHOST'),
             dbname = getenv('PGDATABASE'),
             user = getenv('PGUSER'),
@@ -19,10 +21,9 @@ def make_pool():
     return pool
 
 def get_pool():
-    return current_app.config['DATABASE_POOL']
+    return pool
 
 def get_cursor():
-    pool = current_app.config['DATABASE_POOL']
     if 'cursor' not in g:
         g.connection = pool.getconn()
         g.cursor = g.connection.cursor()
