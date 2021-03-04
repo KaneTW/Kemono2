@@ -26,15 +26,14 @@ app.jinja_env.filters['regex_match'] = lambda val, rgx: re.search(rgx, val)
 app.jinja_env.filters['regex_find'] = lambda val, rgx: re.findall(rgx, val)
 
 cache.init_app(app)
+database.init()
+redis.init()
 
 @app.before_request
 def do_init_stuff():
     session.permanent = True
     app.permanent_session_lifetime = timedelta(days=9999)
     session.modified = False
-
-    app.config['DATABASE_POOL'] = database.make_pool()
-    app.config['REDIS_POOL'] = redis.make_pool()
     
     rp = request.path
     if rp != '/' and rp.endswith('/'):
