@@ -1,6 +1,7 @@
 from ..internals.cache.redis import get_conn
 from ..internals.database.database import get_cursor
 import ujson
+import dateutil
 
 def get_all_post_ids(reload = False):
     redis = get_conn()
@@ -12,7 +13,7 @@ def get_all_post_ids(reload = False):
         cursor.execute(query)
         post_ids = cursor.fetchall()
         post_ids = list(map(lambda row: row['id'], post_ids))
-        redis.set(key, ujson.dumps(post_ids))
+        redis.set(key, ujson.dumps(post_ids), ex = 600)
     else:
         post_ids = ujson.loads(post_ids)
     return post_ids
@@ -26,9 +27,9 @@ def get_post(post_id, reload = False):
         query = 'SELECT * FROM posts WHERE id = %s'
         cursor.execute(query, (post_id,))
         post = cursor.fetchone()
-        redis.set(key, ujson.dumps(serialize_post(post)))
+        redis.set(key, serialize_post(post), ex = 600)
     else:
-        post = deserialize_post(ujson.loads(post))
+        post = deserialize_post(post)
     return post
 
 def serialize_post(post):
@@ -37,7 +38,8 @@ def serialize_post(post):
     post['edited'] = post['edited'].isoformat()
     return ujson.dumps(post)
 
-def deserialize_post(post):
+def deserialize_post(post_str):
+    post = ujson.loads(post_str)
     post['added'] = dateutil.parser.parse(post['added'])
     post['published'] = dateutil.parser.parse(post['published'])
     post['edited'] = dateutil.parser.parse(post['edited'])

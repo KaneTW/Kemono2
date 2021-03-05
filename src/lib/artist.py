@@ -13,7 +13,7 @@ def get_non_discord_artist_ids(reload = False):
         cursor.execute(query)
         artist_ids = cursor.fetchall()
         artist_ids = list(map(lambda row: row['id'], artist_ids))
-        redis.set(key, ujson.dumps(artist_ids))
+        redis.set(key, ujson.dumps(artist_ids), ex = 600)
     else:
         artist_ids = ujson.loads(artist_ids)
     return artist_ids
@@ -27,15 +27,16 @@ def get_artist(artist_id, reload = False):
         query = 'SELECT * FROM lookup WHERE id = %s'
         cursor.execute(query, (artist_id,))
         artist = cursor.fetchone()
-        redis.set(key, serialize_artist(artist))
+        redis.set(key, serialize_artist(artist), ex = 600)
     else:
-        artist = deserialize_artist(ujson.loads(artist))
+        artist = deserialize_artist(artist)
     return artist
 
 def serialize_artist(artist):
     artist['indexed'] = artist['indexed'].isoformat()
     return ujson.dumps(artist)
 
-def deserialize_artist(artist):
+def deserialize_artist(artist_str):
+    artist = ujson.loads(artist_str)
     artist['indexed'] = dateutil.parser.parse(artist['indexed'])
     return artist
