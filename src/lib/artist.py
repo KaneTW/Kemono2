@@ -18,6 +18,20 @@ def get_non_discord_artist_ids(reload = False):
         artist_ids = ujson.loads(artist_ids)
     return artist_ids
 
+def get_all_non_discord_artists(reload = False):
+    redis = get_conn()
+    key = 'non_discord_artists'
+    artists = redis.get(key)
+    if artists is None or reload:
+        cursor = get_cursor()
+        query = "SELECT * FROM lookup WHERE service != 'discord-channel'"
+        cursor.execute(query)
+        artists = cursor.fetchall()
+        redis.set(key, serialize_artists(artists), ex = 600)
+    else:
+        artists = deserialize_artists(artists)
+    return artists
+
 def get_artist(artist_id, reload = False):
     redis = get_conn()
     key = 'artist:' + str(artist_id)
@@ -32,11 +46,28 @@ def get_artist(artist_id, reload = False):
         artist = deserialize_artist(artist)
     return artist
 
+def serialize_artists(artists):
+    return ujson.dumps(list(map(lambda artist: prepare_artist_fields(artist), artists)))
+
+def deserialize_artists(artists_str):
+    artists = ujson.loads(artists_str)
+    for i, artist in enumerate(artists):
+        artists[i] = rebuild_artist_fields(artist)
+    return artists
+
 def serialize_artist(artist):
-    artist['indexed'] = artist['indexed'].isoformat()
+    artist = prepare_artist_fields(artist)
     return ujson.dumps(artist)
 
 def deserialize_artist(artist_str):
     artist = ujson.loads(artist_str)
+    artist = rebuild_artist_fields(artist)
+    return artist
+
+def prepare_artist_fields(artist):
+    artist['indexed'] = artist['indexed'].isoformat()
+    return artist
+
+def rebuild_artist_fields(artist):
     artist['indexed'] = dateutil.parser.parse(artist['indexed'])
     return artist

@@ -1,13 +1,14 @@
 from flask import Blueprint, request, make_response, render_template
 
-from ..utils.utils import make_cache_key
+from ..utils.utils import sort_dict_list_by, offset, take
 from ..internals.cache.flask_cache import cache
 from ..internals.database.database import get_cursor
+from ..internals.cache.redis import get_conn
+from ..lib.artist import get_all_non_discord_artists
 
 artists = Blueprint('artists', __name__)
 
 @artists.route('/artists')
-@cache.cached(key_prefix=make_cache_key)
 def get_artists():
     props = {
         'currentPage': 'artists'
@@ -22,46 +23,11 @@ def get_artists():
     order = request.args.get('order')
     offset = request.args.get('o')
 
-    if not commit:
-        results = {}
-    else:
-        query = "SELECT * FROM lookup "
-        query += "WHERE name ILIKE %s "
-        params = ('%' + q + '%',)
-        if service:
-            query += "AND service = %s "
-            params += (service,)
-        query += "AND service != 'discord-channel' "
-        query += "ORDER BY " + {
-            'indexed': 'indexed',
-            'name': 'name',
-            'service': 'service'
-        }.get(sort_by, 'indexed')
-        query += {
-            'asc': ' asc ',
-            'desc': ' desc '
-        }.get(order, 'asc')
-        query += "OFFSET %s "
-        offset = offset if offset else 0
-        params += (offset,)
-        query += "LIMIT 25"
+    results = []
+    count = 0
+    if commit is not None:
+        (results, props['count']) = get_search_results(q, service, sort_by, order, offset)
 
-        cursor = get_cursor()
-        cursor.execute(query, params)
-        results = cursor.fetchall()
-
-        query2 = "SELECT COUNT(*) FROM lookup "
-        query2 += "WHERE name ILIKE %s "
-        params2 = ('%' + q + '%',)
-        if service:
-            query2 += "AND service = %s "
-            params2 += (service,)
-        query2 += "AND service != 'discord-channel'"
-        cursor2 = get_cursor()
-        cursor2.execute(query2, params2)
-        results2 = cursor.fetchall()
-        props["count"] = int(results2[0]["count"])
-        
     response = make_response(render_template(
         'artists.html',
         props = props,
@@ -70,3 +36,28 @@ def get_artists():
     ), 200)
     response.headers['Cache-Control'] = 's-maxage=60'
     return response
+
+def get_search_results(q, service, sort_by, order, o):
+    artists = get_all_non_discord_artists()
+
+    page = []
+    matches = []
+    if artists is not None:
+        for artist in artists:
+            try:
+                artist['name'].index(q)
+                matches.append(artist)
+            except ValueError:
+                continue
+
+    if service:
+        matches = filter(lambda artist: artist['service'] == service, matches)
+
+    matches = sort_dict_list_by(matches, sort_by, order=='desc')
+    
+    if o is None:
+        o = 0
+    page = offset(matches, o)
+    page = take(page, 25)
+
+    return (page, len(matches))
