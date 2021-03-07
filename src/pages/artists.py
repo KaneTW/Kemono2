@@ -1,10 +1,13 @@
-from flask import Blueprint, request, make_response, render_template
+from flask import Blueprint, request, make_response, render_template, session
+
+import datetime
+import re
 
 from ..utils.utils import sort_dict_list_by, offset, take, limit_int
 from ..internals.cache.flask_cache import cache
 from ..internals.database.database import get_cursor
-from ..lib.artist import get_all_non_discord_artists, get_artist
-from ..lib.post import get_artist_posts_with_offset_and_limit, get_all_posts_by_artist
+from ..lib.artist import get_all_non_discord_artists, get_artist, get_artist_post_count, get_artists_by_service
+from ..lib.post import get_artist_posts, get_all_posts_by_artist
 
 artists = Blueprint('artists', __name__)
 
@@ -53,13 +56,13 @@ def user(service, id):
 
     offset = int(request.args.get('o') or 0)
     query = request.args.get('q')
-    limit = limit_int(int(request.args.get('limit') or 25))
+    limit = limit_int(int(request.args.get('limit') or 25), 50)
 
     (posts, total_count) = ([], 0)
     if query is None:
-        (posts, total_count) = get_artist_posts_with_offset_and_limit(id, offset, 25)
+        (posts, total_count) = get_artist_post_page(id, offset, limit)
     else:
-        (posts, total_count) = do_artist_post_search(id, search, offset)
+        (posts, total_count) = do_artist_post_search(id, query, offset, limit)
 
     artist = get_artist(id)
 
@@ -105,7 +108,8 @@ def user(service, id):
     result_flagged = []
     result_after_kitsune = []
     for post in posts:
-        if post['added'] > datetime(2020, 12, 22, 0, 0, 0, 0):
+        print(type(post['added']))
+        if post['added'] > datetime.datetime(2020, 12, 22, 0, 0, 0, 0):
             result_after_kitsune.append(True)
         else:
             result_after_kitsune.append(False)
@@ -154,7 +158,7 @@ def user(service, id):
     response = make_response(render_template(
         'user.html',
         props = props,
-        results = results,
+        results = posts,
         base = base,
         result_previews = result_previews,
         result_attachments = result_attachments,
@@ -181,14 +185,19 @@ def get_artist_search_results(q, service, sort_by, order, o):
 
     return (take(25, offset(0, matches)), len(matches))
 
-def do_artist_post_search(id, search, o):
+def do_artist_post_search(id, search, o, limit):
     posts = get_all_posts_by_artist(id)
 
     matches = []
     for post in posts:
-        if search in post['content'] or search in post['title']:
+        if search in post['content'].lower() or search in post['title'].lower():
             matches.append(post)
 
     matches = sort_dict_list_by(matches, 'published', True)
 
-    return (take(25, offset(o, matches)), len(matches))
+    return (take(limit, offset(o, matches)), len(matches))
+
+def get_artist_post_page(artist_id, offset, limit):
+    posts = get_artist_posts(artist_id, offset, limit, 'published desc')
+    total_count = get_artist_post_count(artist_id)
+    return (posts, total_count)

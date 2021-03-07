@@ -2,6 +2,7 @@ from ..internals.cache.redis import get_conn
 from ..internals.database.database import get_cursor
 import ujson
 import dateutil
+import copy
 
 def get_non_discord_artist_ids(reload = False):
     redis = get_conn()
@@ -60,15 +61,30 @@ def get_artist(artist_id, reload = False):
         artist = deserialize_artist(artist)
     return artist
 
+def get_artist_post_count(artist_id, reload = False):
+    redis = get_conn()
+    key = 'artist_post_count:' + str(artist_id)
+    count = redis.get(key)
+    if count is None or reload:
+        cursor = get_cursor()
+        query = 'SELECT count(*) as count FROM posts WHERE \"user\" = %s'
+        cursor.execute(query, (artist_id,))
+        count = cursor.fetchone()['count']
+        redis.set(key, str(count), ex = 600)
+    else:
+        count = int(count)
+    return count
+
 def serialize_artists(artists):
+    artists = copy.deepcopy(artists)
     return ujson.dumps(list(map(lambda artist: prepare_artist_fields(artist), artists)))
 
 def deserialize_artists(artists_str):
     artists = ujson.loads(artists_str)
-    return list(map(lmabda artist: rebuild_artist_fields(artist), artists))
+    return list(map(lambda artist: rebuild_artist_fields(artist), artists))
 
 def serialize_artist(artist):
-    artist = prepare_artist_fields(artist)
+    artist = prepare_artist_fields(copy.deepcopy(artist))
     return ujson.dumps(artist)
 
 def deserialize_artist(artist_str):
