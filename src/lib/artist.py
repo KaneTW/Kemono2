@@ -32,6 +32,20 @@ def get_all_non_discord_artists(reload = False):
         artists = deserialize_artists(artists)
     return artists
 
+def get_artists_by_service(service, reload = False):
+    redis = get_conn()
+    key = 'artists_by_service:' + service
+    artists = redis.get(key)
+    if artists is None or reload:
+        cursor = get_cursor()
+        query = "SELECT * FROM lookup WHERE service = %s"
+        cursor.execute(query, (service,))
+        artists = cursor.fetchall()
+        redis.set(key, serialize_artists(artists), ex = 600)
+    else:
+        artists = deserialize_artists(artists)
+    return artists
+
 def get_artist(artist_id, reload = False):
     redis = get_conn()
     key = 'artist:' + str(artist_id)
@@ -51,9 +65,7 @@ def serialize_artists(artists):
 
 def deserialize_artists(artists_str):
     artists = ujson.loads(artists_str)
-    for i, artist in enumerate(artists):
-        artists[i] = rebuild_artist_fields(artist)
-    return artists
+    return list(map(lmabda artist: rebuild_artist_fields(artist), artists))
 
 def serialize_artist(artist):
     artist = prepare_artist_fields(artist)
