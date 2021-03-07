@@ -28,6 +28,8 @@ services:
       - PGPASSWORD=shinonome
       - PGDATABASE=kemonodb
       - PGHOST=kemono-db
+      - REDIS_HOST=kemono-redis
+      - REDIS_PORT=6379
       - ARCHIVERHOST=kemono-archiver
       - ARCHIVERPORT=80
     volumes:
