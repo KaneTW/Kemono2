@@ -67,3 +67,21 @@ def is_url_path_for_file(path):
         return True
     except ValueError:
         return False
+
+def sort_dict_list_by(l, key, reverse = False):
+    return sorted(l, key=lambda v: v[key], reverse=reverse)
+
+def take(num, l):
+    if len(l) <= num:
+        return l
+    return l[:num]
+
+def offset(num, l):
+    if len(l) <= num:
+        return []
+    return l[num:]
+
+def limit_int(i, limit):
+    if i > limit:
+        return limit
+    return i

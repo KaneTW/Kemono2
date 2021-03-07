@@ -22,7 +22,7 @@ from hashlib import sha256
 
 from ..internals.database.database import get_cursor
 from ..internals.cache.flask_cache import cache
-from ..utils.utils import make_cache_key, relative_time, delta_key, allowed_file
+from ..utils.utils import make_cache_key, relative_time, delta_key, allowed_file, limit_int
 
 legacy = Blueprint('legacy', __name__)
 
@@ -47,10 +47,15 @@ def updated_artists():
     props = {
         'currentPage': 'artists'
     }
+
+    offset = int(request.args.get('o') or 0)
+    limit = 25
+
+    props['limit'] = limit
+
     query = 'SELECT posts.user, service, max(added) FROM posts GROUP BY posts.user, service ORDER BY max(added) desc '
     params = ()
     query += "OFFSET %s "
-    offset = request.args.get('o') if request.args.get('o') else 0
     params += (offset,)
     query += "LIMIT 25"
     cursor.execute(query, params)
@@ -205,15 +210,18 @@ def posts():
     base = request.args.to_dict()
     base.pop('o', None)
 
+    limit = limit_int(request.args.get('limit') or 25, 50)
+    offset = int(request.args.get('o') or 0)
+
+    props['limit'] = limit
+
     if not request.args.get('q'):
         query = "SELECT * FROM posts "
         params = ()
 
         query += "ORDER BY added desc "
-        offset = request.args.get('o') if request.args.get('o') else 0
         query += "OFFSET %s "
         params += (offset,)
-        limit = request.args.get('limit') if request.args.get('limit') and request.args.get('limit') <= 50 else 25
         query += "LIMIT %s"
         params += (limit,)
     else:
@@ -344,120 +352,6 @@ def config_remove():
     session.modified = True
     response = redirect(request.headers.get('Referer') if request.headers.get('Referer') else '/')
     response.autocorrect_location_header = False
-    return response
-
-@legacy.route('/<service>/user/<id>')
-def user(service, id):
-    cursor = get_cursor()
-    props = {
-        'currentPage': 'posts',
-        'id': id,
-        'service': service,
-        'session': session
-    }
-    base = request.args.to_dict()
-    base.pop('o', None)
-    base["service"] = service
-    base["id"] = id
-
-    query = "SELECT * FROM posts WHERE \"user\" = %s AND service = %s "
-    params = (id, service)
-
-    if request.args.get('q'):
-        query += "AND to_tsvector('english', content || ' ' || title) @@ websearch_to_tsquery(%s) "
-        params += (request.args.get('q'),)
-    
-    query += "ORDER BY published desc "
-    offset = request.args.get('o') if request.args.get('o') else 0
-    query += "OFFSET %s "
-    params += (offset,)
-    limit = request.args.get('limit') if request.args.get('limit') and int(request.args.get('limit')) <= 50 else 25
-    query += "LIMIT %s"
-    params += (limit,)
-
-    cursor.execute(query, params)
-    results = cursor.fetchall()
-
-    cursor2 = get_cursor()
-    query2 = "SELECT COUNT(*) FROM posts WHERE \"user\" = %s AND service = %s "
-    params2 = (id, service)
-    if request.args.get('q'):
-        query2 += "AND to_tsvector('english', content || ' ' || title) @@ websearch_to_tsquery(%s)"
-        params2 += (request.args.get('q'),)
-    cursor2.execute(query2, params2)
-    results2 = cursor2.fetchall()
-    props["count"] = int(results2[0]["count"])
-
-    cursor3 = get_cursor()
-    query3 = "SELECT * FROM lookup WHERE id = %s AND service = %s"
-    params3 = (id, service)
-    cursor3.execute(query3, params3)
-    results3 = cursor.fetchall()
-    props["name"] = results3[0]['name'] if len(results3) > 0 else ''
-
-    result_previews = []
-    result_attachments = []
-    result_flagged = []
-    result_after_kitsune = []
-    for post in results:
-        if post['added'] > datetime(2020, 12, 22, 0, 0, 0, 0):
-            result_after_kitsune.append(True)
-        else:
-            result_after_kitsune.append(False)
-        previews = []
-        attachments = []
-        if len(post['file']):
-            if re.search("\.(gif|jpe?g|jpe|png|webp)$", post['file']['path'], re.IGNORECASE):
-                previews.append({
-                    'type': 'thumbnail',
-                    'path': post['file']['path'].replace('https://kemono.party','')
-                })
-            else:
-                attachments.append({
-                    'path': post['file']['path'],
-                    'name': post['file'].get('name')
-                })
-        if len(post['embed']):
-            previews.append({
-                'type': 'embed',
-                'url': post['embed']['url'],
-                'subject': post['embed']['subject'],
-                'description': post['embed']['description']
-            })
-        for attachment in post['attachments']:
-            if re.search("\.(gif|jpe?g|jpe|png|webp)$", attachment['path'], re.IGNORECASE):
-                previews.append({
-                    'type': 'thumbnail',
-                    'path': attachment['path'].replace('https://kemono.party','')
-                })
-            else:
-                attachments.append({
-                    'path': attachment['path'],
-                    'name': attachment['name']
-                })
-
-        cursor4 = get_cursor()
-        query4 = "SELECT * FROM booru_flags WHERE id = %s AND \"user\" = %s AND service = %s"
-        params4 = (post['id'], post['user'], post['service'])
-        cursor4.execute(query4, params4)
-        results4 = cursor4.fetchall()
-
-        result_flagged.append(True if len(results4) > 0 else False)
-        result_previews.append(previews)
-        result_attachments.append(attachments)
-    
-    response = make_response(render_template(
-        'user.html',
-        props = props,
-        results = results,
-        base = base,
-        result_previews = result_previews,
-        result_attachments = result_attachments,
-        result_flagged = result_flagged,
-        result_after_kitsune = result_after_kitsune,
-        session = session
-    ), 200)
-    response.headers['Cache-Control'] = 's-maxage=60'
     return response
 
 @legacy.route('/<service>/user/<id>/rss')
@@ -686,6 +580,9 @@ def requests_list():
     }
     base = request.args.to_dict()
     base.pop('o', None)
+    limit = 25
+
+    props['limit'] = limit
 
     if not request.args.get('commit'):
         query = "SELECT * FROM requests "
