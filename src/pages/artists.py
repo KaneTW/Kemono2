@@ -7,7 +7,7 @@ from ..utils.utils import sort_dict_list_by, offset, take, limit_int
 from ..internals.cache.flask_cache import cache
 from ..internals.database.database import get_cursor
 from ..lib.artist import get_all_non_discord_artists, get_artist, get_artist_post_count, get_artists_by_service
-from ..lib.post import get_artist_posts, get_all_posts_by_artist
+from ..lib.post import get_artist_posts, get_all_posts_by_artist, is_post_flagged
 
 artists = Blueprint('artists', __name__)
 
@@ -25,11 +25,14 @@ def get_artists():
     sort_by = request.args.get('sort_by')
     order = request.args.get('order')
     offset = request.args.get('o') or 0
+    limit = 25
 
-    results = []
-    count = 0
+    (results, total_count) = ([], 0)
     if commit is not None:
-        (results, props['count']) = get_artist_search_results(q, service, sort_by, order, offset)
+        (results, total_count) = get_artist_search_results(q, service, sort_by, order, offset, limit)
+
+    props['count'] = total_count
+    props['limit'] = limit
 
     response = make_response(render_template(
         'artists.html',
@@ -41,7 +44,7 @@ def get_artists():
     return response
 
 @artists.route('/<service>/user/<id>')
-def user(service, id):
+def artist(service, id):
     cursor = get_cursor()
     props = {
         'currentPage': 'posts',
@@ -60,55 +63,21 @@ def user(service, id):
 
     (posts, total_count) = ([], 0)
     if query is None:
-        (posts, total_count) = get_artist_post_page(id, offset, limit)
+        (posts, total_count) = get_artist_post_page(id, service, offset, limit)
     else:
-        (posts, total_count) = do_artist_post_search(id, query, offset, limit)
+        (posts, total_count) = do_artist_post_search(id, service, query, offset, limit)
 
-    artist = get_artist(id)
+    artist = get_artist(id, service)
 
     props['name'] = artist['name']
     props['count'] = total_count
-
-    # query = "SELECT * FROM posts WHERE \"user\" = %s AND service = %s "
-    # params = (id, service)
-
-    # if request.args.get('q'):
-    #     query += "AND to_tsvector('english', content || ' ' || title) @@ websearch_to_tsquery(%s) "
-    #     params += (request.args.get('q'),)
-    
-    # query += "ORDER BY published desc "
-    # query += "OFFSET %s "
-    # params += (offset,)
-    # limit = request.args.get('limit') if request.args.get('limit') and int(request.args.get('limit')) <= 50 else 25
-    # query += "LIMIT %s"
-    # params += (limit,)
-
-    # cursor.execute(query, params)
-    # results = cursor.fetchall()
-
-    # cursor2 = get_cursor()
-    # query2 = "SELECT COUNT(*) FROM posts WHERE \"user\" = %s AND service = %s "
-    # params2 = (id, service)
-    # if request.args.get('q'):
-    #     query2 += "AND to_tsvector('english', content || ' ' || title) @@ websearch_to_tsquery(%s)"
-    #     params2 += (request.args.get('q'),)
-    # cursor2.execute(query2, params2)
-    # results2 = cursor2.fetchall()
-    # props["count"] = int(results2[0]["count"])
-
-    # cursor3 = get_cursor()
-    # query3 = "SELECT * FROM lookup WHERE id = %s AND service = %s"
-    # params3 = (id, service)
-    # cursor3.execute(query3, params3)
-    # results3 = cursor.fetchall()
-    # props["name"] = results3[0]['name'] if len(results3) > 0 else ''
+    props['limit'] = limit
 
     result_previews = []
     result_attachments = []
     result_flagged = []
     result_after_kitsune = []
     for post in posts:
-        print(type(post['added']))
         if post['added'] > datetime.datetime(2020, 12, 22, 0, 0, 0, 0):
             result_after_kitsune.append(True)
         else:
@@ -145,13 +114,7 @@ def user(service, id):
                     'name': attachment['name']
                 })
 
-        cursor4 = get_cursor()
-        query4 = "SELECT * FROM booru_flags WHERE id = %s AND \"user\" = %s AND service = %s"
-        params4 = (post['id'], post['user'], post['service'])
-        cursor4.execute(query4, params4)
-        results4 = cursor4.fetchall()
-
-        result_flagged.append(True if len(results4) > 0 else False)
+        result_flagged.append(is_post_flagged(post['id'], post['user'], post['service']))
         result_previews.append(previews)
         result_attachments.append(attachments)
     
@@ -169,7 +132,7 @@ def user(service, id):
     response.headers['Cache-Control'] = 's-maxage=60'
     return response
 
-def get_artist_search_results(q, service, sort_by, order, o):
+def get_artist_search_results(q, service, sort_by, order, o, limit):
     if service:
         artists = get_artists_by_service(service)
     else:
@@ -183,10 +146,10 @@ def get_artist_search_results(q, service, sort_by, order, o):
 
     matches = sort_dict_list_by(matches, sort_by, order=='desc')
 
-    return (take(25, offset(0, matches)), len(matches))
+    return (take(limit, offset(0, matches)), len(matches))
 
-def do_artist_post_search(id, search, o, limit):
-    posts = get_all_posts_by_artist(id)
+def do_artist_post_search(id, service, search, o, limit):
+    posts = get_all_posts_by_artist(id, service)
 
     matches = []
     for post in posts:
@@ -197,7 +160,7 @@ def do_artist_post_search(id, search, o, limit):
 
     return (take(limit, offset(o, matches)), len(matches))
 
-def get_artist_post_page(artist_id, offset, limit):
-    posts = get_artist_posts(artist_id, offset, limit, 'published desc')
+def get_artist_post_page(artist_id, service, offset, limit):
+    posts = get_artist_posts(artist_id, service, offset, limit, 'published desc')
     total_count = get_artist_post_count(artist_id)
     return (posts, total_count)

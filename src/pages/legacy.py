@@ -22,7 +22,7 @@ from hashlib import sha256
 
 from ..internals.database.database import get_cursor
 from ..internals.cache.flask_cache import cache
-from ..utils.utils import make_cache_key, relative_time, delta_key, allowed_file
+from ..utils.utils import make_cache_key, relative_time, delta_key, allowed_file, limit_int
 
 legacy = Blueprint('legacy', __name__)
 
@@ -47,10 +47,15 @@ def updated_artists():
     props = {
         'currentPage': 'artists'
     }
+
+    offset = int(request.args.get('o') or 0)
+    limit = 25
+
+    props['limit'] = limit
+
     query = 'SELECT posts.user, service, max(added) FROM posts GROUP BY posts.user, service ORDER BY max(added) desc '
     params = ()
     query += "OFFSET %s "
-    offset = request.args.get('o') if request.args.get('o') else 0
     params += (offset,)
     query += "LIMIT 25"
     cursor.execute(query, params)
@@ -205,15 +210,18 @@ def posts():
     base = request.args.to_dict()
     base.pop('o', None)
 
+    limit = limit_int(request.args.get('limit') or 25, 50)
+    offset = int(request.args.get('o') or 0)
+
+    props['limit'] = limit
+
     if not request.args.get('q'):
         query = "SELECT * FROM posts "
         params = ()
 
         query += "ORDER BY added desc "
-        offset = request.args.get('o') if request.args.get('o') else 0
         query += "OFFSET %s "
         params += (offset,)
-        limit = request.args.get('limit') if request.args.get('limit') and request.args.get('limit') <= 50 else 25
         query += "LIMIT %s"
         params += (limit,)
     else:
@@ -572,6 +580,9 @@ def requests_list():
     }
     base = request.args.to_dict()
     base.pop('o', None)
+    limit = 25
+
+    props['limit'] = limit
 
     if not request.args.get('commit'):
         query = "SELECT * FROM requests "

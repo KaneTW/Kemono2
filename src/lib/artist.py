@@ -4,20 +4,19 @@ import ujson
 import dateutil
 import copy
 
-def get_non_discord_artist_ids(reload = False):
+def get_non_discord_artist_keys(reload = False):
     redis = get_conn()
-    key = 'non_discord_artist_ids'
-    artist_ids = redis.get(key)
-    if artist_ids is None or reload:
+    key = 'non_discord_artist_keys'
+    artist_keys = redis.get(key)
+    if artist_keys is None or reload:
         cursor = get_cursor()
-        query = "SELECT id FROM lookup WHERE service != 'discord-channel'"
+        query = "SELECT id, service FROM lookup WHERE service != 'discord-channel'"
         cursor.execute(query)
-        artist_ids = cursor.fetchall()
-        artist_ids = list(map(lambda row: row['id'], artist_ids))
-        redis.set(key, ujson.dumps(artist_ids), ex = 600)
+        artist_keys = cursor.fetchall()
+        redis.set(key, ujson.dumps(artist_keys), ex = 600)
     else:
-        artist_ids = ujson.loads(artist_ids)
-    return artist_ids
+        artist_keys = ujson.loads(artist_keys)
+    return artist_keys
 
 def get_all_non_discord_artists(reload = False):
     redis = get_conn()
@@ -47,14 +46,14 @@ def get_artists_by_service(service, reload = False):
         artists = deserialize_artists(artists)
     return artists
 
-def get_artist(artist_id, reload = False):
+def get_artist(artist_id, service, reload = False):
     redis = get_conn()
-    key = 'artist:' + str(artist_id)
+    key = 'artist:' + str(artist_id) + ':' + service
     artist = redis.get(key)
     if artist is None or reload:
         cursor = get_cursor()
-        query = 'SELECT * FROM lookup WHERE id = %s'
-        cursor.execute(query, (artist_id,))
+        query = 'SELECT * FROM lookup WHERE id = %s AND service = %s'
+        cursor.execute(query, (artist_id, service,))
         artist = cursor.fetchone()
         redis.set(key, serialize_artist(artist), ex = 600)
     else:
