@@ -107,7 +107,7 @@ def deserialize_post(post_str):
 def prepare_post_fields(post):
     post['added'] = post['added'].isoformat()
     post['published'] = post['published'].isoformat()
-    post['edited'] = post['edited'].isoformat()
+    post['edited'] = post['edited'].isoformat() if post['edited'] else None
     return post
 
 def rebuild_post_fields(post):
