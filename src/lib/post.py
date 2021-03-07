@@ -106,12 +106,12 @@ def deserialize_post(post_str):
 
 def prepare_post_fields(post):
     post['added'] = post['added'].isoformat()
-    post['published'] = post['published'].isoformat()
+    post['published'] = post['published'].isoformat() if post['published'] else None
     post['edited'] = post['edited'].isoformat() if post['edited'] else None
     return post
 
 def rebuild_post_fields(post):
     post['added'] = dateutil.parser.parse(post['added'])
-    post['published'] = dateutil.parser.parse(post['published'])
-    post['edited'] = dateutil.parser.parse(post['edited'])
+    post['published'] = dateutil.parser.parse(post['published']) if post['published'] else None
+    post['edited'] = dateutil.parser.parse(post['edited']) if post['edited'] else None
     return post
