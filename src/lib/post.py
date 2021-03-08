@@ -88,6 +88,84 @@ def is_post_flagged(post_id, artist_id, service, reload = False):
         flagged = bool(flagged)
     return flagged
 
+def get_next_post_id(post_id, artist_id, service, reload = False):
+    redis = get_conn()
+    key = 'next_post:' + str(post_id) + ':' + str(artist_id) + ':' + service
+    next_post = redis.get(key)
+    if next_post is None or reload:
+        cursor = get_cursor()
+        query = """
+            SELECT id
+            FROM posts
+            WHERE
+                posts.user = %s
+                AND service = %s
+                AND published < (
+                    SELECT published
+                    FROM posts
+                    WHERE
+                        id = %s
+                        AND "user" = %s
+                        AND service = %s
+                    LIMIT 1
+                )
+            ORDER BY published DESC
+            LIMIT 1
+        """
+        cursor.execute(query, (artist_id, service, post_id, artist_id, service))
+        next_post = cursor.fetchone()
+        if next_post is None:
+            next_post = ""
+        else:
+            next_post = next_post['id']
+        redis.set(key, str(next_post), ex = 600)
+    else:
+        next_post = next_post.decode('utf-8')
+
+    if next_post == "":
+        return None
+    else:
+        return next_post
+
+def get_previous_post_id(post_id, artist_id, service, reload = False):
+    redis = get_conn()
+    key = 'previous_post:' + str(post_id) + ':' + str(artist_id) + ':' + service
+    prev_post = redis.get(key)
+    if prev_post is None or reload:
+        cursor = get_cursor()
+        query = """
+            SELECT id
+            FROM posts
+            WHERE
+                posts.user = %s
+                AND service = %s
+                AND published > (
+                    SELECT published
+                    FROM posts
+                    WHERE
+                        id = %s
+                        AND "user" = %s
+                        AND service = %s
+                    LIMIT 1
+                )
+            ORDER BY published ASC
+            LIMIT 1
+        """
+        cursor.execute(query, (artist_id, service, post_id, artist_id, service,))
+        prev_post = cursor.fetchone()
+        if prev_post is None:
+            prev_post = ""
+        else:
+            prev_post = prev_post['id']
+        redis.set(key, str(prev_post), ex = 600)
+    else:
+        prev_post = prev_post.decode('utf-8')
+
+    if prev_post == "":
+        return None
+    else:
+        return prev_post
+
 def serialize_posts(posts):
     posts = copy.deepcopy(posts)
     return ujson.dumps(list(map(lambda post: prepare_post_fields(post), posts)))
