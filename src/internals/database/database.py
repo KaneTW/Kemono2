@@ -14,6 +14,7 @@ def init():
             dbname = getenv('PGDATABASE'),
             user = getenv('PGUSER'),
             password = getenv('PGPASSWORD'),
+            port = getenv('PGPORT') or 5432,
             cursor_factory = RealDictCursor
         )
     except Exception as error:
