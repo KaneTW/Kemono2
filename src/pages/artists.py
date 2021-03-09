@@ -1,4 +1,4 @@
-from flask import Blueprint, request, make_response, render_template, session
+from flask import Blueprint, request, make_response, render_template, session, redirect, url_for
 
 import datetime
 import re
@@ -12,7 +12,7 @@ from ..lib.post import get_artist_posts, get_all_posts_by_artist, is_post_flagge
 artists = Blueprint('artists', __name__)
 
 @artists.route('/artists')
-def get_artists():
+def list():
     props = {
         'currentPage': 'artists'
     }
@@ -44,7 +44,7 @@ def get_artists():
     return response
 
 @artists.route('/<service>/user/<id>')
-def artist(service, id):
+def get(service, id):
     cursor = get_cursor()
     props = {
         'currentPage': 'posts',
@@ -68,6 +68,8 @@ def artist(service, id):
         (posts, total_count) = do_artist_post_search(id, service, query, offset, limit)
 
     artist = get_artist(id, service)
+    if artist is None:
+        return redirect(url_for('artists.list'))
 
     props['name'] = artist['name']
     props['count'] = total_count

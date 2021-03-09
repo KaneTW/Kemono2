@@ -51,6 +51,8 @@ def get(service, user_id, post_id):
     }
 
     post = get_post(post_id, user_id, service)
+    if post is None:
+        return redirect(url_for('artists.get', service = service, id = user_id))
 
     result_previews = None
     result_attachments = None
