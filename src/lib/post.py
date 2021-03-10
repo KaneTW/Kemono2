@@ -175,12 +175,15 @@ def deserialize_posts(posts_str):
     return list(map(lambda post: rebuild_post_fields(post), posts))
 
 def serialize_post(post):
-    post = prepare_post_fields(copy.deepcopy(post))
+    if post is not None:
+        post = prepare_post_fields(copy.deepcopy(post))
     return ujson.dumps(post)
 
 def deserialize_post(post_str):
     post = ujson.loads(post_str)
-    return rebuild_post_fields(post)    
+    if post is not None:
+        post = rebuild_post_fields(post)
+    return post
 
 def prepare_post_fields(post):
     post['added'] = post['added'].isoformat()

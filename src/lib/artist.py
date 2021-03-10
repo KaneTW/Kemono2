@@ -83,12 +83,14 @@ def deserialize_artists(artists_str):
     return list(map(lambda artist: rebuild_artist_fields(artist), artists))
 
 def serialize_artist(artist):
-    artist = prepare_artist_fields(copy.deepcopy(artist))
+    if artist is not None:
+        artist = prepare_artist_fields(copy.deepcopy(artist))
     return ujson.dumps(artist)
 
 def deserialize_artist(artist_str):
     artist = ujson.loads(artist_str)
-    artist = rebuild_artist_fields(artist)
+    if artist is not None:
+        artist = rebuild_artist_fields(artist)
     return artist
 
 def prepare_artist_fields(artist):
