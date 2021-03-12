@@ -69,7 +69,9 @@ def get(service, id):
 
     artist = get_artist(id, service)
     if artist is None:
-        return redirect(url_for('artists.list'))
+        response = redirect(url_for('artists.list'))
+        response.autocorrect_location_header = False
+        return response
 
     props['name'] = artist['name']
     props['count'] = total_count
