@@ -44,7 +44,7 @@ def list():
     return response
 
 @artists.route('/<service>/user/<id>')
-def get(service, id):
+def user(service, id):
     cursor = get_cursor()
     props = {
         'currentPage': 'posts',
