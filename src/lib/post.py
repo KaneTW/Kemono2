@@ -20,7 +20,7 @@ def get_all_post_keys(reload = False):
 
 def get_post(post_id, artist_id, service, reload = False):
     redis = get_conn()
-    key = 'post:' + str(post_id) + ':' + str(artist_id) + ':' + service
+    key = 'post:' + service + ':' + str(artist_id) + ':' + str(post_id)
     post = redis.get(key)
     if post is None or reload:
         cursor = get_cursor()
@@ -34,7 +34,7 @@ def get_post(post_id, artist_id, service, reload = False):
 
 def get_all_posts_by_artist(artist_id, service, reload = False):
     redis = get_conn()
-    key = 'posts_by_artist:' + str(artist_id)
+    key = 'posts_by_artist:' + service + ':' + str(artist_id)
     posts = redis.get(key)
     if posts is None or reload:
         cursor = get_cursor()
@@ -48,7 +48,7 @@ def get_all_posts_by_artist(artist_id, service, reload = False):
 
 def get_artist_posts(artist_id, service, offset, limit, sort = 'id', reload = False):
     redis = get_conn()
-    key = 'artist_posts_offset:' + str(artist_id) + ':' + str(offset)
+    key = 'artist_posts_offset:' + service + ':' + str(artist_id) + ':' + str(offset)
     posts = redis.get(key)
     if posts is None or reload:
         cursor = get_cursor()
@@ -60,23 +60,9 @@ def get_artist_posts(artist_id, service, offset, limit, sort = 'id', reload = Fa
         posts = deserialize_posts(posts)
     return posts
 
-def get_artist_posts_with_search(artist_id, service, search, offset, reload = False):
-    redis = get_conn()
-    key = 'artist_posts_offset:' + str(artist_id) + ':' + str(offset)
-    posts = redis.get(key)
-    if posts is None or reload:
-        cursor = get_cursor()
-        query = 'SELECT * FROM posts WHERE \"user\" = %s AND service = %s'
-        cursor.execute(query, (artist_id, service,))
-        posts = cursor.fetchall()
-        redis.set(key, serialize_post(posts), ex = 600)
-    else:
-        posts = deserialize_post(posts)
-    return posts
-
 def is_post_flagged(post_id, artist_id, service, reload = False):
     redis = get_conn()
-    key = 'is_post_flagged:' + str(post_id) + ':' + str(artist_id) + ':' + service
+    key = 'is_post_flagged:' + service + ':' + str(artist_id) + ':' + str(post_id)
     flagged = redis.get(key)
     if flagged is None or reload:
         cursor = get_cursor()
@@ -90,7 +76,7 @@ def is_post_flagged(post_id, artist_id, service, reload = False):
 
 def get_next_post_id(post_id, artist_id, service, reload = False):
     redis = get_conn()
-    key = 'next_post:' + str(post_id) + ':' + str(artist_id) + ':' + service
+    key = 'next_post:' + service + ':' + str(artist_id) + ':' + str(post_id)
     next_post = redis.get(key)
     if next_post is None or reload:
         cursor = get_cursor()
@@ -129,7 +115,7 @@ def get_next_post_id(post_id, artist_id, service, reload = False):
 
 def get_previous_post_id(post_id, artist_id, service, reload = False):
     redis = get_conn()
-    key = 'previous_post:' + str(post_id) + ':' + str(artist_id) + ':' + service
+    key = 'previous_post:' + service + ':' + str(artist_id) + ':' + str(post_id)
     prev_post = redis.get(key)
     if prev_post is None or reload:
         cursor = get_cursor()
