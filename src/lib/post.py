@@ -71,7 +71,7 @@ def is_post_flagged(post_id, artist_id, service, reload = False):
         flagged = cursor.fetchone() is not None
         redis.set(key, str(flagged), ex = 600)
     else:
-        flagged = flagged == 'True'
+        flagged = flagged.decode('utf-8') == 'True'
     return flagged
 
 def get_next_post_id(post_id, artist_id, service, reload = False):
