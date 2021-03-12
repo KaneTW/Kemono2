@@ -43,7 +43,7 @@ def post_next(service, user_id, post_id):
     return response
 
 @post.route('/<service>/user/<user_id>/post/<post_id>')
-def post_page(service, user_id, post_id):
+def get(service, user_id, post_id):
     cursor = get_cursor()
     props = {
         'currentPage': 'posts',
