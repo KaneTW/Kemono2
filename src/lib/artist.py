@@ -48,7 +48,7 @@ def get_artists_by_service(service, reload = False):
 
 def get_artist(artist_id, service, reload = False):
     redis = get_conn()
-    key = 'artist:' + str(artist_id) + ':' + service
+    key = 'artist:' + service + ':' + str(artist_id)
     artist = redis.get(key)
     if artist is None or reload:
         cursor = get_cursor()
@@ -60,9 +60,9 @@ def get_artist(artist_id, service, reload = False):
         artist = deserialize_artist(artist)
     return artist
 
-def get_artist_post_count(artist_id, reload = False):
+def get_artist_post_count(artist_id, service, reload = False):
     redis = get_conn()
-    key = 'artist_post_count:' + str(artist_id)
+    key = 'artist_post_count:' + service + ':' + str(artist_id)
     count = redis.get(key)
     if count is None or reload:
         cursor = get_cursor()
