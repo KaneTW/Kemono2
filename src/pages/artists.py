@@ -144,8 +144,9 @@ def get_artist_search_results(q, service, sort_by, order, o, limit):
 
     page = []
     matches = []
+    q_lower = q.lower()
     for artist in artists:
-        if q in artist['name'].lower():
+        if q_lower in artist['name'].lower():
             matches.append(artist)
 
     matches = sort_dict_list_by(matches, sort_by, order=='desc')
