@@ -3,14 +3,6 @@
     <h1 class="subtitle">Nobody here but us chickens!</h1>
   </div>
 {% else %}
-  <script>
-    window._posts = {{ results|tojson }};
-    window._flagged = {{ result_flagged|tojson }};
-    window._previews = {{ result_previews|tojson }};
-    window._attachments = {{ result_attachments|tojson }};
-    window._after_kitsune = {{ result_after_kitsune|tojson }};
-    window._is_image = {{ result_is_image|tojson }};
-  </script>
   <div class="opts">
     <select id="posts_layout" name="posts_layout">
       <option value="card" {{ 'selected' if request.cookies.get('layout') == 'card' }}>Cards</option>
@@ -37,13 +29,33 @@
   </div>
   {% if request.cookies.get('layout') == 'card' or not request.cookies.get('layout') %}
     <div class="content" id="content">
-      <div class="pure-g" id="content-grid"></div>
-      <script src="{{ url_for('static', filename='js/list-cards.js') }}"></script>
+      <div class="pure-g">
+        {% for post in results %}
+          {% if not session.get('blocked') or post.service ~ ':' ~ post.user not in session.get('blocked') %}
+            {% set flagged = result_flagged[loop.index0] %}
+            {% set previews = result_previews[loop.index0] %}
+            {% set attachments = result_attachments[loop.index0] %}
+            {% set after_kitsune = result_after_kitsune[loop.index0] %}
+            {% set is_image = result_is_image[loop.index0] %}
+            {% with post=post %}
+              {% include 'components/card.html' %}
+            {% endwith %}
+          {% endif %}
+        {% endfor %}
+      </div>
     </div>
   {% elif request.cookies.get('layout') == 'grid' %}
     <div class="content" id="content">
-      <div class="content-grid" id="content-grid"></div>
-      <script src="{{ url_for('static', filename='js/list-grid.js') }}"></script>
+      <div class="content-grid">
+        {% for post in results %}
+          {% if not session.get('blocked') or post.service ~ ':' ~ post.user not in session.get('blocked') %}
+            {% set is_image = result_after_kitsune[loop.index0] %}
+            {% with post=post %}
+              {% include 'components/preview.html' %}
+            {% endwith %}
+          {% endif %}
+        {% endfor %}
+      </div>
     </div>
   {% endif %}
   <div class="paginator" id="paginator-bottom">
