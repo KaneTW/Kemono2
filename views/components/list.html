@@ -36,6 +36,7 @@
             {% set previews = result_previews[loop.index0] %}
             {% set attachments = result_attachments[loop.index0] %}
             {% set after_kitsune = result_after_kitsune[loop.index0] %}
+            {% set is_image = result_is_image[loop.index0] %}
             {% with post=post %}
               {% include 'components/card.html' %}
             {% endwith %}
@@ -48,6 +49,7 @@
       <div class="content-grid">
         {% for post in results %}
           {% if not session.get('blocked') or post.service ~ ':' ~ post.user not in session.get('blocked') %}
+            {% set is_image = result_after_kitsune[loop.index0] %}
             {% with post=post %}
               {% include 'components/preview.html' %}
             {% endwith %}

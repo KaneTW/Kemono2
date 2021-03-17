@@ -34,8 +34,6 @@ app.register_blueprint(post)
 
 app.config.from_pyfile('flask.cfg')
 app.url_map.strict_slashes = False
-app.jinja_env.filters['regex_match'] = lambda val, rgx: re.search(rgx, val)
-app.jinja_env.filters['regex_find'] = lambda val, rgx: re.findall(rgx, val)
 
 cache.init_app(app)
 database.init()

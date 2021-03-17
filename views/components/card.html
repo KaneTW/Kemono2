@@ -1,5 +1,5 @@
 <div class="pure-u-1 pure-u-sm-1-2 pure-u-md-1-2 pure-u-lg-1-2 pure-u-xl-1-3 card-container">
-  {% if post['file'].path and post['file'].path|lower|regex_match("\.(gif|jpe?g|png|webp)$") %}
+  {% if is_image %}
     <div class="card">
       <style>
         #toggle-{{ post.id }}:checked ~ .card-reveal {

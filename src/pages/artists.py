@@ -81,6 +81,7 @@ def get(service, id):
     result_attachments = []
     result_flagged = []
     result_after_kitsune = []
+    result_is_image = []
     for post in posts:
         if post['added'] > datetime.datetime(2020, 12, 22, 0, 0, 0, 0):
             result_after_kitsune.append(True)
@@ -90,15 +91,20 @@ def get(service, id):
         attachments = []
         if len(post['file']):
             if re.search("\.(gif|jpe?g|jpe|png|webp)$", post['file']['path'], re.IGNORECASE):
+                result_is_image.append(True)
                 previews.append({
                     'type': 'thumbnail',
                     'path': post['file']['path'].replace('https://kemono.party','')
                 })
             else:
+                result_is_image.append(False)
                 attachments.append({
                     'path': post['file']['path'],
                     'name': post['file'].get('name')
                 })
+        else:
+            result_is_image.append(False)
+
         if len(post['embed']):
             previews.append({
                 'type': 'embed',
@@ -131,7 +137,7 @@ def get(service, id):
         result_attachments = result_attachments,
         result_flagged = result_flagged,
         result_after_kitsune = result_after_kitsune,
-        session = session
+        result_is_image = result_is_image
     ), 200)
     response.headers['Cache-Control'] = 's-maxage=60'
     return response
