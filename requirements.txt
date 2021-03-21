@@ -36,3 +36,4 @@ urllib3==1.26.2
 webencodings==0.5.1
 Werkzeug==1.0.1
 wrapt==1.12.1
+bcrypt==3.2.0
