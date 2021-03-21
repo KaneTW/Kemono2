@@ -5,8 +5,8 @@
   <li {{ 'class="current-page"'|safe if props.currentPage == 'requests' }}><a href="/requests">Requests</a></li>
   <li {{ 'class="current-page"'|safe if props.currentPage == 'help' }}><a href="/help">Help</a></li>
   {% if is_logged_in() %}
-     <li {{ 'class="current-page"'|safe if props.currentPage == 'help' }}><a href="/account">Account</a></li>
+     <li {{ 'class="current-page"'|safe if props.currentPage == 'help' }}><a href="{{ url_for('account.get_account') }}">Account</a></li>
   {% else %}
-     <li {{ 'class="current-page"'|safe if props.currentPage == 'help' }}><a href="/login">Login</a></li>
+     <li {{ 'class="current-page"'|safe if props.currentPage == 'help' }}><a href="{{ url_for('account.get_login') }}">Login</a></li>
   {% endif %}
 </ul>
