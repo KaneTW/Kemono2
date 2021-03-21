@@ -5,13 +5,14 @@ from ..internals.database.database import get_cursor
 import ujson
 import copy
 
-def get_account(account_id = None, reload = False):
+def load_account(account_id = None, reload = False):
     if account_id is None and 'account_id' in session:
-        return get_account(session['account_id'], reload)
+        print("in session: " + session['account_id'])
+        return load_account(session['account_id'], reload)
     elif account_id is None and 'account_id' not in session:
         return None
 
-    key = 'account:' = account_id
+    key = 'account:' + account_id
     account = redis.get(key)
     if account is None or reload:
         cursor = get_cursor()
@@ -24,14 +25,8 @@ def get_account(account_id = None, reload = False):
 
     return account
 
-def get_login_info_for_username(username):
-    cursor = get_cursor()
-    query = 'select id, password_hash from account where username = %s'
-    cursor.execute(query, (username,))
-    return cursor.fetchone()
-
 def get_favorites(account_id = None, reload = False):
-    key = 'favorites:' = account_id
+    key = 'favorites:' + account_id
     favorites = redis.get(key)
     if favorites is None or reload:
         cursor = get_cursor()
@@ -41,6 +36,17 @@ def get_favorites(account_id = None, reload = False):
         redis.set(key, serialize_favorites(favorites))
     else:
         favorites = deserialize_account(favorites)
+
+def get_login_info_for_username(username):
+    cursor = get_cursor()
+    query = 'select id, password_hash from account where username = %s'
+    cursor.execute(query, (username,))
+    return cursor.fetchone()
+
+def is_logged_in():
+    if 'account_id' in session:
+        return True
+    return False
 
 def serialize_favorites(favorites):
     return ujson.dumps(favorites)

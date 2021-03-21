@@ -58,15 +58,16 @@ def get_value(d, key, default = None):
         return d[key]
     return default
 
-def is_url_path_for_file(path):
+def url_is_for_non_logged_file_extension(path):
     parts = path.split('/')
     if len(parts) == 0:
         return False
-    try:
-        parts[-1].index('.')
-        return True
-    except ValueError:
-        return False
+
+    blocked_extensions = ['js', 'css', 'ico', 'svg']
+    for extension in blocked_extensions:
+        if ('.' + extension) in parts[-1]:
+            return True
+    return False
 
 def sort_dict_list_by(l, key, reverse = False):
     return sorted(l, key=lambda v: v[key], reverse=reverse)
