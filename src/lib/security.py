@@ -1,2 +1,2 @@
-def password_compromised(password):
+def is_password_compromised(password):
     return False

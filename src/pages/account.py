@@ -1,8 +1,8 @@
 from flask import Blueprint, request, make_response, render_template, session, redirect, flash, url_for
 
 from ..utils.utils import make_cache_key, get_value
-from ..lib.account import get_login_info_for_username, load_account, is_username_taken
-from ..lib.security import password_compromised
+from ..lib.account import get_login_info_for_username, load_account, is_username_taken, attempt_login, create_account
+from ..lib.security import is_password_compromised
 from ..internals.cache.flask_cache import cache
 
 import bcrypt
@@ -71,7 +71,7 @@ def post_register():
         flash('Username already taken')
         errors = True
 
-    if password_compromised(password):
+    if is_password_compromised(password):
         flash('We\'ve detected that password was compromised in a data breach on another site. Please choose a different password.')
         errors = True
 
@@ -100,16 +100,3 @@ def get_account():
         'account.html',
         props = {}
     ), 200)
-
-def attempt_login(username, password):
-    if username is None or password is None:
-        return None
-
-    account_info = get_login_info_for_username(username)
-    if account_info is None:
-        return None
-
-    if bcrypt.checkpw(password, account_info['password_hash']):
-        return load_account(account_info['id'])
-
-    return None

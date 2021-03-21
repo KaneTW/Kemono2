@@ -4,6 +4,9 @@ from ..internals.database.database import get_cursor
 
 import ujson
 import copy
+import bcrypt
+import base64
+import hashlib
 
 account_create_lock = Lock()
 
@@ -74,6 +77,7 @@ def is_username_taken(username):
 
 def create_account(username, password, favorites):
     account_id = None
+    password_hash = bcrypt.hashpw(get_base_password_hash(password), bcrypt.gensalt())
     account_create_lock.acquire()
     try:
         if is_username_taken(username):
@@ -92,6 +96,22 @@ def create_account(username, password, favorites):
             service = user.split(':')[0]
             user_id = user.split(':')[1]
             add_favorite_artist(account_id, service, user_id)
+
+def attempt_login(username, password):
+    if username is None or password is None:
+        return None
+
+    account_info = get_login_info_for_username(username)
+    if account_info is None:
+        return None
+
+    if bcrypt.checkpw(password, account_info['password_hash']):
+        return load_account(account_info['id'])
+
+    return None
+
+def get_base_password_hash(password):
+    return base64.b64encode(hashlib.sha256(password).digest())
 
 def add_favorite_artist(account_id, service, user_id):
     cursor = get_cursor()
