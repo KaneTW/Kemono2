@@ -1,12 +1,9 @@
 from flask import Blueprint, request, make_response, render_template, session, redirect, flash, url_for
 
 from ..utils.utils import make_cache_key, get_value
-from ..lib.account import get_login_info_for_username, load_account, is_username_taken, attempt_login, create_account
+from ..lib.account import load_account, is_username_taken, attempt_login, create_account
 from ..lib.security import is_password_compromised
 from ..internals.cache.flask_cache import cache
-
-import bcrypt
-from threading import Lock
 
 account = Blueprint('account', __name__)
 

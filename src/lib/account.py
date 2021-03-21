@@ -7,6 +7,7 @@ import copy
 import bcrypt
 import base64
 import hashlib
+from threading import Lock
 
 account_create_lock = Lock()
 
@@ -113,11 +114,17 @@ def attempt_login(username, password):
 def get_base_password_hash(password):
     return base64.b64encode(hashlib.sha256(password).digest())
 
-def add_favorite_artist(account_id, service, user_id):
+def add_favorite_artist(account_id, service, artist_id):
     cursor = get_cursor()
     query = 'insert into account_artist_favorite (account_id, service, artist_id) values (%s, %s, %s)'
     cursor.execute(query, (account_id, service, artist_id,))
-    get_favorites(account_id, True)
+    get_favorite_artists(account_id, True)
+
+def add_favorite_post(account_id, service, artist_id, post_id):
+    cursor = get_cursor()
+    query = 'insert into account_post_favorite (account_id, service, artist_id, post_id) values (%s, %s, %s, %s)'
+    cursor.execute(query, (account_id, service, artist_id, post_id))
+    get_favorite_posts(account_id, True)
 
 def serialize_favorites(favorites):
     return ujson.dumps(favorites)
