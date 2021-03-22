@@ -17,6 +17,8 @@ def list():
     if account is not None:
         props = {}
         base = request.args.to_dict()
+        base.pop('o', None)
+
         favorites = []
         fave_type = get_value(request.args, 'type', 'artist')
         if fave_type == 'post':
@@ -27,7 +29,7 @@ def list():
             sort_field = restrict_value(get_value(request.args, 'sort'), ['id', 'indexed'], 'id')
 
         offset = int(get_value(request.args, 'o', 0))
-        sort_asc = True if get_value(request.args, 'dir') == '1' else False
+        sort_asc = True if get_value(request.args, 'order') == 'asc' else False
         results = sort_and_filter_favorites(favorites, offset, sort_field, sort_asc)
 
         props['fave_type'] = fave_type
@@ -39,7 +41,7 @@ def list():
             props = props,
             base = base,
             source = 'account',
-            results = favorites,
+            results = results,
         ), 200)
         response.headers['Cache-Control'] = 's-maxage=60'
         return response
