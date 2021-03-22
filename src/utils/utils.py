@@ -72,6 +72,11 @@ def url_is_for_non_logged_file_extension(path):
 def sort_dict_list_by(l, key, reverse = False):
     return sorted(l, key=lambda v: v[key], reverse=reverse)
 
+def restrict_value(value, allowed, default = None):
+    if value not in allowed:
+        return default
+    return value
+
 def take(num, l):
     if len(l) <= num:
         return l

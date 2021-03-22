@@ -1,4 +1,4 @@
-from flask import Blueprint, request, make_response, render_template, session, redirect, flash, url_for
+from flask import Blueprint, request, make_response, render_template, session, redirect, flash, url_for, current_app
 
 from ..utils.utils import make_cache_key, get_value
 from ..lib.account import load_account, is_username_taken, attempt_login, create_account
@@ -11,7 +11,7 @@ account = Blueprint('account', __name__)
 def get_login():
     account = load_account()
     if account is not None:
-        return redirect(url_for('home.get_home'))
+        return redirect(url_for('artists.list'))
 
     response = make_response(render_template(
         'login.html',
@@ -24,29 +24,28 @@ def get_login():
 def post_login():
     account = load_account()
     if account is not None:
-        return redirect(url_for('home.get_home'))
+        return redirect(url_for('artists.list'))
     
     username = get_value(request.form, 'username')
     password = get_value(request.form, 'password')
-    account = attempt_login(username, password)
-    if account is None:
+    success = attempt_login(username, password)
+    if not success:
         flash('Username or password incorrect')
         return redirect(url_for('account.get_login'))
 
-    session['account_id'] = account['id']
-    return redirect(url_for('home.get_home'))
+    return redirect(url_for('artists.list'))
 
 @account.route('/account/logout')
 def logout():
     if 'account_id' in session:
-        session.clear()
-    return redirect(url_for('home.get_home'))
+        session.pop('account_id')
+    return redirect(url_for('artists.list'))
 
 @account.route('/account/register', methods=['GET'])
 def get_register():
     account = load_account()
     if account is not None:
-        return redirect(url_for('home.get_home'))
+        return redirect(url_for('artists.list'))
 
     return make_response(render_template(
         'register.html',
@@ -81,7 +80,7 @@ def post_register():
     if not errors:
         account = attempt_login(username, password)
         if account is None:
-            current.app.logger.warning("Error logging into account immediately after creation")
+            current_app.logger.warning("Error logging into account immediately after creation")
         flash('Account created successfully')
         return redirect(url_for('artists.list'))
 

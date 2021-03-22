@@ -22,6 +22,7 @@ from src.pages.artists import artists
 from src.pages.random import random
 from src.pages.post import post
 from src.pages.account import account
+from src.pages.favorites import favorites
 
 app = Flask(
     __name__,
@@ -34,6 +35,7 @@ app.register_blueprint(artists)
 app.register_blueprint(random)
 app.register_blueprint(post)
 app.register_blueprint(account)
+app.register_blueprint(favorites)
 
 app.config.from_pyfile('flask.cfg')
 app.url_map.strict_slashes = False
