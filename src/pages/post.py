@@ -56,13 +56,6 @@ def get(service, user_id, post_id):
         response.autocorrect_location_header = False
         return response
 
-    result_previews = None
-    result_attachments = None
-    result_flagged = None
-    result_after_kitsune = False
-
-    if post['added'] > datetime.datetime(2020, 12, 22, 0, 0, 0, 0):
-        result_after_kitsune = True
     previews = []
     attachments = []
     if len(post['file']):
@@ -95,18 +88,14 @@ def get(service, user_id, post_id):
                 'name': attachment['name']
             })
 
-    result_flagged = is_post_flagged(post_id, user_id, service)
-    result_previews = previews
-    result_attachments = attachments
-    
+    props['posts'] = post
+
     response = make_response(render_template(
         'post.html',
         props = props,
-        post = post,
-        result_previews = result_previews,
-        result_attachments = result_attachments,
-        result_flagged = result_flagged,
-        result_after_kitsune = result_after_kitsune
+        results = [post],
+        result_previews = [previews],
+        result_attachments = [attachments],
     ), 200)
     response.headers['Cache-Control'] = 's-maxage=60'
     return response
