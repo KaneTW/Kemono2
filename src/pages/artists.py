@@ -24,7 +24,7 @@ def list():
     service = request.args.get('service')
     sort_by = request.args.get('sort_by')
     order = request.args.get('order')
-    offset = request.args.get('o') or 0
+    offset = int(request.args.get('o') or 0)
     limit = 25
 
     (results, total_count) = ([], 0)
