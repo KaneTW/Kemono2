@@ -1,23 +1,31 @@
 {% extends 'components/shell.html' %}
 {% block content %}
 <div class="page" id="page">
-  <table class="search-results" width="100%">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Service</th>
-      </tr>
-    </thead>
-    <tbody id="favorites-list">
-      <noscript>
+  {% if source == 'session' %}
+    <table class="search-results" width="100%">
+      <thead>
         <tr>
-          <td class="subtitle">This feature requires Javascript.</td>
-          <td></td>
+          <th>Name</th>
+          <th>Service</th>
         </tr>
-      </noscript>
-    </tbody>
-  </table>
-</div>
-<script src="https://unpkg.com/unfetch@4.1.0/polyfill/index.js"></script>
-<script src="{{ url_for('static', filename='/js/favorites.js') }}"></script>
+      </thead>
+      <tbody id="favorites-list">
+        <noscript>
+          <tr>
+            <td class="subtitle">This feature requires Javascript.</td>
+            <td></td>
+          </tr>
+        </noscript>
+      </tbody>
+    </table>
+    <script src="https://unpkg.com/unfetch@4.1.0/polyfill/index.js"></script>
+    <script src="{{ url_for('static', filename='/js/favorites.js') }}"></script>
+  </div>
+  {% else %}
+    {% if props.fave_type == "artist" %}
+      {% include 'components/artist_list.html' %}
+    {% else %}
+      {% include 'components/post_list.html' %}
+    {% endif %}
+  {% endif %}
 {% endblock %}

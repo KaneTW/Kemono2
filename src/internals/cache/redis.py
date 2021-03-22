@@ -1,6 +1,10 @@
 import redis
 from flask import current_app
 from os import getenv
+import dateutil
+import datetime
+import copy
+import ujson
 
 pool = None
 
@@ -18,14 +22,14 @@ def serialize_dict(data):
         'data': {}
     }
 
-    for key, value in d.items():
+    for key, value in data.items():
         if type(value) is datetime.datetime:
             to_serialize['dates'].append(key)
             to_serialize['data'][key] = value.isoformat()
         else:
             to_serialize['data'][key] = value
 
-    return ujson.dumps(data)
+    return ujson.dumps(to_serialize)
 
 def deserialize_dict(data):
     data = ujson.loads(data)
@@ -39,11 +43,9 @@ def deserialize_dict(data):
 
 def serialize_dict_list(data):
     data = copy.deepcopy(data)
-    return list(map(lambda elem: serialize_dict(elem), data))
+    return ujson.dumps(list(map(lambda elem: serialize_dict(elem), data)))
 
 def deserialize_dict_list(data):
     data = ujson.loads(data)
-    to_return = []
-    for elem in data:
-        to_return.append(deserialize_dict(elem))
+    to_return = list(map(lambda elem: deserialize_dict(elem), data))
     return to_return

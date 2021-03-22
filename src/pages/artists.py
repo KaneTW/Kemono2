@@ -7,7 +7,7 @@ from ..utils.utils import sort_dict_list_by, offset, take, limit_int
 from ..internals.cache.flask_cache import cache
 from ..internals.database.database import get_cursor
 from ..lib.artist import get_all_non_discord_artists, get_artist, get_artist_post_count, get_artists_by_service
-from ..lib.post import get_artist_posts, get_all_posts_by_artist, is_post_flagged
+from ..lib.post import get_artist_posts, get_all_posts_by_artist, is_post_flagged, get_render_data_for_posts
 
 artists = Blueprint('artists', __name__)
 
@@ -67,7 +67,7 @@ def get(service, id):
     else:
         (posts, total_count) = do_artist_post_search(id, service, query, offset, limit)
 
-    artist = get_artist(id, service)
+    artist = get_artist(service, id)
     if artist is None:
         response = redirect(url_for('artists.list'))
         response.autocorrect_location_header = False
@@ -77,56 +77,7 @@ def get(service, id):
     props['count'] = total_count
     props['limit'] = limit
 
-    result_previews = []
-    result_attachments = []
-    result_flagged = []
-    result_after_kitsune = []
-    result_is_image = []
-    for post in posts:
-        if post['added'] > datetime.datetime(2020, 12, 22, 0, 0, 0, 0):
-            result_after_kitsune.append(True)
-        else:
-            result_after_kitsune.append(False)
-        previews = []
-        attachments = []
-        if len(post['file']):
-            if re.search("\.(gif|jpe?g|jpe|png|webp)$", post['file']['path'], re.IGNORECASE):
-                result_is_image.append(True)
-                previews.append({
-                    'type': 'thumbnail',
-                    'path': post['file']['path'].replace('https://kemono.party','')
-                })
-            else:
-                result_is_image.append(False)
-                attachments.append({
-                    'path': post['file']['path'],
-                    'name': post['file'].get('name')
-                })
-        else:
-            result_is_image.append(False)
-
-        if len(post['embed']):
-            previews.append({
-                'type': 'embed',
-                'url': post['embed']['url'],
-                'subject': post['embed']['subject'],
-                'description': post['embed']['description']
-            })
-        for attachment in post['attachments']:
-            if re.search("\.(gif|jpe?g|jpe|png|webp)$", attachment['path'], re.IGNORECASE):
-                previews.append({
-                    'type': 'thumbnail',
-                    'path': attachment['path'].replace('https://kemono.party','')
-                })
-            else:
-                attachments.append({
-                    'path': attachment['path'],
-                    'name': attachment['name']
-                })
-
-        result_flagged.append(is_post_flagged(post['id'], post['user'], post['service']))
-        result_previews.append(previews)
-        result_attachments.append(attachments)
+    (result_previews, result_attachments, result_flagged, result_after_kitsune, result_is_image) = get_render_data_for_posts(posts)
     
     response = make_response(render_template(
         'user.html',
@@ -157,7 +108,7 @@ def get_artist_search_results(q, service, sort_by, order, o, limit):
 
     matches = sort_dict_list_by(matches, sort_by, order=='desc')
 
-    return (take(limit, offset(0, matches)), len(matches))
+    return (take(limit, offset(o, matches)), len(matches))
 
 def do_artist_post_search(id, service, search, o, limit):
     posts = get_all_posts_by_artist(id, service)

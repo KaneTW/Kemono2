@@ -1,7 +1,8 @@
 from flask import Blueprint, request, make_response, render_template, session, redirect, flash, url_for, current_app
 
-from ..utils.utils import make_cache_key, get_value, restrict_value, sort_dict_list_by
-from ..lib.account import load_account, get_favorite_artists, get_favorite_posts
+from ..utils.utils import make_cache_key, get_value, restrict_value, sort_dict_list_by, take, offset
+from ..lib.account import load_account
+from ..lib.favorites import get_favorite_artists, get_favorite_posts
 from ..lib.security import is_password_compromised
 from ..internals.cache.flask_cache import cache
 
@@ -14,22 +15,31 @@ def list():
         return redirect(url_for('account.get_login'))
 
     if account is not None:
+        props = {}
+        base = request.args.to_dict()
         favorites = []
-        fave_type = get_value(request.args, 'type')
-        if fave_type == 'artist':
-            favorites = get_favorite_artists(account['id'])
-        else:
+        fave_type = get_value(request.args, 'type', 'artist')
+        if fave_type == 'post':
             favorites = get_favorite_posts(account['id'])
+            sort_field = restrict_value(get_value(request.args, 'sort'), ['id', 'published'], 'id')
+        else:
+            favorites = get_favorite_artists(account['id'])
+            sort_field = restrict_value(get_value(request.args, 'sort'), ['id', 'indexed'], 'id')
 
-        sort_field = restrict_value(get_value(request.args, 'sort'), ['id', 'published'], 'id')
+        offset = int(get_value(request.args, 'o', 0))
         sort_asc = True if get_value(request.args, 'dir') == '1' else False
-        favorites = sort_favorites(favorites, fave_sort, sort_asc)
+        results = sort_and_filter_favorites(favorites, offset, sort_field, sort_asc)
+
+        props['fave_type'] = fave_type
+        props['sort_field'] = sort_field
+        props['sort_asc'] = sort_asc
 
         response = make_response(render_template(
             'favorites.html',
-            props = {},
-            favorites = favorites,
-            fave_type = fave_type
+            props = props,
+            base = base,
+            source = 'account',
+            results = favorites,
         ), 200)
         response.headers['Cache-Control'] = 's-maxage=60'
         return response
@@ -99,11 +109,13 @@ def list():
         response = make_response(render_template(
             'favorites.html',
             props = props,
+            source = 'session',
             results = results,
             session = session
         ), 200)
         response.headers['Cache-Control'] = 'no-store, max-age=0'
         return response
 
-def sort_favorites(favorites, field, asc):
-    return sort_dict_list_by(favorites, field, asc)
+def sort_and_filter_favorites(favorites, o, field, asc):
+    favorites = sort_dict_list_by(favorites, field, asc)
+    return take(25, offset(o, favorites))
