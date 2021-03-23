@@ -7,6 +7,9 @@ from ..utils.utils import make_cache_key
 from ..internals.cache.flask_cache import cache
 from ..internals.database.database import get_cursor
 from ..lib.post import get_post, is_post_flagged, get_next_post_id, get_previous_post_id
+from ..lib.artist import get_artist
+from ..lib.favorites import is_post_favorited
+from ..lib.account import load_account
 
 post = Blueprint('post', __name__)
 
@@ -21,7 +24,7 @@ def post_prev(service, user_id, post_id):
     if not previous_post:
         response = redirect(request.headers.get('Referer') if request.headers.get('Referer') else '/')
     else:
-        response = redirect(url_for('post.get', service = previous_post['service'], user_id = previous_post['user'], post_id = previous_post['id']))
+        response = redirect(url_for('post.get', service = previous_post['service'], artist_id = previous_post['user'], post_id = previous_post['id']))
         response.autocorrect_location_header = False
 
     return response
@@ -37,24 +40,31 @@ def post_next(service, user_id, post_id):
     if not next_post:
         response = redirect(request.headers.get('Referer') if request.headers.get('Referer') else '/')
     else:
-        response = redirect(url_for('post.get', service = next_post['service'], user_id = next_post['user'], post_id = next_post['id']))
+        response = redirect(url_for('post.get', service = next_post['service'], artist_id = next_post['user'], post_id = next_post['id']))
         response.autocorrect_location_header = False
 
     return response
 
-@post.route('/<service>/user/<user_id>/post/<post_id>')
-def get(service, user_id, post_id):
+@post.route('/<service>/user/<artist_id>/post/<post_id>')
+def get(service, artist_id, post_id):
     cursor = get_cursor()
     props = {
         'currentPage': 'posts',
         'service': service if service else 'patreon'
     }
 
-    post = get_post(post_id, user_id, service)
+    post = get_post(post_id, artist_id, service)
     if post is None:
-        response = redirect(url_for('artists.get', service = service, artist_id = user_id))
+        response = redirect(url_for('artists.get', service = service, artist_id = artist_id))
         response.autocorrect_location_header = False
         return response
+
+    favorited = False
+    account = load_account()
+    if account is not None:
+        favorited = is_post_favorited(account['id'], service, artist_id, post_id)
+
+    artist = get_artist(service, artist_id)
 
     previews = []
     attachments = []
@@ -88,14 +98,16 @@ def get(service, user_id, post_id):
                 'name': attachment['name']
             })
 
-    props['posts'] = post
+    props['artist'] = artist
+    props['flagged'] = is_post_flagged(service, artist_id, post_id)
+    props['favorited'] = favorited
 
     response = make_response(render_template(
         'post.html',
         props = props,
-        results = [post],
-        result_previews = [previews],
-        result_attachments = [attachments],
+        post = post,
+        result_previews = previews,
+        result_attachments = attachments,
     ), 200)
     response.headers['Cache-Control'] = 's-maxage=60'
     return response

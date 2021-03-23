@@ -87,8 +87,6 @@ def get(service, artist_id):
     props['artist'] = artist
     props['display_data'] = make_artist_display_data(artist)
 
-    print(props)
-
     (result_previews, result_attachments, result_flagged, result_after_kitsune, result_is_image) = get_render_data_for_posts(posts)
     
     response = make_response(render_template(
