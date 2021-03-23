@@ -71,8 +71,13 @@ def get_register():
 def post_register():
     username = get_value(request.form, 'username')
     password = get_value(request.form, 'password')
-    favorites = json.loads(get_value(request.form, 'favorites', '[]'))
+    favorites_json = get_value(request.form, 'favorites', '[]')
     confirm_password = get_value(request.form, 'confirm_password')
+
+
+    favorites = []
+    if favorites_json != '':
+        favorites = json.loads(favorites_json)
 
     errors = False
     if password != confirm_password:
