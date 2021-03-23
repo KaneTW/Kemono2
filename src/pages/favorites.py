@@ -22,10 +22,10 @@ def list():
     fave_type = get_value(request.args, 'type', 'artist')
     if fave_type == 'post':
         favorites = get_favorite_posts(account['id'])
-        sort_field = restrict_value(get_value(request.args, 'sort'), ['id', 'published'], 'id')
+        sort_field = restrict_value(get_value(request.args, 'sort'), ['faved_seq', 'published'], 'faved_seq')
     else:
         favorites = get_favorite_artists(account['id'])
-        sort_field = restrict_value(get_value(request.args, 'sort'), ['id', 'indexed'], 'id')
+        sort_field = restrict_value(get_value(request.args, 'sort'), ['faved_seq', 'indexed'], 'faved_seq')
 
     offset = int(get_value(request.args, 'o', 0))
     sort_asc = True if get_value(request.args, 'order') == 'asc' else False
@@ -78,5 +78,5 @@ def delete_favorite_artist(service, artist_id):
     return '', 200
 
 def sort_and_filter_favorites(favorites, o, field, asc):
-    favorites = sort_dict_list_by(favorites, field, asc)
+    favorites = sort_dict_list_by(favorites, field, not asc)
     return take(25, offset(o, favorites))

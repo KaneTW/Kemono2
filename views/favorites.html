@@ -33,14 +33,14 @@
       {% if props.fave_type == "artist" %}
         <label>Sory by</label>
         <select autocomplete="off" onchange="on_change_filters('sort', this)">
-          <option value="id" {% if props.sort_field == "id" %}selected="selected"{% endif %}>Faved date</option>
+          <option value="faved_seq" {% if props.sort_field == "faved_seq" %}selected="selected"{% endif %}>Faved date</option>
           <option value="indexed" {% if props.sort_field == "indexed" %}selected="selected"{% endif %}>Last indexed</option>
         </select>
       {% else %}
         <label>Sory by</label>
         <select autocomplete="off" onchange="on_change_filters('sort', this)">
-          <option value="id" {% if props.sort_field == "id" %}selected="selected"{% endif %}>Faved date</option>
-          <option value="published" {% if props.sort_field == "indexed" %}selected="selected"{% endif %}>Published</option>
+          <option value="faved_seq" {% if props.sort_field == "faved_seq" %}selected="selected"{% endif %}>Faved date</option>
+          <option value="published" {% if props.sort_field == "published" %}selected="selected"{% endif %}>Published</option>
         </select>
       {% endif %}
 

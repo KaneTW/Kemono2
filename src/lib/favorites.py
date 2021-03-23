@@ -14,7 +14,7 @@ def get_favorite_artists(account_id, reload = False):
     favorites = redis.get(key)
     if favorites is None or reload:
         cursor = get_cursor()
-        query = "select service, artist_id from account_artist_favorite where account_id = %s"
+        query = "select id, service, artist_id from account_artist_favorite where account_id = %s"
         cursor.execute(query, (account_id,))
         favorites = cursor.fetchall()
         redis.set(key, serialize_dict_list(favorites))
@@ -25,6 +25,7 @@ def get_favorite_artists(account_id, reload = False):
     for favorite in favorites:
         artist = get_artist(favorite['service'], favorite['artist_id'])
         if artist is not None:
+            artist['faved_seq'] = favorite['id']
             artists.append(artist)
     return artists
 
@@ -34,7 +35,7 @@ def get_favorite_posts(account_id, reload = False):
     favorites = redis.get(key)
     if favorites is None or reload:
         cursor = get_cursor()
-        query = "select service, artist_id, post_id from account_post_favorite where account_id = %s"
+        query = "select id, service, artist_id, post_id from account_post_favorite where account_id = %s"
         cursor.execute(query, (account_id,))
         favorites = cursor.fetchall()
         redis.set(key, serialize_dict_list(favorites))
@@ -45,6 +46,7 @@ def get_favorite_posts(account_id, reload = False):
     for favorite in favorites:
         post = get_post(favorite['post_id'], favorite['artist_id'], favorite['service'])
         if post is not None:
+            post['faved_seq'] = favorite['id']
             posts.append(post)
     return posts
 

@@ -12,13 +12,21 @@ account = Blueprint('account', __name__)
 
 @account.route('/account/login', methods=['GET'])
 def get_login():
+    props = {
+        'query_string': ''
+    }
+
     account = load_account()
     if account is not None:
         return redirect(url_for('artists.list'))
 
+    query = request.query_string.decode('utf-8')
+    if len(query) > 0:
+        props['query_string'] = '?' + query
+
     response = make_response(render_template(
         'login.html',
-        props = {}
+        props = props
     ), 200)
     response.headers['Cache-Control'] = 's-maxage=60'
     return response
