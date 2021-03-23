@@ -5,19 +5,32 @@ require.config({
 });
 
 /* eslint-disable no-unused-vars */
-function favorite (service, user) {
-  const favorites = localStorage.getItem('favorites') ? localStorage.getItem('favorites').split(',') : [];
-  if (favorites.includes(service + ':' + user)) return;
-  favorites.push(service + ':' + user);
-  localStorage.setItem('favorites', favorites.join(','));
-  location.reload();
+function favorite_artist(service, user) {
+  fetch(`/favorites/artist/${service}/${user}`, {
+    method: 'POST'
+  }).then(res => {
+    if (res.redirected) {
+      window.location = res.url;
+    } else if (res.ok) {
+      location.reload();
+    } else {
+      alert('Error 003 - could not save favorite');
+    }
+  });
 }
 
-function unfavorite (service, user) {
-  let favorites = localStorage.getItem('favorites') ? localStorage.getItem('favorites').split(',') : [];
-  favorites = favorites.filter(i => i !== service + ':' + user);
-  localStorage.setItem('favorites', favorites.join(','));
-  location.reload();
+function unfavorite_artist(service, user) {
+  fetch(`/favorites/artist/${service}/${user}`, {
+    method: "DELETE"
+  }).then(res => {
+    if (res.redirected) {
+      window.location = res.url;
+    } else if (res.ok) {
+      location.reload();
+    } else {
+      alert('Error 004 - could not remove favorite');
+    }
+  });
 }
 /* eslint-enable no-unused-vars */
 
@@ -88,11 +101,11 @@ function loadQuery () {
         </li>
         ${localStorage.getItem('favorites') && localStorage.getItem('favorites').split(',').includes(document.getElementsByName('service')[0].content + ':' + pathname[3]) ? `
           <li class="subtitle">
-            ★ Favorited <a href="javascript:unfavorite('${document.getElementsByName('service')[0].content}', '${pathname[3]}');">(☆)</a>
+            ★ Favorited <a href="javascript:unfavorite_artist('${document.getElementsByName('service')[0].content}', '${pathname[3]}');">(☆)</a>
           </li>
         ` : `
           <li>
-            <a href="javascript:favorite('${document.getElementsByName('service')[0].content}', '${pathname[3]}');">☆ Favorite</a>
+            <a href="javascript:favorite_artist('${document.getElementsByName('service')[0].content}', '${pathname[3]}');">☆ Favorite</a>
           </li>
         `}
       `;

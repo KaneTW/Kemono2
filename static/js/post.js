@@ -7,6 +7,34 @@ function attemptFlag (_, api) {
   }
 }
 
+function favorite_post(service, user, post_id) {
+  fetch(`/favorites/post/${service}/${user}/${post_id}`, {
+    method: 'POST'
+  }).then(res => {
+    if (res.redirected) {
+      window.location = res.url;
+    } else if (res.ok) {
+      location.reload();
+    } else {
+      alert('Error 001 - could not save favorite');
+    }
+  });
+}
+
+function unfavorite_post(service, user, post_id) {
+  fetch(`/favorites/artist/${service}/${user}/${post_id}`, {
+    method: "DELETE"
+  }).then(res => {
+    if (res.redirected) {
+      window.location = res.url;
+    } else if (res.ok) {
+      location.reload();
+    } else {
+      alert('Error 002 - could not remove favorite');
+    }
+  });
+}
+
 (function () {
   const pathname = window.location.pathname.split('/');
   const resultsView = document.getElementById('results');

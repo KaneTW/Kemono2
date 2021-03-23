@@ -2,7 +2,7 @@ from flask import Blueprint, request, make_response, render_template, session, r
 
 from ..utils.utils import make_cache_key, get_value, restrict_value, sort_dict_list_by, take, offset
 from ..lib.account import load_account
-from ..lib.favorites import get_favorite_artists, get_favorite_posts
+from ..lib.favorites import get_favorite_artists, get_favorite_posts, add_favorite_post, add_favorite_artist, remove_favorite_post, remove_favorite_artist
 from ..lib.security import is_password_compromised
 from ..internals.cache.flask_cache import cache
 
@@ -117,6 +117,38 @@ def list():
         ), 200)
         response.headers['Cache-Control'] = 'no-store, max-age=0'
         return response
+
+@favorites.route('/favorites/post/<service>/<artist_id>/<post_id>', methods=['POST'])
+def post_favorite_post(service, artist_id, post_id):
+    account = load_account()
+    if account is None:
+        return redirect(url_for('account.get_login'))
+    add_favorite_post(account['id'], service, artist_id, post_id)
+    return '', 200
+
+@favorites.route('/favorites/artist/<service>/<artist_id>', methods=['POST'])
+def post_favorite_artist(service, artist_id):
+    account = load_account()
+    if account is None:
+        return redirect(url_for('account.get_login'))
+    add_favorite_artist(account['id'], service, artist_id)
+    return '', 200
+
+@favorites.route('/favorites/post/<service>/<artist_id>/<post_id>', methods=['DELETE'])
+def delete_favorite_post(service, artist_id, post_id):
+    account = load_account()
+    if account is None:
+        return redirect(url_for('account.get_login'))
+    remove_favorite_post(account['id'], service, artist_id, post_id)
+    return '', 200
+
+@favorites.route('/favorites/artist/<service>/<artist_id>', methods=['DELETE'])
+def delete_favorite_artist(service, artist_id):
+    account = load_account()
+    if account is None:
+        return redirect(url_for('account.get_login'))
+    remove_favorite_artist(account['id'], service, artist_id)
+    return '', 200
 
 def sort_and_filter_favorites(favorites, o, field, asc):
     favorites = sort_dict_list_by(favorites, field, asc)

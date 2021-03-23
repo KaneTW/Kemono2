@@ -14,7 +14,7 @@ def get_favorite_artists(account_id, reload = False):
     favorites = redis.get(key)
     if favorites is None or reload:
         cursor = get_cursor()
-        query = "select service, artist_id from account_artist_favorite where account_id"
+        query = "select service, artist_id from account_artist_favorite where account_id = %s"
         cursor.execute(query, (account_id,))
         favorites = cursor.fetchall()
         redis.set(key, serialize_dict_list(favorites))
@@ -50,12 +50,24 @@ def get_favorite_posts(account_id, reload = False):
 
 def add_favorite_artist(account_id, service, artist_id):
     cursor = get_cursor()
-    query = 'insert into account_artist_favorite (account_id, service, artist_id) values (%s, %s, %s)'
+    query = 'insert into account_artist_favorite (account_id, service, artist_id) values (%s, %s, %s) ON CONFLICT (account_id, service, artist_id) DO NOTHING'
     cursor.execute(query, (account_id, service, artist_id,))
     get_favorite_artists(account_id, True)
 
 def add_favorite_post(account_id, service, artist_id, post_id):
     cursor = get_cursor()
-    query = 'insert into account_post_favorite (account_id, service, artist_id, post_id) values (%s, %s, %s, %s)'
+    query = 'insert into account_post_favorite (account_id, service, artist_id, post_id) values (%s, %s, %s, %s) ON CONFLICT (account_id, service, artist_id, post_id) DO NOTHING'
+    cursor.execute(query, (account_id, service, artist_id, post_id))
+    get_favorite_posts(account_id, True)
+
+def remove_favorite_artist(account_id, service, artist_id):
+    cursor = get_cursor()
+    query = 'delete from account_artist_favorite where account_id = %s and service = %s and artist_id = %s'
+    cursor.execute(query, (account_id, service, artist_id,))
+    get_favorite_artists(account_id, True)
+
+def remove_favorite_post(account_id, service, artist_id, post_id):
+    cursor = get_cursor()
+    query = 'delete from account_post_favorite where account_id = %s and service = %s and artist_id = %s and post_id = %s'
     cursor.execute(query, (account_id, service, artist_id, post_id))
     get_favorite_posts(account_id, True)
