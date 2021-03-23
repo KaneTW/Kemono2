@@ -23,11 +23,15 @@ from src.pages.random import random
 from src.pages.post import post
 from src.pages.account import account
 from src.pages.favorites import favorites
+from src.pages.help import help_app
+from src.pages.proxy import proxy_app
 
 app = Flask(
     __name__,
     template_folder='views'
 )
+
+app.url_map.strict_slashes = False
 
 app.register_blueprint(home)
 app.register_blueprint(legacy)
@@ -36,9 +40,10 @@ app.register_blueprint(random)
 app.register_blueprint(post)
 app.register_blueprint(account)
 app.register_blueprint(favorites)
+app.register_blueprint(help_app, url_prefix='/help')
+app.register_blueprint(proxy_app, url_prefix='/proxy')
 
 app.config.from_pyfile('flask.cfg')
-app.url_map.strict_slashes = False
 app.jinja_env.globals.update(is_logged_in=is_logged_in)
 app.jinja_env.filters['regex_match'] = lambda val, rgx: re.search(rgx, val)
 app.jinja_env.filters['regex_find'] = lambda val, rgx: re.findall(rgx, val)
@@ -57,12 +62,6 @@ def do_init_stuff():
     session.permanent = True
     app.permanent_session_lifetime = timedelta(days=9999)
     session.modified = False
-    
-    rp = request.path
-    if rp != '/' and rp.endswith('/'):
-        response = redirect(rp[:-1])
-        response.autocorrect_location_header = False
-        return response
 
 @app.after_request
 def do_finish_stuff(response):

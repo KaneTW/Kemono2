@@ -16,21 +16,12 @@ random = Blueprint('random', __name__)
 
 @random.route('/posts/random')
 def random_post():
-    variant = get_ab_variant('random_post_redis')
-
-    post = None
-    if variant == 'CONTROL':
-        cursor = get_cursor()
-        query = "SELECT service, \"user\", id FROM posts WHERE random() < 0.01 LIMIT 1"
-        cursor.execute(query)
-        random = cursor.fetchall()
-        post = get_value(random, 0)
-    else:
-        post = get_random_post()
+    post = get_random_post()
 
     if post is None:
         return redirect('back')
-    response = redirect(url_for('legacy.post', service = post['service'], id = post['user'], post = post['id']))
+
+    response = redirect(url_for('post.get', service = post['service'], artist_id = post['user'], post_id = post['id']))
     response.autocorrect_location_header = False
     return response
 

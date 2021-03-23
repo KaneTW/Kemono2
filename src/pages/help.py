@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, make_response
 
-help_app = Blueprint('help', __name__, template_folder='../views')
+help_app = Blueprint('help_app', __name__)
 @help_app.route('/')
 def help():
     props = {
