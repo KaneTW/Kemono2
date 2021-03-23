@@ -12,7 +12,7 @@ function favorite_post(service, user, post_id) {
     method: 'POST'
   }).then(res => {
     if (res.redirected) {
-      window.location = res.url;
+      window.location = add_url_param(res.url, 'redir', window.location.pathname);
     } else if (res.ok) {
       location.reload();
     } else {
@@ -26,7 +26,7 @@ function unfavorite_post(service, user, post_id) {
     method: "DELETE"
   }).then(res => {
     if (res.redirected) {
-      window.location = res.url;
+      window.location =  add_url_param(res.url, 'redir', window.location.pathname);;
     } else if (res.ok) {
       location.reload();
     } else {

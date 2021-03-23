@@ -1,5 +1,7 @@
 from flask import Blueprint, request, make_response, render_template, session, redirect, flash, url_for, current_app
 
+import urllib
+
 from ..utils.utils import make_cache_key, get_value
 from ..lib.account import load_account, is_username_taken, attempt_login, create_account
 from ..lib.security import is_password_compromised
@@ -31,7 +33,11 @@ def post_login():
     success = attempt_login(username, password)
     if not success:
         flash('Username or password incorrect')
-        return redirect(url_for('account.get_login'))
+        return redirect(url_for('account.get_login') + '?' + request.query_string.decode('utf-8'))
+
+    redir = get_value(request.args, 'redir')
+    if redir is not None:
+        return redirect(redir)
 
     return redirect(url_for('artists.list'))
 
@@ -82,9 +88,14 @@ def post_register():
         if account is None:
             current_app.logger.warning("Error logging into account immediately after creation")
         flash('Account created successfully')
+
+        redir = get_value(request.args, 'redir')
+        if redir is not None:
+            return redirect(redir)
+
         return redirect(url_for('artists.list'))
 
-    return redirect(url_for('account.get_register'))
+    return redirect(url_for('account.get_register') + '?' + request.query_string.decode('utf-8'))
 
 @account.route('/account')
 def get_account():

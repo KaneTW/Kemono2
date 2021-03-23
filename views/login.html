@@ -5,7 +5,7 @@
     <div style="flex-direction: row" class="login-container">
         <h3>Login</h3>
         {% include 'components/flash_messages.html' %}
-        <form class="login" method="POST" action="{{ url_for('account.post_login') }}">
+        <form class="login" method="POST" action="{{ request.url }}">
             <label for="username">Username</label><input class="left-align-text" type="text" name="username"/>
             <label for="password">Password</label><input class="left-align-text" type="password" name="password">
             <input type="submit" value="Login"/>
