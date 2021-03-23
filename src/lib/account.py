@@ -3,6 +3,8 @@ from flask import session
 from ..internals.database.database import get_cursor
 from ..utils.utils import get_value
 from ..internals.cache.redis import get_conn
+from ..lib.favorites import add_favorite_artist
+from ..lib.artist import get_artist
 
 import ujson
 import copy
@@ -51,7 +53,7 @@ def is_username_taken(username):
     cursor.execute(query, (username,))
     return cursor.fetchone() is not None
 
-def create_account(username, password):
+def create_account(username, password, favorites):
     account_id = None
     password_hash = bcrypt.hashpw(get_base_password_hash(password), bcrypt.gensalt()).decode('utf-8')
     account_create_lock.acquire()
@@ -66,12 +68,12 @@ def create_account(username, password):
     finally:
         account_create_lock.release()
 
-    favorites = get_value(session, 'favorites')
     if favorites is not None:
-        for user in favorites:
-            service = user.split(':')[0]
-            user_id = user.split(':')[1]
-            add_favorite_artist(account_id, service, user_id)
+        for favorite in favorites:
+            artist = get_artist(favorite['service'], favorite['artist_id'])
+            if artist is None:
+                continue
+            add_favorite_artist(account_id, favorite['service'], favorite['artist_id'])
 
     return True
 

@@ -1,6 +1,7 @@
 from flask import Blueprint, request, make_response, render_template, session, redirect, flash, url_for, current_app
 
 import urllib
+import json
 
 from ..utils.utils import make_cache_key, get_value
 from ..lib.account import load_account, is_username_taken, attempt_login, create_account
@@ -62,6 +63,7 @@ def get_register():
 def post_register():
     username = get_value(request.form, 'username')
     password = get_value(request.form, 'password')
+    favorites = json.loads(get_value(request.form, 'favorites', '[]'))
     confirm_password = get_value(request.form, 'confirm_password')
 
     errors = False
@@ -78,7 +80,7 @@ def post_register():
         errors = True
 
     if not errors:
-        success = create_account(username, password)
+        success = create_account(username, password, favorites)
         if not success:
             flash('Username already taken')
             errors = True
