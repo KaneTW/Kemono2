@@ -8,6 +8,8 @@ from ..internals.cache.flask_cache import cache
 from ..internals.database.database import get_cursor
 from ..lib.artist import get_all_non_discord_artists, get_artist, get_artist_post_count, get_artists_by_service
 from ..lib.post import get_artist_posts, get_all_posts_by_artist, is_post_flagged, get_render_data_for_posts
+from ..lib.favorites import is_artist_favorited
+from ..lib.account import load_account
 
 artists = Blueprint('artists', __name__)
 
@@ -43,31 +45,36 @@ def list():
     response.headers['Cache-Control'] = 's-maxage=60'
     return response
 
-@artists.route('/<service>/user/<id>')
-def get(service, id):
+@artists.route('/<service>/user/<artist_id>')
+def get(service, artist_id):
     cursor = get_cursor()
     props = {
         'currentPage': 'posts',
-        'id': id,
+        'id': artist_id,
         'service': service,
         'session': session
     }
     base = request.args.to_dict()
     base.pop('o', None)
     base["service"] = service
-    base["id"] = id
+    base["artist_id"] = artist_id
 
     offset = int(request.args.get('o') or 0)
     query = request.args.get('q')
     limit = limit_int(int(request.args.get('limit') or 25), 50)
 
+    favorited = False
+    account = load_account()
+    if account is not None:
+        favorited = is_artist_favorited(account['id'], service, artist_id)
+
     (posts, total_count) = ([], 0)
     if query is None:
-        (posts, total_count) = get_artist_post_page(id, service, offset, limit)
+        (posts, total_count) = get_artist_post_page(artist_id, service, offset, limit)
     else:
-        (posts, total_count) = do_artist_post_search(id, service, query, offset, limit)
+        (posts, total_count) = do_artist_post_search(artist_id, service, query, offset, limit)
 
-    artist = get_artist(service, id)
+    artist = get_artist(service, artist_id)
     if artist is None:
         response = redirect(url_for('artists.list'))
         response.autocorrect_location_header = False
@@ -76,6 +83,11 @@ def get(service, id):
     props['name'] = artist['name']
     props['count'] = total_count
     props['limit'] = limit
+    props['favorited'] = favorited
+    props['artist'] = artist
+    props['display_data'] = make_artist_display_data(artist)
+
+    print(props)
 
     (result_previews, result_attachments, result_flagged, result_after_kitsune, result_is_image) = get_render_data_for_posts(posts)
     
@@ -126,3 +138,24 @@ def get_artist_post_page(artist_id, service, offset, limit):
     posts = get_artist_posts(artist_id, service, offset, limit, 'published desc')
     total_count = get_artist_post_count(artist_id, service)
     return (posts, total_count)
+
+def make_artist_display_data(artist):
+    data = {}
+    if artist['service'] == 'patreon':
+        data['service'] = 'Patreon';
+        data['proxy'] = '/proxy/patreon/user/' + str(artist['id']);
+        data['href'] = 'https://www.patreon.com/user?u=' + str(artist['id']);
+    elif artist['service'] == 'fanbox':
+        data['service'] = 'Fanbox';
+        data['href'] = 'https://www.pixiv.net/fanbox/creator/' + str(artist['id']);
+    elif artist['service'] == 'gumroad':
+        data['service'] = 'Gumroad';
+        data['href'] = 'https://gumroad.com/' + str(artist['id']);
+    elif artist['service'] == 'subscribestar':
+        data['service'] = 'SubscribeStar';
+        data['href'] = 'https://subscribestar.adult/' + str(artist['id']);
+    elif artist['service'] == 'dlsite':
+        data['service'] = 'DLsite';
+        data['href'] = 'https://www.dlsite.com/eng/circle/profile/=/maker_id/' + str(artist['id']);
+
+    return data

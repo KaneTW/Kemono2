@@ -50,7 +50,7 @@ def random_artist():
 
     if artist is None:
         return redirect('back')
-    response = redirect(url_for('artists.get', service = artist['service'], id = artist['id']))
+    response = redirect(url_for('artists.get', service = artist['service'], artist_id = artist['id']))
     response.autocorrect_location_header = False
     return response
 
