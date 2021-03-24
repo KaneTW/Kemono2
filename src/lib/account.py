@@ -1,10 +1,11 @@
-from flask import session
+from flask import session, current_app, flash
 
 from ..internals.database.database import get_cursor
 from ..utils.utils import get_value
 from ..internals.cache.redis import get_conn
 from ..lib.favorites import add_favorite_artist
 from ..lib.artist import get_artist
+from ..lib.security import is_login_rate_limited
 
 import ujson
 import copy
@@ -83,6 +84,11 @@ def attempt_login(username, password):
 
     account_info = get_login_info_for_username(username)
     if account_info is None:
+        flash('Username or password is incorrect')
+        return False
+
+    if get_value(current_app.config, 'ENABLE_LOGIN_RATE_LIMITING') and is_login_rate_limited(account_info['id']):
+        flash('You\'re doing that too much. Try again in a little bit.')
         return False
 
     if bcrypt.checkpw(get_base_password_hash(password), account_info['password_hash'].encode('utf-8')):
@@ -90,6 +96,7 @@ def attempt_login(username, password):
         session['account_id'] = account['id']
         return True
 
+    flash('Username or password is incorrect')
     return False
 
 def get_base_password_hash(password):

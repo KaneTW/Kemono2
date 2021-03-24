@@ -41,7 +41,6 @@ def post_login():
     password = get_value(request.form, 'password')
     success = attempt_login(username, password)
     if not success:
-        flash('Username or password incorrect')
         return redirect(url_for('account.get_login') + '?' + request.query_string.decode('utf-8'))
 
     redir = get_value(request.args, 'redir')
@@ -58,13 +57,21 @@ def logout():
 
 @account.route('/account/register', methods=['GET'])
 def get_register():
+    props = {
+        'query_string': ''
+    }
+
     account = load_account()
     if account is not None:
         return redirect(url_for('artists.list'))
 
+    query = request.query_string.decode('utf-8')
+    if len(query) > 0:
+        props['query_string'] = '?' + query
+
     return make_response(render_template(
         'register.html',
-        props = {}
+        props = props
     ), 200)
 
 @account.route('/account/register', methods=['POST'])
@@ -80,6 +87,14 @@ def post_register():
         favorites = json.loads(favorites_json)
 
     errors = False
+    if username.strip() == '':
+        flash('Username cannot be empty')
+        errors = True
+
+    if password.strip() == '':
+        flash('Password cannot be empty')
+        errors = True
+
     if password != confirm_password:
         flash('Passwords do not match')
         errors = True
@@ -88,7 +103,7 @@ def post_register():
         flash('Username already taken')
         errors = True
 
-    if is_password_compromised(password):
+    if get_value(current_app.config, 'ENABLE_PASSWORD_VALIDATOR') and is_password_compromised(password):
         flash('We\'ve detected that password was compromised in a data breach on another site. Please choose a different password.')
         errors = True
 
@@ -110,7 +125,10 @@ def post_register():
 
         return redirect(url_for('artists.list'))
 
-    return redirect(url_for('account.get_register') + '?' + request.query_string.decode('utf-8'))
+    return make_response(render_template(
+        'register.html',
+        props = {}
+    ), 200)
 
 @account.route('/account')
 def get_account():

@@ -37,6 +37,8 @@
     <div class="main" id="main">
       {% include 'components/header.html' %}
       {% include 'components/subheader.html' %}
+      {% include 'components/flash_messages.html' %}
+      <div class="sep"></div>
       {% block content %}{% endblock %}
     </div>
   </body>

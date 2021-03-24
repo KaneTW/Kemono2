@@ -69,7 +69,7 @@ def do_finish_stuff(response):
         start_time = g.request_start_time
         end_time = datetime.datetime.now()
         elapsed = end_time - start_time
-        app.logger.debug('Completed {0} request to {1} in {2}ms with ab test variants: {3}'.format(request.method, request.url, elapsed.microseconds/1000, get_all_variants()))
+        app.logger.debug('[{4}] Completed {0} request to {1} in {2}ms with ab test variants: {3}'.format(request.method, request.url, elapsed.microseconds/1000, get_all_variants(), end_time.strftime("%Y-%m-%d %X")))
     return response
 
 @app.errorhandler(413)

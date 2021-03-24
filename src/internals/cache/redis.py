@@ -13,6 +13,10 @@ def init():
     pool = redis.ConnectionPool(host=getenv('REDIS_HOST'), port=getenv('REDIS_PORT'))
     return pool
 
+def get_pool():
+    global pool
+    return pool
+
 def get_conn():
     return redis.Redis(connection_pool=pool)
 

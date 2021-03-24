@@ -12,6 +12,7 @@ favorites = Blueprint('favorites', __name__)
 def list():
     account = load_account()
     if account is None:
+        flash('We now support accounts! Register for an account and your current favorites will automatically be added to your account.')
         return redirect(url_for('account.get_login'))
 
     props = {}

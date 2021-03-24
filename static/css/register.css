@@ -23,3 +23,7 @@ form > label {
 form > label:after {
     content: ":";
 }
+
+.register-cta {
+    margin-top: 10px;
+}
