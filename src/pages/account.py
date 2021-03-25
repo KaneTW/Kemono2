@@ -36,12 +36,16 @@ def post_login():
     account = load_account()
     if account is not None:
         return redirect(url_for('artists.list'))
-    
+
+    query = request.query_string.decode('utf-8')
+    if len(query) > 0:
+        query = '?' + query
+
     username = get_value(request.form, 'username')
     password = get_value(request.form, 'password')
     success = attempt_login(username, password)
     if not success:
-        return redirect(url_for('account.get_login') + '?' + request.query_string.decode('utf-8'))
+        return redirect(url_for('account.get_login') +  query)
 
     redir = get_value(request.args, 'redir')
     if redir is not None:
@@ -76,11 +80,18 @@ def get_register():
 
 @account.route('/account/register', methods=['POST'])
 def post_register():
+    props = {
+        'query_string': ''
+    }
+
+    query = request.query_string.decode('utf-8')
+    if len(query) > 0:
+        props['query_string'] = '?' + query
+
     username = get_value(request.form, 'username')
     password = get_value(request.form, 'password')
     favorites_json = get_value(request.form, 'favorites', '[]')
     confirm_password = get_value(request.form, 'confirm_password')
-
 
     favorites = []
     if favorites_json != '':
@@ -127,7 +138,7 @@ def post_register():
 
     return make_response(render_template(
         'register.html',
-        props = {}
+        props = props
     ), 200)
 
 @account.route('/account')
