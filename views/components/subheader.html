@@ -1,14 +1,14 @@
 <ul class="subheader">
   {% if props.currentPage == 'posts' %}
-    <li><a href="/posts">List</a></li>
-    <li><a href="/posts/random">Random</a></li>
+    <li><a href="{{ url_for('legacy.posts') }}">List</a></li>
+    <li><a href="{{ url_for('random.random_post') }}">Random</a></li>
     <li><a href="/help/posts">Help</a></li>
   {% endif %}
   {% if props.currentPage == 'artists' %}
-    <li><a href="/">List</a></li>
-    <li><a href="/artists/random">Random</a></li>
+    <li><a href="{{ url_for('artists.list') }}">List</a></li>
+    <li><a href="{{ url_for('random.random_artist') }}">Random</a></li>
     <li><a href="/artists/updated">Recently Updated</a></li>
-    <li><a href="/artists/favorites">Favorites</a></li>
+    <li><a href="{{ url_for('favorites.list') }}">Favorites</a></li>
   {% endif %}
   {% if props.currentPage == 'requests' %}
     <li><a href="/requests">List</a></li>
@@ -18,6 +18,12 @@
     <li><a href="">List</a></li>
   {% endif %}
   {% if props.currentPage == 'help' %}
+    <li><a href="">List</a></li>
+  {% endif %}
+  {% if props.currentPage == 'favorites' %}
+    <li><a href="">List</a></li>
+  {% endif %}
+  {% if props.currentPage == 'login' %}
     <li><a href="">List</a></li>
   {% endif %}
   {% if props.currentPage == 'board' %}

@@ -31,11 +31,14 @@
       <meta name="added" content="{{ props.posts.added }}"/>
       <meta name="id" content="{{ props.posts.id }}"/>
     {% endif %}
+    <script src="{{ url_for('static', filename='js/global.js') }}"></script>
   </head>
   <body>
     <div class="main" id="main">
       {% include 'components/header.html' %}
       {% include 'components/subheader.html' %}
+      {% include 'components/flash_messages.html' %}
+      <div class="sep"></div>
       {% block content %}{% endblock %}
     </div>
   </body>

@@ -14,8 +14,38 @@
     >
     <h1>Information</h1>
     <div class="results" id="results">
-      <div id="info-block"></div>
-      <div id="extra-info-block"></div>
+      <div id="info-block">
+        <li>
+          Service: <a href="{{ props.display_data.href }}" target="_blank" rel="noreferrer">{{ props.display_data.service }}</a>
+        </li>
+        <li>
+          User: <a href="{{ request.url }}">{{ props.artist.name }}</a>
+        </li>
+        {% if props.favorited %}
+          <li class="subtitle">
+            ★ Favorited <a href="javascript:unfavorite_artist('{{ props.artist.service }}', '{{ props.artist.id }}');">(☆)</a>
+          </li>
+        {% else %}
+          <li>
+            <a href="javascript:favorite_artist('{{ props.artist.service }}', '{{ props.artist.id }}');">☆ Favorite</a>
+          </li>
+        {% endif %}
+      </div>
+      <div id="extra-info-block">
+         <!-- {% if props.artist.service == 'patreon' %}
+           <li>
+              Tagline: ${user.included[0].attributes.creation_name}
+            </li>
+            <li>
+              CUF Enabled: ${user.included[0].attributes.is_charge_upfront ? 'Yes' : '<span style="color: #0f0">No</span>'}
+            </li>
+            <li>
+              ${user.included[0].attributes.creation_count > Number(document.getElementsByName('count')[0].content) ? `
+                <span style="color:#cc0">Missing ${user.included[0].attributes.creation_count - Number(document.getElementsByName('count')[0].content)} posts</span>
+              ` : '<span style="color:#0f0">Up to date</span>'}
+            </li>
+          {% endif %} -->
+      </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js"></script>
     <script src="https://unpkg.com/unfetch@4.1.0/polyfill/index.js"></script>
@@ -29,6 +59,6 @@
       <li><a href="{{ request.path }}/rss">RSS</a></li>
     </div>
   </div>
-  {% include 'components/list.html' %}
+  {% include 'components/post_list.html' %}
 </div>
 {% endblock %}

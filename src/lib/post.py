@@ -2,7 +2,9 @@ from ..internals.cache.redis import get_conn
 from ..internals.database.database import get_cursor
 import ujson
 import dateutil
+import datetime
 import copy
+import re
 
 def get_all_post_keys(reload = False):
     redis = get_conn()
@@ -151,6 +153,63 @@ def get_previous_post_id(post_id, artist_id, service, reload = False):
         return None
     else:
         return prev_post
+
+def get_render_data_for_posts(posts):
+    result_previews = []
+    result_attachments = []
+    result_flagged = []
+    result_after_kitsune = []
+    result_is_image = []
+
+    for post in posts:
+        if post['added'] > datetime.datetime(2020, 12, 22, 0, 0, 0, 0):
+            result_after_kitsune.append(True)
+        else:
+            result_after_kitsune.append(False)
+
+        previews = []
+        attachments = []
+        if len(post['file']):
+            if re.search("\.(gif|jpe?g|jpe|png|webp)$", post['file']['path'], re.IGNORECASE):
+                result_is_image.append(True)
+                previews.append({
+                    'type': 'thumbnail',
+                    'path': post['file']['path'].replace('https://kemono.party','')
+                })
+            else:
+                result_is_image.append(False)
+                attachments.append({
+                    'path': post['file']['path'],
+                    'name': post['file'].get('name')
+                })
+        else:
+            result_is_image.append(False)
+
+        if len(post['embed']):
+            previews.append({
+                'type': 'embed',
+                'url': post['embed']['url'],
+                'subject': post['embed']['subject'],
+                'description': post['embed']['description']
+            })
+        for attachment in post['attachments']:
+            if re.search("\.(gif|jpe?g|jpe|png|webp)$", attachment['path'], re.IGNORECASE):
+                previews.append({
+                    'type': 'thumbnail',
+                    'path': attachment['path'].replace('https://kemono.party','')
+                })
+            else:
+                attachments.append({
+                    'path': attachment['path'],
+                    'name': attachment['name']
+                })
+
+        result_flagged.append(is_post_flagged(post['id'], post['user'], post['service']))
+        result_previews.append(previews)
+        result_attachments.append(attachments)
+
+    return (result_previews, result_attachments, result_flagged, result_after_kitsune, result_is_image)
+
 
 def serialize_posts(posts):
     posts = copy.deepcopy(posts)
