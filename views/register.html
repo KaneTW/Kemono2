@@ -5,7 +5,7 @@
 <div class="views">
     <div style="flex-direction: row" class="login-container">
         <h3>Register</h3>
-        <form id="register_form" class="register" method="POST" action="{{ request.url }}">
+        <form id="register_form" class="register" method="POST" action="{{ url_for('account.post_register') }}">
             <label for="username">Username</label><input class="left-align-text" type="text" name="username" value="{{ request.form['username'] }}"/>
             <label for="password">Password</label><input class="left-align-text" type="password" name="password">
             <label for="password">Confirm Password</label><input class="left-align-text" type="password" name="confirm_password">
