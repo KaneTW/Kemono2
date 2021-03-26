@@ -4,7 +4,6 @@ from datetime import timedelta
 from os import getenv
 from os.path import join, dirname
 
-import logging
 from dotenv import load_dotenv
 load_dotenv(join(dirname(__file__), '.env'))
 from flask import Flask, render_template, request, redirect, g, abort, session
@@ -48,29 +47,15 @@ app.jinja_env.globals.update(is_logged_in=is_logged_in)
 app.jinja_env.filters['regex_match'] = lambda val, rgx: re.search(rgx, val)
 app.jinja_env.filters['regex_find'] = lambda val, rgx: re.findall(rgx, val)
 
-logging.basicConfig(filename='kemono.log', level=logging.DEBUG)
-pil_logger = logging.getLogger('PIL')
-pil_logger.setLevel(logging.INFO)
-
 cache.init_app(app)
 database.init()
 redis.init()
 
 @app.before_request
 def do_init_stuff():
-    g.request_start_time = datetime.datetime.now()
     session.permanent = True
     app.permanent_session_lifetime = timedelta(days=9999)
     session.modified = False
-
-@app.after_request
-def do_finish_stuff(response):
-    if not url_is_for_non_logged_file_extension(request.path):
-        start_time = g.request_start_time
-        end_time = datetime.datetime.now()
-        elapsed = end_time - start_time
-        app.logger.debug('[{4}] Completed {0} request to {1} in {2}ms with ab test variants: {3}'.format(request.method, request.url, elapsed.microseconds/1000, get_all_variants(), end_time.strftime("%Y-%m-%d %X")))
-    return response
 
 @app.errorhandler(413)
 def upload_exceeded(error):
