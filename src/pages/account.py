@@ -13,6 +13,7 @@ account = Blueprint('account', __name__)
 @account.route('/account/login', methods=['GET'])
 def get_login():
     props = {
+        'currentPage': 'login',
         'query_string': ''
     }
 
@@ -62,6 +63,7 @@ def logout():
 @account.route('/account/register', methods=['GET'])
 def get_register():
     props = {
+        'currentPage': 'login',
         'query_string': ''
     }
 

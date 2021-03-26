@@ -15,7 +15,9 @@ def list():
         flash('We now support accounts! Register for an account and your current favorites will automatically be added to your account.')
         return redirect(url_for('account.get_login'))
 
-    props = {}
+    props = {
+        'currentPage': 'favorites'
+    }
     base = request.args.to_dict()
     base.pop('o', None)
 
