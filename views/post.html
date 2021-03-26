@@ -9,7 +9,7 @@
         User: <a href="../">{{ props.artist.name }}</a>
       </li>
       <li>
-        ID: <a href="{{ request.url }}">{{ post.id }}</a>
+        ID: <a href="{{ url_for('post.get', service=post.service, artist_id=post.user, post_id=post.id) }}">{{ post.id }}</a>
       </li>
       <li>
         Published at: {{ post.published }}

@@ -19,7 +19,7 @@
           Service: <a href="{{ props.display_data.href }}" target="_blank" rel="noreferrer">{{ props.display_data.service }}</a>
         </li>
         <li>
-          User: <a href="{{ request.url }}">{{ props.artist.name }}</a>
+          User: <a href="{{ url_for('artists.get', service=props.artist.service, artist_id=props.artist.id) }}">{{ props.artist.name }}</a>
         </li>
         {% if props.favorited %}
           <li class="subtitle">

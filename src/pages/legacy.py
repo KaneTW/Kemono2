@@ -47,52 +47,16 @@ def updated_artists():
     props = {
         'currentPage': 'artists'
     }
-
-    offset = int(request.args.get('o') or 0)
-    limit = 25
-
-    props['limit'] = limit
-
-    query = 'SELECT posts.user, service, max(added) FROM posts GROUP BY posts.user, service ORDER BY max(added) desc '
-    params = ()
-    query += "OFFSET %s "
-    params += (offset,)
-    query += "LIMIT 25"
-    cursor.execute(query, params)
-    posts_results = cursor.fetchall()
-
-    count_query = "SELECT posts.user, service, max(added) FROM posts GROUP BY posts.user, service"
-    count_cursor = get_cursor()
-    count_cursor.execute(count_query)
-    results2 = cursor.fetchall()
-    props["count"] = len(results2)
-
-    base = request.args.to_dict()
-    base.pop('o', None)
-
-    results = []
-    for post in posts_results:
-        cursor2 = get_cursor()
-        query2 = "SELECT * FROM lookup WHERE id = %s AND service = %s"
-        params2 = (post['user'], post['service'])
-        cursor2.execute(query2, params2)
-        user_result = cursor2.fetchone()
-        if not user_result:
-            continue
-        results.append({
-            "id": post['user'],
-            "name": user_result['name'],
-            "service": post['service'],
-            "updated": post['max']
-        })
-
+    query = 'WITH "posts" as (select "user", "service", max("added") from "posts" group by "user", "service" order by max(added) desc limit 50) '\
+        'select "user", "posts"."service" as service, "lookup"."name" as name, "max" from "posts" inner join "lookup" on "posts"."user" = "lookup"."id"'
+    cursor.execute(query)
+    results = cursor.fetchall()
     response = make_response(render_template(
         'updated.html',
         props = props,
-        results = results,
-        base = base
+        results = results
     ), 200)
-    response.headers['Cache-Control'] = 's-maxage=300'
+    response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
     return response
 
 @legacy.route('/artists/blocked')
