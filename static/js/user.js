@@ -53,3 +53,5 @@ function loadQuery () {
       });
   });
 }
+
+document.getElementById('search-input').addEventListener('keyup', debounce(() => loadQuery(), 350));
