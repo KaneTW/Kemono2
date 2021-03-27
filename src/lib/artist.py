@@ -4,6 +4,20 @@ import ujson
 import dateutil
 import copy
 
+def get_random_artist_keys(count, reload = False):
+    redis = get_conn()
+    key = 'random_artist_keys:' + str(count)
+    artist_keys = redis.get(key)
+    if artist_keys is None or reload:
+        cursor = get_cursor()
+        query = "SELECT id, service FROM lookup WHERE service != 'discord-channel' ORDER BY random() LIMIT %s"
+        cursor.execute(query, (count,))
+        artist_keys = cursor.fetchall()
+        redis.set(key, ujson.dumps(artist_keys), ex = 600)
+    else:
+        artist_keys = ujson.loads(artist_keys)
+    return artist_keys
+
 def get_non_discord_artist_keys(reload = False):
     redis = get_conn()
     key = 'non_discord_artist_keys'

@@ -6,6 +6,20 @@ import datetime
 import copy
 import re
 
+def get_random_posts_keys(count, reload = False):
+    redis = get_conn()
+    key = 'random_post_keys:' + str(count)
+    post_keys = redis.get(key)
+    if post_keys is None or reload:
+        cursor = get_cursor()
+        query = "SELECT id, \"user\", service FROM posts WHERE file != '{}' AND attachments != '{}' ORDER BY random() LIMIT %s"
+        cursor.execute(query, (count,))
+        post_keys = cursor.fetchall()
+        redis.set(key, ujson.dumps(post_keys), ex = 600)
+    else:
+        post_keys = ujson.loads(post_keys)
+    return post_keys
+
 def get_all_post_keys(reload = False):
     redis = get_conn()
     key = 'all_post_keys'
