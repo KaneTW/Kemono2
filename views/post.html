@@ -20,7 +20,7 @@
       {% if props.flagged %}
         <li><span class="subtitle">This post has been flagged for reimport.</span></li>
       {% else %}
-        <li><a href="javascript:;" id="flag-button">Flag for reimport</a> </li>
+        <li><a href="javascript:attemptFlag();" id="flag-button">Flag for reimport</a> </li>
       {% endif %}
       {% if props.favorited %}
         <li class="subtitle">
