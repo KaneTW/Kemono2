@@ -44,6 +44,8 @@ def get_count_of_artists_faved(reload = False):
         cursor.execute(query)
         count = cursor.fetchone()['count']
         redis.set(key, count, ex = 3600)
+    else:
+        count = int(count)
     return count
 
 def get_random_artist_keys(count, reload = False):
