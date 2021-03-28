@@ -46,6 +46,12 @@
                   'dlsite': 'DLsite'
                 }.get(artist['service'], '') }}
               </td>
+
+              {% if artist['count'] %}
+              <td style="display:none">
+                  {{ artist['count'] }}
+              </td>
+              {% endif %}
             </tr>
           {% endfor %}
         {% endif %}

@@ -41,12 +41,15 @@
           <option value="service" {{ 'selected' if request.args.get('sort_by') == 'service' }}>Service</option>
         </select>
         <select name="order">
-          <option value="asc">Ascending</option>
           <option value="desc" {{ 'selected' if request.args.get('order') == 'desc'}}>Descending</option>
+          <option value="asc">Ascending</option>
         </select>
       </div>
       <input type="submit" name="commit" value="Search" data-disable-with="Search">
     </form>
+    {% if props['display'] %}
+      <h3>Displaying {{ props['display'] }}</h3>
+    {% endif %}
     {% include 'components/artist_list.html' %}
   {% if results|length %}
     <script src="https://unpkg.com/unfetch@4.1.0/polyfill/index.js"></script>

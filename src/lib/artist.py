@@ -4,6 +4,29 @@ import ujson
 import dateutil
 import copy
 
+def get_top_artists_by_faves(count, reload = False):
+    redis = get_conn()
+    key = 'top_artists:' + str(count)
+    artists = redis.get(key)
+    if artists is None or reload:
+        cursor = get_cursor()
+        query = """
+            SELECT l.*, count(*)
+            FROM lookup l
+            INNER JOIN account_artist_favorite aaf
+                ON l.id = aaf.artist_id AND l.service = aaf.service
+            WHERE aaf.service != 'discord-channel'
+            GROUP BY (l.id, l.service)
+            ORDER BY count(*) DESC
+            LIMIT %s
+        """
+        cursor.execute(query, (count,))
+        artists = cursor.fetchall()
+        redis.set(key, serialize_artists(artists), ex = 3600)
+    else:
+        artists = deserialize_artists(artists)
+    return artists
+
 def get_random_artist_keys(count, reload = False):
     redis = get_conn()
     key = 'random_artist_keys:' + str(count)
