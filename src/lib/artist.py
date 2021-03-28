@@ -4,9 +4,9 @@ import ujson
 import dateutil
 import copy
 
-def get_top_artists_by_faves(count, reload = False):
+def get_top_artists_by_faves(offset, count, reload = False):
     redis = get_conn()
-    key = 'top_artists:' + str(count)
+    key = 'top_artists:' + str(offset) + ':' + str(count)
     artists = redis.get(key)
     if artists is None or reload:
         cursor = get_cursor()
@@ -18,14 +18,33 @@ def get_top_artists_by_faves(count, reload = False):
             WHERE aaf.service != 'discord-channel'
             GROUP BY (l.id, l.service)
             ORDER BY count(*) DESC
+            OFFSET %s
             LIMIT %s
         """
-        cursor.execute(query, (count,))
+        cursor.execute(query, (offset, count,))
         artists = cursor.fetchall()
         redis.set(key, serialize_artists(artists), ex = 3600)
     else:
         artists = deserialize_artists(artists)
     return artists
+
+def get_count_of_artists_faved(reload = False):
+    redis = get_conn()
+    key = 'artists_faved'
+    count = redis.get(key)
+    if count is None or reload:
+        cursor = get_cursor()
+        query = """
+            SELECT count(distinct(l.id, l.service))
+            FROM lookup l
+            INNER JOIN account_artist_favorite aaf
+                ON l.id = aaf.artist_id AND l.service = aaf.service
+            WHERE aaf.service != 'discord-channel'
+        """
+        cursor.execute(query)
+        count = cursor.fetchone()['count']
+        redis.set(key, count, ex = 3600)
+    return count
 
 def get_random_artist_keys(count, reload = False):
     redis = get_conn()

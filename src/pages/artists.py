@@ -6,7 +6,7 @@ import re
 from ..utils.utils import sort_dict_list_by, offset, take, limit_int
 from ..internals.cache.flask_cache import cache
 from ..internals.database.database import get_cursor
-from ..lib.artist import get_all_non_discord_artists, get_artist, get_artist_post_count, get_artists_by_service, get_top_artists_by_faves
+from ..lib.artist import get_all_non_discord_artists, get_artist, get_artist_post_count, get_artists_by_service, get_top_artists_by_faves, get_count_of_artists_faved
 from ..lib.post import get_artist_posts, get_all_posts_by_artist, is_post_flagged, get_render_data_for_posts
 from ..lib.favorites import is_artist_favorited
 from ..lib.account import load_account
@@ -34,8 +34,8 @@ def list():
         (results, total_count) = get_artist_search_results(q, service, sort_by, order, offset, limit)
         props['display'] = 'search results'
     else:
-        results = get_top_artists_by_faves(limit)
-        total_count = limit if len(results) > 25 else len(results)
+        results = get_top_artists_by_faves(offset, limit)
+        total_count = get_count_of_artists_faved()
         props['display'] = 'most popular artists'
 
     props['count'] = total_count
