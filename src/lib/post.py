@@ -76,7 +76,7 @@ def get_artist_posts(artist_id, service, offset, limit, sort = 'id', reload = Fa
         posts = deserialize_posts(posts)
     return posts
 
-def is_post_flagged(post_id, artist_id, service, reload = False):
+def is_post_flagged(service, artist_id, post_id, reload = False):
     redis = get_conn()
     key = 'is_post_flagged:' + service + ':' + str(artist_id) + ':' + str(post_id)
     flagged = redis.get(key)

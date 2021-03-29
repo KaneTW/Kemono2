@@ -1,6 +1,6 @@
-function attemptFlag (_, api) {
+function attemptFlag (service, user, post_id) {
   if (confirm('Are you sure you want to flag this post for reimport?')) {
-    fetch(api, { method: 'post' })
+    fetch(`/api/${service}/user/${user}/post/${post_id}/flag`, { method: 'post' })
       .then(function (res) {
         window.alert(res.ok ? 'Successfully flagged.' : 'Error. There might already be a flag here.');
       });
