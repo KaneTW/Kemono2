@@ -34,3 +34,17 @@ function unfavorite_post(service, user, post_id) {
     }
   });
 }
+
+Array.prototype.forEach.call(document.getElementsByClassName('flag'), function (flag) {
+  flag.addEventListener('click', function (_) {
+    attemptFlag(
+      '/api/' + 
+      flag.getAttribute('data-service') +
+      '/user/' +
+      flag.getAttribute('data-user') +
+      '/post/' +
+      flag.getAttribute('data-post') +
+      '/flag'
+    );
+  })
+});
