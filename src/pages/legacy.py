@@ -47,48 +47,12 @@ def updated_artists():
     props = {
         'currentPage': 'artists'
     }
-    base = request.args.to_dict()
-    base.pop('o', None)
-    offset = int(request.args.get('o') or 0)
-    limit = 25
-
-    props['limit'] = limit
-
-    query = 'SELECT posts.user, service, max(added) FROM posts GROUP BY posts.user, service ORDER BY max(added) desc '
-    params = ()
-    query += "OFFSET %s "
-    params += (offset,)
-    query += "LIMIT 25"
-    cursor.execute(query, params)
-    posts_results = cursor.fetchall()
-
-    count_query = "SELECT posts.user, service, max(added) FROM posts GROUP BY posts.user, service"
-    count_cursor = get_cursor()
-    count_cursor.execute(count_query)
-    results2 = cursor.fetchall()
-    props["count"] = len(results2)
-
-    base = request.args.to_dict()
-    base.pop('o', None)
-
-    results = []
-    for post in posts_results:
-        cursor2 = get_cursor()
-        query2 = "SELECT * FROM lookup WHERE id = %s AND service = %s"
-        params2 = (post['user'], post['service'])
-        cursor2.execute(query2, params2)
-        user_result = cursor2.fetchone()
-        if not user_result:
-            continue
-        results.append({
-            "id": post['user'],
-            "name": user_result['name'],
-            "service": post['service'],
-            "updated": post['max']
-        })
+    query = 'WITH "posts" as (select "user", "service", max("added") from "posts" group by "user", "service" order by max(added) desc limit 50) '\
+        'select "user", "posts"."service" as service, "lookup"."name" as name, "max" from "posts" inner join "lookup" on "posts"."user" = "lookup"."id"'
+    cursor.execute(query)
+    results = cursor.fetchall()
     response = make_response(render_template(
         'updated.html',
-        base = base,
         props = props,
         results = results
     ), 200)
@@ -354,7 +318,6 @@ def requests_list():
     }
     base = request.args.to_dict()
     base.pop('o', None)
-    props['limit'] = 25
 
     if not request.args.get('commit'):
         query = "SELECT * FROM requests "
@@ -364,13 +327,6 @@ def requests_list():
         offset = request.args.get('o') if request.args.get('o') else 0
         params = (offset,)
         query += "LIMIT 25"
-
-        cursor2 = get_cursor()
-        query2 = "SELECT COUNT(*) FROM requests "
-        query2 += "WHERE status = 'open'"
-        cursor2.execute(query2)
-        results2 = cursor2.fetchall()
-        props["count"] = int(results2[0]["count"])
     else:
         query = "SELECT * FROM requests "
         query += "WHERE title ILIKE %s "
@@ -397,23 +353,6 @@ def requests_list():
         offset = request.args.get('o') if request.args.get('o') else 0
         params += (offset,)
         query += "LIMIT 25"
-
-        cursor2 = get_cursor()
-        query2 = "SELECT COUNT(*) FROM requests "
-        query2 += "WHERE title ILIKE %s "
-        params2 = ('%' + request.args.get('q') + '%',)
-        if request.args.get('service'):
-            query2 += "AND service = %s "
-            params2 += (request.args.get('service'),)
-        query2 += "AND service != 'discord' "
-        if request.args.get('max_price'):
-            query2 += "AND price <= %s "
-            params2 += (request.args.get('max_price'),)
-        query2 += "AND status = %s"
-        params2 += (request.args.get('status'),)
-        cursor2.execute(query2, params2)
-        results2 = cursor2.fetchall()
-        props["count"] = int(results2[0]["count"])
 
     cursor = get_cursor()
     cursor.execute(query, params)
