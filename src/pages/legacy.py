@@ -226,32 +226,6 @@ def upload_post():
 
 # TODO: /:service/user/:id/rss
 
-@legacy.route('/config/set', methods=["POST"])
-def config_set():
-    for key in request.form.keys():
-        session[key] = request.form[key]
-    response = redirect(request.headers.get('Referer') if request.headers.get('Referer') else '/')
-    response.autocorrect_location_header = False
-    return response
-
-@legacy.route('/config/add', methods=["POST"])
-def config_add():
-    for key in request.form.keys():
-        session[key] = session[key] + [request.form[key]] if session.get(key) and isinstance(session[key], list) else [request.form[key]]
-    response = redirect(request.headers.get('Referer') if request.headers.get('Referer') else '/')
-    response.autocorrect_location_header = False
-    return response
-
-@legacy.route('/config/remove', methods=["POST"])
-def config_remove():
-    for key in request.form.keys():
-        if session.get(key) and isinstance(session[key], list):
-            session[key].remove(request.form[key])
-    session.modified = True
-    response = redirect(request.headers.get('Referer') if request.headers.get('Referer') else '/')
-    response.autocorrect_location_header = False
-    return response
-
 @legacy.route('/<service>/user/<id>/rss')
 def user_rss(service, id):
     cursor = get_cursor()
