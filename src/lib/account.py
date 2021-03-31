@@ -14,6 +14,7 @@ import base64
 import hashlib
 import dateutil
 from threading import Lock
+from bleach.sanitizer import Cleaner
 
 account_create_lock = Lock()
 
@@ -62,9 +63,11 @@ def create_account(username, password, favorites):
         if is_username_taken(username):
             return False
 
+        scrub = Cleaner(tags = [])
+
         cursor = get_cursor()
         query = "insert into account (username, password_hash) values (%s, %s) returning id"
-        cursor.execute(query, (username, password_hash,))
+        cursor.execute(query, (scrub.clean(username), password_hash,))
         account_id = cursor.fetchone()['id']
     finally:
         account_create_lock.release()
