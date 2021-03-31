@@ -101,7 +101,7 @@ def get(service, artist_id, post_id):
     props['artist'] = artist
     props['flagged'] = is_post_flagged(service, artist_id, post_id)
     props['favorited'] = favorited
-
+    props['after_kitsune'] = post['added'] > datetime.datetime(2020, 12, 22, 0, 0, 0, 0)
     response = make_response(render_template(
         'post.html',
         props = props,

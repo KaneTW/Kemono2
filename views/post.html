@@ -24,7 +24,7 @@
       <div class="pure-u-1 pure-u-sm-1 pure-u-md-4-5">
         {% set previews = result_previews %}
         {% set attachments = result_attachments %}
-        {% set after_kitsune = result_after_kitsune %}
+        {% set after_kitsune = props.after_kitsune %}
         {% with post=post %}
           {% include 'components/post_view.html' %}
         {% endwith %}
