@@ -17,7 +17,7 @@
 {% if post.published %}
   <label for="toggle-{{ post.id }}" class="subtitle">{{ post.published }}</label>
 {% endif %}
-{% if flagged %}
+{% if props.flagged %}
   <span class="flag-disabled" title="This post has been flagged.">⚑</span>
 {% else %}
   <span class="flag" title="Flag post" id="flag-button" data-service="{{ post.service }}" data-user="{{ post.user }}" data-post="{{ post.id }}">⚑</span>

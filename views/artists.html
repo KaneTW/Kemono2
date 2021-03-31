@@ -48,7 +48,9 @@
       <input type="submit" name="commit" value="Search" data-disable-with="Search">
     </form>
     {% if props['display'] %}
-      <h3>Displaying {{ props['display'] }}</h3>
+      <div style="text-align: center;">
+        <h3 class="subtitle">Displaying {{ props['display'] }}</h3>
+      </div>
     {% endif %}
     {% include 'components/artist_list.html' %}
   {% if results|length %}
