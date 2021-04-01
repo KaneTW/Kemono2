@@ -9,7 +9,6 @@
         <tr>
           <th width="50px">Icon</th>
           <th>Name</th>
-          <th>Transliteration</th>
           <th>Service</th>
         </tr>
       </thead>
@@ -31,10 +30,6 @@
               </td>
               <td>
                 <a href="/{{ artist['service'] }}/{{ 'server' if artist['service'] == 'discord' else 'user' }}/{{ artist['id'] }}">{{ artist['name'] }}</a>
-              </td>
-              <td>
-                <!-- TODO: Reimplemnt transliteration -->
-                <div><!--${transliterate(artist[1]) !== artist[1] ? transliterate(artist[1]) : '<span class="subtitle">(N/A)</span>'}--></div>
               </td>
               <td>
                 {{ {
