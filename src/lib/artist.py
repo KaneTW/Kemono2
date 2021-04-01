@@ -142,10 +142,10 @@ def get_artist_last_updated(service, artist_id, reload = False):
         cursor.execute(query, (service, artist_id,))
         last_updated = cursor.fetchone()
         if last_updated is not None:
-            last_updated = last_updated['max'].isoformat()
+            last_updated = last_updated['max']
         else:
-            last_updated = datetime.datetime.min.isoformat()
-        redis.set(key, last_updated, ex = 600)
+            last_updated = datetime.datetime.min
+        redis.set(key, last_updated.isoformat(), ex = 600)
     else:
         last_updated = dateutil.parser.parse(last_updated)
 
