@@ -22,12 +22,9 @@ def post_prev(service, user_id, post_id):
         previous_post = get_post(previous_post_id, user_id, service)
 
     if not previous_post:
-        response = redirect(request.headers.get('Referer') if request.headers.get('Referer') else '/')
+        return redirect(request.headers.get('Referer') if request.headers.get('Referer') else '/')
     else:
-        response = redirect(url_for('post.get', service = previous_post['service'], artist_id = previous_post['user'], post_id = previous_post['id']))
-        response.autocorrect_location_header = False
-
-    return response
+        return redirect(url_for('post.get', service = previous_post['service'], artist_id = previous_post['user'], post_id = previous_post['id']))
 
 @post.route('/<service>/user/<user_id>/post/<post_id>/next')
 def post_next(service, user_id, post_id):
@@ -38,12 +35,9 @@ def post_next(service, user_id, post_id):
         next_post = get_post(next_post_id, user_id, service)
 
     if not next_post:
-        response = redirect(request.headers.get('Referer') if request.headers.get('Referer') else '/')
+        return redirect(request.headers.get('Referer') if request.headers.get('Referer') else '/')
     else:
-        response = redirect(url_for('post.get', service = next_post['service'], artist_id = next_post['user'], post_id = next_post['id']))
-        response.autocorrect_location_header = False
-
-    return response
+        return redirect(url_for('post.get', service = next_post['service'], artist_id = next_post['user'], post_id = next_post['id']))
 
 @post.route('/<service>/user/<artist_id>/post/<post_id>')
 def get(service, artist_id, post_id):
@@ -56,7 +50,6 @@ def get(service, artist_id, post_id):
     post = get_post(post_id, artist_id, service)
     if post is None:
         response = redirect(url_for('artists.get', service = service, artist_id = artist_id))
-        response.autocorrect_location_header = False
         return response
 
     favorited = False

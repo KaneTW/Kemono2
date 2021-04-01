@@ -3,7 +3,7 @@ from flask import Blueprint, request, make_response, render_template, session, r
 import datetime
 import re
 
-from ..utils.utils import sort_dict_list_by, offset, take, limit_int
+from ..utils.utils import sort_dict_list_by, offset, take, limit_int, parse_int
 from ..internals.cache.flask_cache import cache
 from ..internals.database.database import get_cursor
 from ..lib.artist import get_all_non_discord_artists, get_artist, get_artist_post_count, get_artists_by_service, get_top_artists_by_faves, get_count_of_artists_faved
@@ -26,7 +26,7 @@ def list():
     service = request.args.get('service')
     sort_by = request.args.get('sort_by')
     order = request.args.get('order')
-    offset = int(request.args.get('o') or 0)
+    offset = parse_int(request.args.get('o'), 0)
     limit = 25
 
     (results, total_count) = ([], 0)
@@ -81,9 +81,7 @@ def get(service, artist_id):
 
     artist = get_artist(service, artist_id)
     if artist is None:
-        response = redirect(url_for('artists.list'))
-        response.autocorrect_location_header = False
-        return response
+        return redirect(url_for('artists.list'))
 
     props['name'] = artist['name']
     props['count'] = total_count

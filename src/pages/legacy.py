@@ -34,9 +34,7 @@ def thumbnail(path):
         image.thumbnail((800, 800))
         makedirs(dirname(join(getenv('DB_ROOT'), 'thumbnail', path)), exist_ok=True)
         image.save(join(getenv('DB_ROOT'), 'thumbnail', path), 'JPEG', quality=60)
-        response = redirect(join('/', 'thumbnail', path), code=302)
-        response.autocorrect_location_header = False
-        return response
+        return redirect(join('/', 'thumbnail', path), code=302)
     except Exception as e:
         return f"The file you requested could not be converted. Error: {e}", 404
 

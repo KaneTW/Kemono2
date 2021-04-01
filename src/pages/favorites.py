@@ -1,6 +1,6 @@
 from flask import Blueprint, request, make_response, render_template, session, redirect, flash, url_for, current_app
 
-from ..utils.utils import make_cache_key, get_value, restrict_value, sort_dict_list_by, take, offset
+from ..utils.utils import make_cache_key, get_value, restrict_value, sort_dict_list_by, take, offset, parse_int
 from ..lib.account import load_account
 from ..lib.favorites import get_favorite_artists, get_favorite_posts, add_favorite_post, add_favorite_artist, remove_favorite_post, remove_favorite_artist
 from ..lib.security import is_password_compromised
@@ -28,9 +28,9 @@ def list():
         sort_field = restrict_value(get_value(request.args, 'sort'), ['faved_seq', 'published'], 'faved_seq')
     else:
         favorites = get_favorite_artists(account['id'])
-        sort_field = restrict_value(get_value(request.args, 'sort'), ['faved_seq', 'indexed'], 'faved_seq')
+        sort_field = restrict_value(get_value(request.args, 'sort'), ['faved_seq', 'updated'], 'updated')
 
-    offset = int(get_value(request.args, 'o', 0))
+    offset = parse_int(request.args.get('o'), 0)
     sort_asc = True if get_value(request.args, 'order') == 'asc' else False
     results = sort_and_filter_favorites(favorites, offset, sort_field, sort_asc)
 

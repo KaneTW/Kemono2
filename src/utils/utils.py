@@ -91,3 +91,9 @@ def limit_int(i, limit):
     if i > limit:
         return limit
     return i
+
+def parse_int(string, default = 0):
+    try:
+        return int(string)
+    except Exception:
+        return default

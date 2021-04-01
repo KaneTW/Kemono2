@@ -132,6 +132,25 @@ def get_artist_post_count(service, artist_id, reload = False):
         count = int(count)
     return count
 
+def get_artist_last_updated(service, artist_id, reload = False):
+    redis = get_conn()
+    key = 'artist_last_updated:' + service + ':' + str(artist_id)
+    last_updated = redis.get(key)
+    if last_updated is None or reload:
+        cursor = get_cursor()
+        query = 'SELECT max(added) as max FROM posts WHERE service = %s AND "user" = %s'
+        cursor.execute(query, (service, artist_id,))
+        last_updated = cursor.fetchone()
+        if last_updated is not None:
+            last_updated = last_updated['max'].isoformat()
+        else:
+            last_updated = datetime.datetime.min.isoformat()
+        redis.set(key, last_updated, ex = 600)
+    else:
+        last_updated = dateutil.parser.parse(last_updated)
+
+    return last_updated
+
 def serialize_artists(artists):
     artists = copy.deepcopy(artists)
     return ujson.dumps(list(map(lambda artist: prepare_artist_fields(artist), artists)))

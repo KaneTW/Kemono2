@@ -1,7 +1,7 @@
 from ..internals.database.database import get_cursor
 from ..utils.utils import get_value
 from ..internals.cache.redis import get_conn, serialize_dict_list, deserialize_dict_list
-from ..lib.artist import get_artist
+from ..lib.artist import get_artist, get_artist_last_updated
 from ..lib.post import get_post
 
 import ujson
@@ -24,8 +24,10 @@ def get_favorite_artists(account_id, reload = False):
     artists = []
     for favorite in favorites:
         artist = get_artist(favorite['service'], favorite['artist_id'])
+        last_updated = get_artist_last_updated(favorite['service'], favorite['artist_id'])
         if artist is not None:
             artist['faved_seq'] = favorite['id']
+            artist['updated'] = last_updated
             artists.append(artist)
     return artists
 
