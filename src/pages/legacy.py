@@ -519,29 +519,34 @@ def importer_ok():
     response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
     return response
 
-@legacy.route('/importer/status/<lgid>')
-def importer_status(lgid):
+@legacy.route('/importer/status/<log_id>')
+def importer_status(log_id):
     props = {
         'currentPage': 'import',
-        'id': lgid
     }
 
-    try:
-        with open(join(getenv('DB_ROOT'), 'logs', lgid + '.log')) as f:
-            response = make_response(render_template(
-                'importer_status.html',
-                props = props,
-                log = f.read()
-            ), 200)
-    except IOError:
-        props['message'] = 'That log doesn\'t exist.'
-        response = make_response(render_template(
-            'error.html',
-            props = props
-        ), 401)
+    response = make_response(render_template(
+        'importer_status.html',
+        props = props,
+        log_id = log_id
+    ), 200)
 
     response.headers['Cache-Control'] = 'max-age=0, private, must-revalidate'
     return response
+
+@legacy.route('/api/logs/<log_id>')
+def get_importer_logs(log_id):
+    host = getenv('ARCHIVERHOST')
+    port = getenv('ARCHIVERPORT') if getenv('ARCHIVERPORT') else '8000'
+
+    try:
+        r = requests.get(
+            f'http://{host}:{port}/api/logs/{log_id}'
+        )
+        r.raise_for_status()
+        return r.text, r.status_code
+    except Exception:
+        return f'Error while connecting to archiver.', 500
 
 ### API ###
 @legacy.route('/api/import', methods=['POST'])
@@ -563,11 +568,12 @@ def importer_submit():
                 'channel_ids': request.form.get("channel_ids")
             }
         )
+
         r.raise_for_status()
-        # in new importer, return just the id instead of a whole page
+        log_id = r.text
         props = {
             'currentPage': 'import',
-            'redirect': f'/importer/status/{r.text}'
+            'redirect': f'/importer/status/{log_id}'
         }
         return make_response(render_template(
             'success.html',
