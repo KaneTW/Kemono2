@@ -51,8 +51,9 @@ app.jinja_env.filters['regex_match'] = lambda val, rgx: re.search(rgx, val)
 app.jinja_env.filters['regex_find'] = lambda val, rgx: re.findall(rgx, val)
 
 logging.basicConfig(filename='kemono.log', level=logging.DEBUG)
-pil_logger = logging.getLogger('PIL')
-pil_logger.setLevel(logging.INFO)
+logging.getLogger('PIL').setLevel(logging.INFO)
+logging.getLogger('requests').setLevel(logging.WARNING)
+logging.getLogger('urllib3').setLevel(logging.WARNING)
 
 cache.init_app(app)
 database.init()

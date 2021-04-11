@@ -1,4 +1,4 @@
-from flask import Blueprint, request, make_response, render_template
+from flask import Blueprint, request, make_response, render_template, current_app
 
 import requests
 from os import getenv
@@ -82,15 +82,11 @@ def importer_submit():
     try:
         r = requests.post(
             f'http://{host}:{port}/api/import',
-            json = {
+            data = {
                 'service': request.form.get("service"),
                 'session_key': request.form.get("session_key"),
-                'channel_ids': request.form.get("channel_ids")
-            },
-            params = {
-                'service': request.form.get("service"),
-                'session_key': request.form.get("session_key"),
-                'channel_ids': request.form.get("channel_ids")
+                'channel_ids': request.form.get("channel_ids"),
+                'save_session_key': request.form.get("save_session_key")
             }
         )
 
@@ -105,4 +101,5 @@ def importer_submit():
             props = props
         ), 200)
     except Exception as e:
-        return f'Error while connecting to archiver. Is it running? Error: {e}', 500
+        current_app.logger.exception('Error connecting to archver')
+        return f'Error while connecting to archiver. Is it running?', 500
