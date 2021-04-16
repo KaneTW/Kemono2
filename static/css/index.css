@@ -493,8 +493,12 @@ input[type="number"] {
   box-shadow: inset 0 1px 3px #1f2024;
   background:#3a3d43;
   color: #fff;
-  text-align: center;
   border: 0;
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+  cursor: pointer;
 }
 
 /* headers */
@@ -650,6 +654,7 @@ input[type="submit"] {
 }
 
 .search-form small {
+  display: block;
   line-height: normal;
 }
 
@@ -663,10 +668,6 @@ input[type="submit"] {
 .search-form label {
   text-align: right;
   font-weight: 700;
-}
-
-.search-form small {
-  display: block;
 }
 
 /* search results */
@@ -708,26 +709,90 @@ thead th {
   text-align: center;
 }
 
+/* .site-section__subheading {} */
+
 .form {
+  box-sizing: border-box;
   max-width: 360px;
   padding: 1em;
   margin: 0 auto;
 }
 
-.form__section {
-  padding-bottom: 1em;
+.form--bigger {
+  max-width: 480px;
 }
 
-.form__section:last-child {
+.form--wide {
+  max-width: 720px;
+}
+
+.form__section,
+.form__fieldset {
+  padding-bottom: 1em;
+  transition-property: opacity, visibility;
+  transition-duration: 250ms;
+}
+
+.form__section:last-child,
+.form__fieldset:last-child {
   padding-bottom: 0;
 }
 
-.form__label {
-  text-align: right;
+.form__section--hidden,
+.form__fieldset {
+  max-height: 0;
+  opacity: 0;
+  visibility: hidden;
+  padding: 0;
+  margin: 0;
+}
+
+.form__section--checkbox {
+  position: relative;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-around;
+  align-items: center;
+  gap: 1em;
+}
+
+.form__section--checkbox .form__input {
+  flex: 0 1;
+  -webkit-appearance: none;
+  appearance: none;
+  padding: 0;
+  margin: 0;
+}
+
+.form__section--checkbox .form__input:before {
+  position: absolute;
+  top: 40%;
+  left: 0.7em;
+  content: "X";
+  font-size: 2em;
+  color: hsl(0, 100%, 60%);
+  transform: translate(-50%, -50%);
+}
+
+.form__section--checkbox .form__input:checked:before {
+  content: "\2713"; /* checkmark */
+  color: hsl(120, 100%, 50%);
+}
+
+.form__section--checkbox .form__label {
+  flex: 1 1;
+  opacity: 0.5;
+  transition-property: opacity;
+  transition-duration: 250ms;
+}
+
+.form__section--checkbox .form__input:checked + .form__label {
+  opacity: 1;
 }
 
 .form__input,
-.form__button {
+.form__button,
+.form__select {
   box-sizing: border-box;
   min-height: 44px;
   min-width: 44px;
@@ -738,10 +803,29 @@ thead th {
   padding: 0.5em;
 }
 
+.form__subtitle {
+  display: block;
+  line-height: normal;
+  color: hsl(0, 0%, 45%);
+}
+
+.form__label {
+  cursor: pointer;
+}
+
 .form__input {
   background: hsl(224, 7%, 32%);
   color: hsl(0, 0%, 100%);
   border: 0;
+}
+
+.form__select {
+  cursor: pointer;
+}
+
+.form__option {
+  color: hsl(0, 0%, 100%);
+  background-color: hsl(224, 7%, 32%);
 }
 
 /* quick hack to overwrite attribute rules */

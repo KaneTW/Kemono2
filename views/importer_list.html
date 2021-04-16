@@ -1,61 +1,107 @@
 {% extends 'components/shell.html' %}
+
+{% block scripts_extra %}
+  <script src="/static/js/importer.js" defer></script>
+{% endblock %}
+
 {% block content %}
-<div class="page" id="page">
-  <h1>Import from paysite</h1>
+<section class="page site-section site-section--importer" id="page">
+  <h1 class="site-section__heading">Import from paysite</h1>
   <form
-    class="importer-form"
+    class="form form--bigger"
     action="/api/import"
     enctype="application/x-www-form-urlencoded"
-    method="post"
+    method="POST"
     onsubmit="return (typeof submitted == 'undefined') ? (submitted = true) : !submitted"
   >
-    <select id="service" name="service">
-      <option value="patreon" selected>Patreon</option>
-      <option value="fanbox">Pixiv Fanbox</option>
-      <option value="gumroad">Gumroad</option>
-      <option value="subscribestar">SubscribeStar</option>
-      <option value="discord">Discord</option>
-      <option value="dlsite">DLsite English</option>
-      <option value="dlsite-jp">DLsite Japan</option>
-    </select>
-    <input 
-      type="text"
-      name="session_key"
-      placeholder="session key"
-      autocomplete="off" 
-      autocorrect="off" 
-      autocapitalize="off" 
-      spellcheck="false"
-      required
-    >
-    <input 
-      type="text"
-      id="channel_ids"
-      name="channel_ids"
-      placeholder="discord channel ids (comma separated, no spaces)"
-      autocomplete="off" 
-      autocorrect="off" 
-      autocapitalize="off" 
-      spellcheck="false"
-    >
-    <input type="submit"/>
-    <div id="consent" style="width:100%;margin-top:5px">
-      <input type="checkbox" checked="checked" id="save-session-key" name="save_session_key" value="1" style="display:inline;margin-right:5px"/>
-      <label for="save-session-key" style="display:inline">I want to allow the development team to use my session for debugging (your session will be encrypted)</label>
+    <div class="form__section">
+      <label for="service" class="form__label">Paysite:</label>
+       <select id="service" class="form__select" name="service">
+        <option class="form__option" value="patreon" selected>Patreon</option>
+        <option class="form__option" value="fanbox">Pixiv Fanbox</option>
+        <option class="form__option" value="gumroad">Gumroad</option>
+        <option class="form__option" value="subscribestar">SubscribeStar</option>
+        <option class="form__option" value="discord">Discord</option>
+        <option class="form__option" value="dlsite">DLsite English</option>
+        <option class="form__option" value="dlsite-jp">DLsite Japan</option>
+      </select>
     </div>
+
+    <div class="form__section">
+      <label class="form__label" for="session-key" >
+        Session key:
+      </label>
+      <input 
+        id="session-key"
+        class="form__input"
+        type="text"
+        name="session_key"
+        autocomplete="off" 
+        autocorrect="off" 
+        autocapitalize="off" 
+        spellcheck="false"
+        required
+      >
+      <small class="form__subtitle">
+        <a href="/importer/tutorial">Learn how to get your session key.</a>
+      </small>
+    </div>
+
+    <div id="discord-section" class="form__section form__section--hidden">
+      <label for="channel_ids" class="form__label">
+        Discord channel IDs:
+      </label>
+      <input 
+        type="text"
+        class="form__input"
+        id="channel_ids"
+        name="channel_ids"
+        autocomplete="off" 
+        autocorrect="off" 
+        autocapitalize="off" 
+        spellcheck="false"
+      >
+      <small class="form__subtitle">
+        comma separated, no spaces
+      </small>
+    </div>
+
+    <div id="consent" class="form__section form__section--checkbox">
+      <input 
+        class="form__input"
+        type="checkbox" 
+        checked="checked" 
+        id="save-session-key" 
+        name="save_session_key" 
+        value="1"
+      />
+      <label class="form__label" for="save-session-key">
+        I want to allow the development team to use my session for debugging (your session will be encrypted)
+      </label>
+    </div>
+
+    <div class="form__section">
+      <button 
+        class="form__button form__button--submit" 
+        type="submit" 
+      >
+        Submit key
+      </button>
+    </div>
+
   </form>
+  <h2 class="site-section__subheading">Important information</h2>
   <p>
-    <a href="/importer/tutorial">Learn how to get your session key.</a><br>
-    <h2>Important information</h2>
     Your session key is used to scrape paid posts from your feed. After downloading missing posts, the key is immediately discarded and never stored.
-    <h3>DLsite</h3>
-    <ul>
-      <li>The English and Japanese versions of DLsite are separate, and have different APIs and login systems. Make sure to select the right one!</li>
-      <li>As of right now, the importer is unable to crack DRM-protected works from DLsite. (extensions .dlst and .cpd) These will not be downloaded.</li>
-      <li>DLsite has a short token expiration period. If your import fails, try getting a new token by logging out and back in.</li>
-    </ul>
+  </p>
+  <h3>DLsite</h3>
+  <ul>
+    <li>The English and Japanese versions of DLsite are separate, and have different APIs and login systems. Make sure to select the right one!</li>
+    <li>As of right now, the importer is unable to crack DRM-protected works from DLsite. (extensions .dlst and .cpd) These will not be downloaded.</li>
+    <li>DLsite has a short token expiration period. If your import fails, try getting a new token by logging out and back in.</li>
+  </ul>
+  <p>
     If you're having trouble with the importer, <a href="mailto:admin@kemono.party">contact admin.</a> 
   </p>
-</div>
-<script src="/static/js/importer.js"></script>
+</section>
 {% endblock %}
