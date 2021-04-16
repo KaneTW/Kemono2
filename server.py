@@ -14,7 +14,7 @@ import src.internals.cache.redis as redis
 from src.internals.cache.flask_cache import cache
 from src.lib.ab_test import get_all_variants
 from src.lib.account import is_logged_in
-from src.utils.utils import url_is_for_non_logged_file_extension
+from src.utils.utils import url_is_for_non_logged_file_extension, render_page_data
 
 from src.pages.home import home
 from src.pages.legacy import legacy
@@ -47,6 +47,7 @@ app.register_blueprint(importer_page)
 
 app.config.from_pyfile('flask.cfg')
 app.jinja_env.globals.update(is_logged_in=is_logged_in)
+app.jinja_env.globals.update(render_page_data=render_page_data)
 app.jinja_env.filters['regex_match'] = lambda val, rgx: re.search(rgx, val)
 app.jinja_env.filters['regex_find'] = lambda val, rgx: re.findall(rgx, val)
 
@@ -61,6 +62,7 @@ redis.init()
 
 @app.before_request
 def do_init_stuff():
+    g.page_data = {}
     g.request_start_time = datetime.datetime.now()
     session.permanent = True
     app.permanent_session_lifetime = timedelta(days=30)

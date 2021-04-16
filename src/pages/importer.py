@@ -1,4 +1,4 @@
-from flask import Blueprint, request, make_response, render_template, current_app
+from flask import Blueprint, request, make_response, render_template, current_app, g
 
 import requests
 from os import getenv
@@ -44,29 +44,30 @@ def importer_ok():
     response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
     return response
 
-@importer_page.route('/importer/status/<log_id>')
-def importer_status(log_id):
+@importer_page.route('/importer/status/<import_id>')
+def importer_status(import_id):
     props = {
         'currentPage': 'import',
     }
 
+    g.page_data['import_id'] = import_id
+
     response = make_response(render_template(
         'importer_status.html',
-        props = props,
-        log_id = log_id
+        props = props
     ), 200)
 
     response.headers['Cache-Control'] = 'max-age=0, private, must-revalidate'
     return response
 
-@importer_page.route('/api/logs/<log_id>')
-def get_importer_logs(log_id):
+@importer_page.route('/api/logs/<import_id>')
+def get_importer_logs(import_id):
     host = getenv('ARCHIVERHOST')
     port = getenv('ARCHIVERPORT') if getenv('ARCHIVERPORT') else '8000'
 
     try:
         r = requests.get(
-            f'http://{host}:{port}/api/logs/{log_id}'
+            f'http://{host}:{port}/api/logs/{import_id}'
         )
         r.raise_for_status()
         return r.text, r.status_code
@@ -91,10 +92,10 @@ def importer_submit():
         )
 
         r.raise_for_status()
-        log_id = r.text
+        import_id = r.text
         props = {
             'currentPage': 'import',
-            'redirect': f'/importer/status/{log_id}'
+            'redirect': f'/importer/status/{import_id}'
         }
         return make_response(render_template(
             'success.html',
