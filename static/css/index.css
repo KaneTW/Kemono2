@@ -149,6 +149,10 @@ a:link {
   background: #3a3d43;
 }
 
+.jumbo p {
+  margin: 0;
+}
+
 .jumbo-user {
   text-align: center;
 }
