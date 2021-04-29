@@ -26,18 +26,6 @@ from ..utils.utils import make_cache_key, relative_time, delta_key, allowed_file
 
 legacy = Blueprint('legacy', __name__)
 
-# @legacy.route('/thumbnail/<path:path>')
-# def thumbnail(path):
-#     try:
-#         image = Image.open(join(getenv('DB_ROOT'), path))
-#         image = image.convert('RGB')
-#         image.thumbnail((800, 800))
-#         makedirs(dirname(join(getenv('DB_ROOT'), 'thumbnail', path)), exist_ok=True)
-#         image.save(join(getenv('DB_ROOT'), 'thumbnail', path), 'JPEG', quality=60)
-#         return redirect(join('/', 'thumbnail', path), code=302)
-#     except Exception as e:
-#         return f"The file you requested could not be converted. Error: {e}", 404
-
 @legacy.route('/artists/updated')
 @cache.cached(key_prefix=make_cache_key)
 def updated_artists():
