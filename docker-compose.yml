@@ -34,7 +34,6 @@ services:
       - ARCHIVERPORT=80
     volumes:
       - ./flask.cfg:/app/flask.cfg
-      - data:/storage
     sysctls:
       net.core.somaxconn: 500
     healthcheck:

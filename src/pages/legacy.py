@@ -7,7 +7,7 @@ from feedgen.feed import FeedGenerator
 from urllib.parse import urlencode
 from datetime import datetime, timedelta
 from os import getenv, stat, rename, makedirs
-from os.path import join, dirname, isfile, splitext
+from os.path import join, dirname, isfile, splitext, basename
 from shutil import move
 
 from PIL import Image
@@ -26,17 +26,17 @@ from ..utils.utils import make_cache_key, relative_time, delta_key, allowed_file
 
 legacy = Blueprint('legacy', __name__)
 
-@legacy.route('/thumbnail/<path:path>')
-def thumbnail(path):
-    try:
-        image = Image.open(join(getenv('DB_ROOT'), path))
-        image = image.convert('RGB')
-        image.thumbnail((800, 800))
-        makedirs(dirname(join(getenv('DB_ROOT'), 'thumbnail', path)), exist_ok=True)
-        image.save(join(getenv('DB_ROOT'), 'thumbnail', path), 'JPEG', quality=60)
-        return redirect(join('/', 'thumbnail', path), code=302)
-    except Exception as e:
-        return f"The file you requested could not be converted. Error: {e}", 404
+# @legacy.route('/thumbnail/<path:path>')
+# def thumbnail(path):
+#     try:
+#         image = Image.open(join(getenv('DB_ROOT'), path))
+#         image = image.convert('RGB')
+#         image.thumbnail((800, 800))
+#         makedirs(dirname(join(getenv('DB_ROOT'), 'thumbnail', path)), exist_ok=True)
+#         image.save(join(getenv('DB_ROOT'), 'thumbnail', path), 'JPEG', quality=60)
+#         return redirect(join('/', 'thumbnail', path), code=302)
+#     except Exception as e:
+#         return f"The file you requested could not be converted. Error: {e}", 404
 
 @legacy.route('/artists/updated')
 @cache.cached(key_prefix=make_cache_key)
@@ -431,14 +431,17 @@ def request_submit():
                 limit = int(getenv('REQUESTS_IMAGES')) if getenv('REQUESTS_IMAGES') else 1048576
                 if stat(tmp).st_size > limit:
                     abort(413)
-                makedirs(join(getenv('DB_ROOT'), 'requests', 'images'), exist_ok=True)
-                store = join(getenv('DB_ROOT'), 'requests', 'images', filename)
-                copy = 1
-                while isfile(store):
-                    filename = splitext(original)[0] + '-' + str(copy) + splitext(original)[1]
-                    store = join(getenv('DB_ROOT'), 'requests', 'images', filename)
-                    copy += 1
-                move(tmp, store)
+                try:
+                    host = getenv('ARCHIVERHOST')
+                    port = getenv('ARCHIVERPORT') if getenv('ARCHIVERPORT') else '8000'
+                    r = requests.post(
+                        f'http://{host}:{port}/api/upload/requests/images',
+                        files = { 'file' : open(tmp) }
+                    )
+                    filename = basename(r.text)
+                    r.raise_for_status()
+                except Exception:
+                    return f'Error while connecting to archiver.', 500
     except Exception as error:
         props['message'] = 'Failed to upload image. Error: {}'.format(error)
         return make_response(render_template(
@@ -493,13 +496,13 @@ def upload():
     if int(request.form.get('resumableTotalSize')) > int(getenv('UPLOAD_LIMIT')):
         return "File too large.", 415
 
-    makedirs(join(getenv('DB_ROOT'), 'uploads'), exist_ok=True)
-    makedirs(join(getenv('DB_ROOT'), 'uploads', 'temp'), exist_ok=True)
+    makedirs('/tmp/uploads', exist_ok=True)
+    makedirs('/tmp/uploads/incomplete', exist_ok=True)
 
     resumable = UploaderFlask(
         resumable_dict,
-        join(getenv('DB_ROOT'), 'uploads'),
-        join(getenv('DB_ROOT'), 'uploads', 'temp'),
+        '/tmp/uploads',
+        '/tmp/uploads/incomplete',
         request.files['file']
     )
 
@@ -511,6 +514,18 @@ def upload():
             resumable.cleanup()
         except:
             pass
+
+        try:
+            host = getenv('ARCHIVERHOST')
+            port = getenv('ARCHIVERPORT') if getenv('ARCHIVERPORT') else '8000'
+            r = requests.post(
+                f'http://{host}:{port}/api/upload/uploads',
+                files = { 'file' : open(join('/tmp/uploads', request.form.get('resumableFilename'))) }
+            )
+            final_path = r.text
+            r.raise_for_status()
+        except Exception:
+            return f'Error while connecting to archiver.', 500
 
         post_model = {
             'id': ''.join(random.choice(string.ascii_letters) for x in range(8)),
@@ -524,8 +539,8 @@ def upload():
             'published': datetime.now(),
             'edited': None,
             'file': {
-                "name": request.form.get('resumableFilename'),
-                "path": f"/uploads/{request.form.get('resumableFilename')}"
+                "name": basename(final_path),
+                "path": final_path
             },
             'attachments': []
         }
