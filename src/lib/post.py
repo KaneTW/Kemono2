@@ -193,7 +193,7 @@ def get_render_data_for_posts(posts):
             else:
                 result_is_image.append(False)
                 attachments.append({
-                    'path': post['file']['path'],
+                    'path': post['file']['path'].replace('https://kemono.party',''),
                     'name': post['file'].get('name')
                 })
         else:
