@@ -1,12 +1,33 @@
-window.onload = () => {
-  document.getElementById('channel_ids').style.display = 'none';
-  document.getElementById('service').addEventListener('change', () => {
-    switch (document.getElementById('service').value) {
-      case 'discord':
-        document.getElementById('channel_ids').style.display = 'block';
-        break;
-      default:
-        document.getElementById('channel_ids').style.display = 'none';
+(function() {
+  "use strict";
+
+  /**
+   * @type {HTMLFormElement}
+   */
+  const form = document.querySelector(".form");
+  const discordSection = form.querySelector("#discord-section");
+
+  form.addEventListener("change", switchDiscordSection);
+
+  /**
+   * @param {Event} event
+   */
+  function switchDiscordSection(event) {
+
+    if (event.target.id === "service") {
+      event.stopPropagation();
+
+      /**
+       * @type {HTMLSelectElement}
+       */
+      const select = event.target;
+
+      if (select.value === "discord") {
+        discordSection.classList.remove("form__section--hidden");
+      } else {
+        discordSection.classList.add("form__section--hidden");
+      }
     }
-  });
-};
+   
+  }
+})();
