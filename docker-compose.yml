@@ -28,10 +28,12 @@ services:
       - PGPASSWORD=shinonome
       - PGDATABASE=kemonodb
       - PGHOST=kemono-db
+      - REDIS_HOST=kemono-redis
+      - REDIS_PORT=6379
       - ARCHIVERHOST=kemono-archiver
       - ARCHIVERPORT=80
     volumes:
-      - data:/storage
+      - ./flask.cfg:/app/flask.cfg
     sysctls:
       net.core.somaxconn: 500
     healthcheck:

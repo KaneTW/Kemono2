@@ -11,6 +11,5 @@ RUN pip3 install -r requirements.txt
 
 COPY ./nginx.conf /etc/nginx/sites-enabled/default
 
-ENV DB_ROOT=/storage
 ENV LANG=C.UTF-8
 CMD service nginx start && uwsgi --ini ./uwsgi.ini
