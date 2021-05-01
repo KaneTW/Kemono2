@@ -136,7 +136,7 @@ def do_artist_post_search(id, service, search, o, limit):
 
 def get_artist_post_page(artist_id, service, offset, limit):
     posts = get_artist_posts(artist_id, service, offset, limit, 'published desc')
-    total_count = get_artist_post_count(artist_id, service)
+    total_count = get_artist_post_count(service, artist_id)
     return (posts, total_count)
 
 def make_artist_display_data(artist):

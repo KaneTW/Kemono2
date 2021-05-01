@@ -37,6 +37,8 @@ def list():
     props['fave_type'] = fave_type
     props['sort_field'] = sort_field
     props['sort_asc'] = sort_asc
+    props['count'] = len(favorites)
+    props['limit'] = 25
 
     response = make_response(render_template(
         'favorites.html',
