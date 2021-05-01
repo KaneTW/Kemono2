@@ -486,6 +486,10 @@ select::-ms-expand {
   color: #000;
 }
 
+.search-input {
+  text-align: center;
+}
+
 input[type="text"], 
 input[type="password"], 
 input[type="number"] {
