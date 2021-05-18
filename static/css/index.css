@@ -2,6 +2,11 @@ html {
   background: #1d1f21
 }
 
+* {
+  font-family: Helvetica, sans-serif;
+  color: #fff;
+}
+
 .flash_messages {
   background-color: #3a3d43;
   border-radius: 0.25rem;
@@ -42,6 +47,14 @@ a {
   color: #87CEFA;
 }
 
+a:visited {
+  text-decoration: none;
+}
+
+a:link {
+  text-decoration: none;
+}
+
 .a {
   color: #87CEFA;
   font-family: Verdana, sans-serif;
@@ -53,11 +66,6 @@ select * {
 
 h1, h2, h3 {
   font-weight: normal;
-}
-
-* {
-  font-family: Helvetica, sans-serif;
-  color: #fff;
 }
 
 html, button, input, select, textarea, .pure-g [class *= "pure-u"] {
@@ -77,14 +85,6 @@ html, button, input, select, textarea, .pure-g [class *= "pure-u"] {
 .content-grid * {
   max-width: 200px;
   max-height: 200px;
-}
-
-a:visited {
-  text-decoration: none;
-}
-
-a:link {
-  text-decoration: none;
 }
 
 .no-posts {
@@ -704,16 +704,22 @@ thead th {
 
 /*  BEM styles */
 
+/* Site sections */
+
 /* .site-section {} */
 
-.site-section__register-cta {
-  text-align: center;
-}
 .site-section__heading {
   text-align: center;
 }
 
+.site-section__register-cta {
+  text-align: center;
+}
+
 /* .site-section__subheading {} */
+/* END Site sections */
+
+/* Forms */
 
 .form {
   box-sizing: border-box;
@@ -850,3 +856,5 @@ thead th {
   );
   border: 0;
 }
+
+/* END Forms */
