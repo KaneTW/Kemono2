@@ -1,4 +1,6 @@
 let currentChannel;
+//image file formats which can be rendered in browser
+let imageFormats = ['bmp','gif','ico','jpeg','jpe','jpg','jfif','apng','png','tga','tiff','tif','svg','webp']
 /* eslint-disable no-unused-vars */
 const loadMessages = async (channelId, skip = 0) => {
   const messages = document.getElementById('messages');
@@ -15,7 +17,7 @@ const loadMessages = async (channelId, skip = 0) => {
     let avatarurl = '';
     let embeds = '';
     msg.attachments.map(dl => {
-      if (dl.isImage) {
+      if (imageFormats.includes(dl.name.split('.').pop())) {
         dls += `<a href="${dl.path}" target="_blank"><img class="user-post-image" style="max-width:300px"src="${dl.path}"></a><br>`;
       } else {
         dls += `<a href="${dl.path}">Download ${dl.name}</a><br>`;
