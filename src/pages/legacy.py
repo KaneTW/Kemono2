@@ -485,7 +485,7 @@ def request_submit():
                     port = getenv('ARCHIVERPORT') if getenv('ARCHIVERPORT') else '8000'
                     r = requests.post(
                         f'http://{host}:{port}/api/upload/requests/images',
-                        files = { 'file' : open(tmp) }
+                        files = { 'file' : open(tmp, 'rb') }
                     )
                     filename = basename(r.text)
                     r.raise_for_status()
@@ -569,7 +569,7 @@ def upload():
             port = getenv('ARCHIVERPORT') if getenv('ARCHIVERPORT') else '8000'
             r = requests.post(
                 f'http://{host}:{port}/api/upload/uploads',
-                files = { 'file' : open(join('/tmp/uploads', request.form.get('resumableFilename'))) }
+                files = { 'file' : open(join('/tmp/uploads', request.form.get('resumableFilename')), 'rb') }
             )
             final_path = r.text
             r.raise_for_status()
