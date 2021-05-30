@@ -28,7 +28,8 @@ from src.pages.importer import importer_page
 
 app = Flask(
     __name__,
-    template_folder='views'
+    static_folder='dist/static',
+    template_folder='dist/pages'
 )
 
 app.url_map.strict_slashes = False

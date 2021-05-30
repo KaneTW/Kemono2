@@ -1,0 +1,17 @@
+dist/
+client/
+__pycache__
+venv
+.env
+.env.*
+.git
+.gitignore
+Dockerfile
+Dockerfile*
+docker-compose*
+.dockerignore
+*.code-workspace
+.vscode
+node_modules
+npm-debug.log
+README.md

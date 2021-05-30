@@ -1,30 +1,20 @@
 version: '2.3'
 services:
-  kemono-db:
-    image: healthcheck/postgres
-    container_name: kemono-db
-    environment:
-      - POSTGRES_USER=nano
-      - POSTGRES_PASSWORD=shinonome
-      - POSTGRES_DB=kemonodb
-    volumes:
-      - db-data:/var/lib/postgresql/data/
-    restart: unless-stopped
-    # ports:
-    #  - 5432:5432
-
-  kemono-app:
-    build: .
-    container_name: kemono
+  kemono-app-dev:
+    build: 
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: kemono-dev
     restart: unless-stopped
     depends_on:
       kemono-db:
         condition: service_healthy
     ports:
-      - 8000:80
+      - 5000:80
     env_file:
       - .env
     environment:
+      - FLASK_ENV=development
       - PGUSER=nano
       - PGPASSWORD=shinonome
       - PGDATABASE=kemonodb
@@ -34,7 +24,9 @@ services:
       - ARCHIVERHOST=kemono-archiver
       - ARCHIVERPORT=80
     volumes:
-      - frontend-assets:/app/dist:ro
+      - .:/app
+      - ./nginx.log:/var/log/nginx/error.log
+      - frontend-assets-dev:/app/dist:ro
     sysctls:
       net.core.somaxconn: 500
     healthcheck:
@@ -43,16 +35,33 @@ services:
       timeout: 2m
       retries: 3
       start_period: 30s
-  
-  kemono-frontend:
+      
+  kemono-frontend-dev:
     build: 
       context: ./client
-    container_name: kemono-frontend
+      dockerfile: Dockerfile.dev
+    container_name: kemono-frontend-dev
     environment: 
-      - NODE_ENV=production
+      - NODE_ENV=development
     volumes:
-      - frontend-assets:/app/dist
-    
+      - ./client/src:/app/src
+      - ./client/static:/app/static
+      - frontend-assets-dev:/app/dev
+    stdin_open: true
+
+  kemono-db:
+    image: healthcheck/postgres
+    container_name: kemono-db
+    environment:
+      - POSTGRES_USER=nano
+      - POSTGRES_PASSWORD=shinonome
+      - POSTGRES_DB=kemonodb
+    volumes:
+      - db-data-dev:/var/lib/postgresql/data/
+    restart: unless-stopped
+    # ports:
+    #  - 5432:5432
+
   kemono-archiver:
     image: openyiff/kitsune
     container_name: kemono-archiver
@@ -62,9 +71,14 @@ services:
         condition: service_healthy
     volumes:
       - ./kitsune.py:/app/config.py
-      - data:/storage
+      - data-dev:/storage
     sysctls:
       net.core.somaxconn: 40000
+
+  kemono-redis:
+    image: redis:6.2.0
+    container_name: kemono-redis
+
   autoheal:
     restart: always
     container_name: kemono-autoheal
@@ -73,26 +87,24 @@ services:
       - AUTOHEAL_CONTAINER_LABEL=all
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-  kemono-redis:
-    image: redis:6.2.0
-    container_name: kemono-redis
+
 volumes:
   # If you need to store your volumes manually, uncomment the "driver_opts" lines and specify your "device" location.
-  db-data:
+  db-data-dev:
     driver: local
     # driver_opts:
     #   type: 'none'
     #   o: 'bind'
-    #   device: "/mnt/slab1/kemono-db"
-  data:
+    #   device: "/mnt/slab1/kemono-db-dev"
+  data-dev:
     driver: local
     # driver_opts:
     #   type: 'none'
     #   o: 'bind'
-    #   device: "/mnt/slab1/kemono"
-  frontend-assets:
+    #   device: "/mnt/slab1/kemono-dev"
+  frontend-assets-dev:
     driver: local
     # driver_opts:
     #   type: 'none'
     #   o: 'bind'
-    #   device: "/mnt/slab1/kemono-assets"
+    #   device: "/mnt/slab1/kemono-assets-dev"
