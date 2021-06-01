@@ -11,3 +11,7 @@ redis_port = 6379
 
 # proxies = ["socks5://user:pass@host:port"]
 proxies = []
+
+# BAN url prefix (for varnish purging and the like)
+# ban_url = 'http://10.0.0.1:8313'
+ban_url = ''
