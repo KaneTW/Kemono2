@@ -372,14 +372,15 @@ def vote_up(id):
             props = props
         ), 401)
     else:
-        record = result.get('ips')
-        record.append(hash)
-        query = "UPDATE requests SET votes = votes + 1,"
-        query += "ips = %s "
-        params = (record,)
-        query += "WHERE id = %s"
-        params += (id,)
-        cursor.execute(query, params)
+        with get_cursor() as cursor:
+            record = result.get('ips')
+            record.append(hash)
+            query = "UPDATE requests SET votes = votes + 1,"
+            query += "ips = %s "
+            params = (record,)
+            query += "WHERE id = %s"
+            params += (id,)
+            cursor.execute(query, params)
 
         return make_response(render_template(
             'success.html',
@@ -700,7 +701,7 @@ def post_api(service, user, post):
         query = "SELECT * FROM posts WHERE id = %s AND \"user\" = %s AND service = %s ORDER BY added asc"
         params = (post, user, service)
         cursor.execute(query, params)
-    results = cursor.fetchall()
+        results = cursor.fetchall()
     return jsonify(results)
 
 @legacy.route('/api/<service>/user/<user>/post/<post>/flag')
