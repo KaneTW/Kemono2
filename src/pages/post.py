@@ -41,7 +41,6 @@ def post_next(service, user_id, post_id):
 
 @post.route('/<service>/user/<artist_id>/post/<post_id>')
 def get(service, artist_id, post_id):
-    cursor = get_cursor()
     props = {
         'currentPage': 'posts',
         'service': service if service else 'patreon'

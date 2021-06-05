@@ -11,10 +11,10 @@ def get_random_posts_keys(count, reload = False):
     key = 'random_post_keys:' + str(count)
     post_keys = redis.get(key)
     if post_keys is None or reload:
-        cursor = get_cursor()
-        query = "SELECT id, \"user\", service FROM posts WHERE file != '{}' AND attachments != '{}' ORDER BY random() LIMIT %s"
-        cursor.execute(query, (count,))
-        post_keys = cursor.fetchall()
+        with get_cursor() as cursor:
+            query = "SELECT id, \"user\", service FROM posts WHERE file != '{}' AND attachments != '{}' ORDER BY random() LIMIT %s"
+            cursor.execute(query, (count,))
+            post_keys = cursor.fetchall()
         redis.set(key, ujson.dumps(post_keys), ex = 600)
     else:
         post_keys = ujson.loads(post_keys)
@@ -25,10 +25,10 @@ def get_all_post_keys(reload = False):
     key = 'all_post_keys'
     post_keys = redis.get(key)
     if post_keys is None or reload:
-        cursor = get_cursor()
-        query = "SELECT id, \"user\", service FROM posts"
-        cursor.execute(query)
-        post_keys = cursor.fetchall()
+        with get_cursor() as cursor:
+            query = "SELECT id, \"user\", service FROM posts"
+            cursor.execute(query)
+            post_keys = cursor.fetchall()
         redis.set(key, ujson.dumps(post_keys), ex = 600)
     else:
         post_keys = ujson.loads(post_keys)
@@ -39,10 +39,10 @@ def get_post(post_id, artist_id, service, reload = False):
     key = 'post:' + service + ':' + str(artist_id) + ':' + str(post_id)
     post = redis.get(key)
     if post is None or reload:
-        cursor = get_cursor()
-        query = 'SELECT * FROM posts WHERE id = %s AND \"user\" = %s AND service = %s'
-        cursor.execute(query, (post_id, artist_id, service))
-        post = cursor.fetchone()
+        with get_cursor() as cursor:
+            query = 'SELECT * FROM posts WHERE id = %s AND \"user\" = %s AND service = %s'
+            cursor.execute(query, (post_id, artist_id, service))
+            post = cursor.fetchone()
         redis.set(key, serialize_post(post), ex = 600)
     else:
         post = deserialize_post(post)
@@ -53,10 +53,10 @@ def get_all_posts_by_artist(artist_id, service, reload = False):
     key = 'posts_by_artist:' + service + ':' + str(artist_id)
     posts = redis.get(key)
     if posts is None or reload:
-        cursor = get_cursor()
-        query = 'SELECT * FROM posts WHERE \"user\" = %s AND service = %s'
-        cursor.execute(query, (artist_id, service))
-        posts = cursor.fetchall()
+        with get_cursor() as cursor:
+            query = 'SELECT * FROM posts WHERE \"user\" = %s AND service = %s'
+            cursor.execute(query, (artist_id, service))
+            posts = cursor.fetchall()
         redis.set(key, serialize_posts(posts), ex = 600)
     else:
         posts = deserialize_posts(posts)
@@ -67,10 +67,10 @@ def get_artist_posts(artist_id, service, offset, limit, sort = 'id', reload = Fa
     key = 'artist_posts_offset:' + service + ':' + str(artist_id) + ':' + str(offset)
     posts = redis.get(key)
     if posts is None or reload:
-        cursor = get_cursor()
-        query = 'SELECT * FROM posts WHERE \"user\" = %s AND service = %s ORDER BY ' + sort + ' OFFSET %s LIMIT %s'
-        cursor.execute(query, (artist_id, service, offset, limit,))
-        posts = cursor.fetchall()
+        with get_cursor() as cursor:
+            query = 'SELECT * FROM posts WHERE \"user\" = %s AND service = %s ORDER BY ' + sort + ' OFFSET %s LIMIT %s'
+            cursor.execute(query, (artist_id, service, offset, limit,))
+            posts = cursor.fetchall()
         redis.set(key, serialize_posts(posts), ex = 600)
     else:
         posts = deserialize_posts(posts)
@@ -81,10 +81,10 @@ def is_post_flagged(service, artist_id, post_id, reload = False):
     key = 'is_post_flagged:' + service + ':' + str(artist_id) + ':' + str(post_id)
     flagged = redis.get(key)
     if flagged is None or reload:
-        cursor = get_cursor()
-        query = "SELECT * FROM booru_flags WHERE id = %s AND \"user\" = %s AND service = %s"
-        cursor.execute(query, (post_id, artist_id, service,))
-        flagged = cursor.fetchone() is not None
+        with get_cursor() as cursor:
+            query = "SELECT * FROM booru_flags WHERE id = %s AND \"user\" = %s AND service = %s"
+            cursor.execute(query, (post_id, artist_id, service,))
+            flagged = cursor.fetchone() is not None
         redis.set(key, str(flagged), ex = 600)
     else:
         flagged = flagged.decode('utf-8') == 'True'
@@ -95,27 +95,27 @@ def get_next_post_id(post_id, artist_id, service, reload = False):
     key = 'next_post:' + service + ':' + str(artist_id) + ':' + str(post_id)
     next_post = redis.get(key)
     if next_post is None or reload:
-        cursor = get_cursor()
-        query = """
-            SELECT id
-            FROM posts
-            WHERE
-                posts.user = %s
-                AND service = %s
-                AND published < (
-                    SELECT published
-                    FROM posts
-                    WHERE
-                        id = %s
-                        AND "user" = %s
-                        AND service = %s
-                    LIMIT 1
-                )
-            ORDER BY published DESC
-            LIMIT 1
-        """
-        cursor.execute(query, (artist_id, service, post_id, artist_id, service))
-        next_post = cursor.fetchone()
+        with get_cursor() as cursor:
+            query = """
+                SELECT id
+                FROM posts
+                WHERE
+                    posts.user = %s
+                    AND service = %s
+                    AND published < (
+                        SELECT published
+                        FROM posts
+                        WHERE
+                            id = %s
+                            AND "user" = %s
+                            AND service = %s
+                        LIMIT 1
+                    )
+                ORDER BY published DESC
+                LIMIT 1
+            """
+            cursor.execute(query, (artist_id, service, post_id, artist_id, service))
+            next_post = cursor.fetchone()
         if next_post is None:
             next_post = ""
         else:
@@ -134,27 +134,27 @@ def get_previous_post_id(post_id, artist_id, service, reload = False):
     key = 'previous_post:' + service + ':' + str(artist_id) + ':' + str(post_id)
     prev_post = redis.get(key)
     if prev_post is None or reload:
-        cursor = get_cursor()
-        query = """
-            SELECT id
-            FROM posts
-            WHERE
-                posts.user = %s
-                AND service = %s
-                AND published > (
-                    SELECT published
-                    FROM posts
-                    WHERE
-                        id = %s
-                        AND "user" = %s
-                        AND service = %s
-                    LIMIT 1
-                )
-            ORDER BY published ASC
-            LIMIT 1
-        """
-        cursor.execute(query, (artist_id, service, post_id, artist_id, service,))
-        prev_post = cursor.fetchone()
+        with get_cursor() as cursor:
+            query = """
+                SELECT id
+                FROM posts
+                WHERE
+                    posts.user = %s
+                    AND service = %s
+                    AND published > (
+                        SELECT published
+                        FROM posts
+                        WHERE
+                            id = %s
+                            AND "user" = %s
+                            AND service = %s
+                        LIMIT 1
+                    )
+                ORDER BY published ASC
+                LIMIT 1
+            """
+            cursor.execute(query, (artist_id, service, post_id, artist_id, service,))
+            prev_post = cursor.fetchone()
         if prev_post is None:
             prev_post = ""
         else:

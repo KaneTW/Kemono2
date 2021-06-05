@@ -22,6 +22,7 @@ from hashlib import sha256
 
 from ..internals.database.database import get_cursor
 from ..internals.cache.flask_cache import cache
+from ..lib.post import is_post_flagged
 from ..utils.utils import make_cache_key, relative_time, delta_key, allowed_file, limit_int
 
 legacy = Blueprint('legacy', __name__)
@@ -29,7 +30,6 @@ legacy = Blueprint('legacy', __name__)
 @legacy.route('/artists/updated')
 @cache.cached(key_prefix=make_cache_key)
 def updated_artists():
-    cursor = get_cursor()
     props = {
         'currentPage': 'artists'
     }
@@ -40,38 +40,38 @@ def updated_artists():
 
     props['limit'] = limit
 
-    query = 'SELECT posts.user, service, max(added) FROM posts GROUP BY posts.user, service ORDER BY max(added) desc '
-    params = ()
-    query += "OFFSET %s "
-    params += (offset,)
-    query += "LIMIT 25"
-    cursor.execute(query, params)
-    posts_results = cursor.fetchall()
+    with get_cursor() as cursor:
+        query = 'SELECT posts.user, service, max(added) FROM posts GROUP BY posts.user, service ORDER BY max(added) desc '
+        params = ()
+        query += "OFFSET %s "
+        params += (offset,)
+        query += "LIMIT 25"
+        cursor.execute(query, params)
+        post_results = cursor.fetchall()
 
-    count_query = "SELECT posts.user, service, max(added) FROM posts GROUP BY posts.user, service"
-    count_cursor = get_cursor()
-    count_cursor.execute(count_query)
-    results2 = cursor.fetchall()
-    props["count"] = len(results2)
+    with get_cursor() as cursor:
+        count_query = "SELECT posts.user, service, max(added) FROM posts GROUP BY posts.user, service"
+        cursor.execute(count_query)
+        props["count"] = len(cursor.fetchall())
 
     base = request.args.to_dict()
     base.pop('o', None)
 
     results = []
-    for post in posts_results:
-        cursor2 = get_cursor()
-        query2 = "SELECT * FROM lookup WHERE id = %s AND service = %s"
-        params2 = (post['user'], post['service'])
-        cursor2.execute(query2, params2)
-        user_result = cursor2.fetchone()
-        if not user_result:
-            continue
-        results.append({
-            "id": post['user'],
-            "name": user_result['name'],
-            "service": post['service'],
-            "updated": post['max']
-        })
+    for post in post_results:
+        with get_cursor() as cursor:
+            lookup_query = "SELECT * FROM lookup WHERE id = %s AND service = %s"
+            lookup_params = (post['user'], post['service'])
+            cursor.execute(lookup_query, lookup_params)
+            user_result = cursor.fetchone()
+            if not user_result:
+                continue
+            results.append({
+                "id": post['user'],
+                "name": user_result['name'],
+                "service": post['service'],
+                "updated": post['max']
+            })
     response = make_response(render_template(
         'updated.html',
         base = base,
@@ -81,42 +81,8 @@ def updated_artists():
     response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
     return response
 
-@legacy.route('/artists/blocked')
-def blocked():
-    props = {
-        'currentPage': 'artists'
-    }
-
-    results = []
-    if session.get('blocked'):
-        for user in session['blocked']:
-            service = user.split(':')[0]
-            user_id = user.split(':')[1]
-            
-            cursor2 = get_cursor()
-            query2 = "SELECT * FROM lookup WHERE id = %s AND service = %s"
-            params2 = (user_id, service)
-            cursor2.execute(query2, params2)
-            results2 = cursor2.fetchone()
-            
-            results.append({
-                "name": results2['name'] if results2 else "",
-                "service": service,
-                "user": user_id
-            })
-    
-    response = make_response(render_template(
-        'blocked.html',
-        props = props,
-        results = results,
-        session = session
-    ), 200)
-    response.headers['Cache-Control'] = 'no-store, max-age=0'
-    return response
-
 @legacy.route('/posts')
 def posts():
-    cursor = get_cursor()
     props = {
         'currentPage': 'posts'
     }
@@ -150,18 +116,18 @@ def posts():
         query += "LIMIT %s"
         params += (limit,)
     
-    cursor.execute(query, params)
-    results = cursor.fetchall()
+    with get_cursor() as cursor:
+        cursor.execute(query, params)
+        results = cursor.fetchall()
 
-    cursor2 = get_cursor()
-    query2 = "SELECT COUNT(*) FROM posts "
-    params2 = ()
-    if request.args.get('q'):
-        query2 += "WHERE to_tsvector('english', content || ' ' || title) @@ websearch_to_tsquery(%s)"
-        params2 += (request.args.get('q'),)
-    cursor2.execute(query2, params2)
-    results2 = cursor2.fetchall()
-    props["count"] = int(results2[0]["count"])
+    with get_cursor() as cursor:
+        count_query = "SELECT COUNT(*) FROM posts "
+        count_params = ()
+        if request.args.get('q'):
+            count_query += "WHERE to_tsvector('english', content || ' ' || title) @@ websearch_to_tsquery(%s)"
+            count_params += (request.args.get('q'),)
+        cursor.execute(count_query, count_params)
+        props["count"] = int(cursor.fetchall()[0]["count"])
 
     result_previews = []
     result_attachments = []
@@ -209,14 +175,8 @@ def posts():
                     'path': attachment['path'],
                     'name': attachment['name']
                 })
-
-        cursor4 = get_cursor()
-        query4 = "SELECT * FROM booru_flags WHERE id = %s AND \"user\" = %s AND service = %s"
-        params4 = (post['id'], post['user'], post['service'])
-        cursor4.execute(query4, params4)
-        results4 = cursor4.fetchall()
-
-        result_flagged.append(True if len(results4) > 0 else False)
+        
+        result_flagged.append(is_post_flagged(post['service'], post['user'], post['id']))
         result_previews.append(previews)
         result_attachments.append(attachments)
     
@@ -250,22 +210,22 @@ def upload_post():
 
 @legacy.route('/<service>/user/<id>/rss')
 def user_rss(service, id):
-    cursor = get_cursor()
-    query = "SELECT * FROM posts WHERE \"user\" = %s AND service = %s "
-    params = (id, service)
+    with get_cursor() as cursor:
+        query = "SELECT * FROM posts WHERE \"user\" = %s AND service = %s "
+        params = (id, service)
 
-    query += "ORDER BY added desc "
-    query += "LIMIT 10"
+        query += "ORDER BY added desc "
+        query += "LIMIT 10"
 
-    cursor.execute(query, params)
-    results = cursor.fetchall()
+        cursor.execute(query, params)
+        results = cursor.fetchall()
 
-    cursor3 = get_cursor()
-    query3 = "SELECT * FROM lookup WHERE id = %s AND service = %s"
-    params3 = (id, service)
-    cursor3.execute(query3, params3)
-    results3 = cursor.fetchall()
-    name = results3[0]['name'] if len(results3) > 0 else ''
+    with get_cursor() as cursor:
+        lookup_query = "SELECT * FROM lookup WHERE id = %s AND service = %s"
+        lookup_params = (id, service)
+        cursor.execute(lookup_query, lookup_params)
+        results3 = cursor.fetchall()
+        name = results3[0]['name'] if len(results3) > 0 else ''
 
     fg = FeedGenerator()
     fg.title(name)
@@ -325,12 +285,12 @@ def requests_list():
         params = (offset,)
         query += "LIMIT 25"
 
-        cursor2 = get_cursor()
-        query2 = "SELECT COUNT(*) FROM requests "
-        query2 += "WHERE status = 'open'"
-        cursor2.execute(query2)
-        results2 = cursor2.fetchall()
-        props["count"] = int(results2[0]["count"])
+        with get_cursor() as cursor:
+            query2 = "SELECT COUNT(*) FROM requests "
+            query2 += "WHERE status = 'open'"
+            cursor.execute(query2)
+            results2 = cursor.fetchall()
+            props["count"] = int(results2[0]["count"])
     else:
         query = "SELECT * FROM requests "
         query += "WHERE title ILIKE %s "
@@ -358,26 +318,26 @@ def requests_list():
         params += (offset,)
         query += "LIMIT 25"
 
-        cursor2 = get_cursor()
-        query2 = "SELECT COUNT(*) FROM requests "
-        query2 += "WHERE title ILIKE %s "
-        params2 = ('%' + request.args.get('q') + '%',)
-        if request.args.get('service'):
-            query2 += "AND service = %s "
-            params2 += (request.args.get('service'),)
-        query2 += "AND service != 'discord' "
-        if request.args.get('max_price'):
-            query2 += "AND price <= %s "
-            params2 += (request.args.get('max_price'),)
-        query2 += "AND status = %s"
-        params2 += (request.args.get('status'),)
-        cursor2.execute(query2, params2)
-        results2 = cursor2.fetchall()
-        props["count"] = int(results2[0]["count"])
+        with get_cursor() as cursor:
+            query2 = "SELECT COUNT(*) FROM requests "
+            query2 += "WHERE title ILIKE %s "
+            params2 = ('%' + request.args.get('q') + '%',)
+            if request.args.get('service'):
+                query2 += "AND service = %s "
+                params2 += (request.args.get('service'),)
+            query2 += "AND service != 'discord' "
+            if request.args.get('max_price'):
+                query2 += "AND price <= %s "
+                params2 += (request.args.get('max_price'),)
+            query2 += "AND status = %s"
+            params2 += (request.args.get('status'),)
+            cursor.execute(query2, params2)
+            results2 = cursor.fetchall()
+            props["count"] = int(results2[0]["count"])
 
-    cursor = get_cursor()
-    cursor.execute(query, params)
-    results = cursor.fetchall()
+    with get_cursor() as cursor:
+        cursor.execute(query, params)
+        results = cursor.fetchall()
 
     response = make_response(render_template(
         'requests_list.html',
@@ -393,9 +353,9 @@ def vote_up(id):
     query = "SELECT * FROM requests WHERE id = %s"
     params = (id,)
 
-    cursor = get_cursor()
-    cursor.execute(query, params)
-    result = cursor.fetchone()
+    with get_cursor() as cursor:
+        cursor.execute(query, params)
+        result = cursor.fetchone()
 
     props = {
         'currentPage': 'requests',
@@ -524,8 +484,8 @@ def request_submit():
         values = ','.join(data)
     )
 
-    cursor = get_cursor()
-    cursor.execute(query, params)
+    with get_cursor() as cursor:
+        cursor.execute(query, params)
 
     return make_response(render_template(
         'success.html',
@@ -604,8 +564,9 @@ def upload():
             fields = ','.join(columns),
             values = ','.join(data)
         )
-        cursor = get_cursor()
-        cursor.execute(query, list(post_model.values()))
+        
+        with get_cursor() as cursor:
+            cursor.execute(query, list(post_model.values()))
         
         return jsonify({
             "fileUploadStatus": True,
@@ -619,27 +580,27 @@ def upload():
 
 @legacy.route('/api/bans')
 def bans():
-    cursor = get_cursor()
-    query = "SELECT * FROM dnp"
-    cursor.execute(query)
-    results = cursor.fetchall()
+    with get_cursor() as cursor:
+        query = "SELECT * FROM dnp"
+        cursor.execute(query)
+        results = cursor.fetchall()
     return make_response(jsonify(results), 200)
 
 @legacy.route('/api/recent')
 def recent():
-    cursor = get_cursor()
-    query = "SELECT * FROM posts ORDER BY added desc "
-    params = ()
+    with get_cursor() as cursor:
+        query = "SELECT * FROM posts ORDER BY added desc "
+        params = ()
 
-    offset = request.args.get('o') if request.args.get('o') else 0
-    query += "OFFSET %s "
-    params += (offset,)
-    limit = request.args.get('limit') if request.args.get('limit') and int(request.args.get('limit')) <= 50 else 25
-    query += "LIMIT %s"
-    params += (limit,)
+        offset = request.args.get('o') if request.args.get('o') else 0
+        query += "OFFSET %s "
+        params += (offset,)
+        limit = request.args.get('limit') if request.args.get('limit') and int(request.args.get('limit')) <= 50 else 25
+        query += "LIMIT %s"
+        params += (limit,)
 
-    cursor.execute(query, params)
-    results = cursor.fetchall()
+        cursor.execute(query, params)
+        results = cursor.fetchall()
 
     response = make_response(jsonify(results), 200)
     response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
@@ -649,65 +610,65 @@ def recent():
 def lookup():
     if (request.args.get('q') is None):
         return make_response('Bad request', 400)
-    cursor = get_cursor()
-    query = "SELECT * FROM lookup "
-    params = ()
-    query += "WHERE name ILIKE %s "
-    params += ('%' + request.args.get('q') + '%',)
-    if (request.args.get('service')):
-        query += "AND service = %s "
-        params += (request.args.get('service'),)
-    limit = request.args.get('limit') if request.args.get('limit') and int(request.args.get('limit')) <= 150 else 50
-    query += "LIMIT %s"
-    params += (limit,)
+    
+    with get_cursor() as cursor:
+        query = "SELECT * FROM lookup "
+        params = ()
+        query += "WHERE name ILIKE %s "
+        params += ('%' + request.args.get('q') + '%',)
+        if (request.args.get('service')):
+            query += "AND service = %s "
+            params += (request.args.get('service'),)
+        limit = request.args.get('limit') if request.args.get('limit') and int(request.args.get('limit')) <= 150 else 50
+        query += "LIMIT %s"
+        params += (limit,)
 
-    cursor.execute(query, params)
-    results = cursor.fetchall()
-    response = make_response(jsonify(list(map(lambda x: x['id'], results))), 200)
+        cursor.execute(query, params)
+        results = cursor.fetchall()
+        response = make_response(jsonify(list(map(lambda x: x['id'], results))), 200)
     return response
 
 @legacy.route('/api/discord/channels/lookup')
 def discord_lookup():
-    cursor = get_cursor()
-    query = "SELECT channel FROM discord_posts WHERE server = %s GROUP BY channel"
-    params = (request.args.get('q'),)
-    cursor.execute(query, params)
-    channels = cursor.fetchall()
-    lookup = []
-    for x in channels:
-        cursor = get_cursor()
-        cursor.execute("SELECT * FROM lookup WHERE service = 'discord-channel' AND id = %s", (x['channel'],))
-        lookup_result = cursor.fetchall()
-        lookup.append({ 'id': x['channel'], 'name': lookup_result[0]['name'] if len(lookup_result) else '' })
+    with get_cursor() as cursor:
+        query = "SELECT channel FROM discord_posts WHERE server = %s GROUP BY channel"
+        params = (request.args.get('q'),)
+        cursor.execute(query, params)
+        channels = cursor.fetchall()
+        lookup = []
+        for x in channels:
+            cursor.execute("SELECT * FROM lookup WHERE service = 'discord-channel' AND id = %s", (x['channel'],))
+            lookup_result = cursor.fetchall()
+            lookup.append({ 'id': x['channel'], 'name': lookup_result[0]['name'] if len(lookup_result) else '' })
     response = make_response(jsonify(lookup))
     return response
 
 @legacy.route('/api/discord/channel/<id>')
 def discord_channel(id):
-    cursor = get_cursor()
-    query = "SELECT * FROM discord_posts WHERE channel = %s ORDER BY published desc "
-    params = (id,)
+    with get_cursor() as cursor:
+        query = "SELECT * FROM discord_posts WHERE channel = %s ORDER BY published desc "
+        params = (id,)
 
-    offset = request.args.get('skip') if request.args.get('skip') else 0
-    query += "OFFSET %s "
-    params += (offset,)
-    limit = request.args.get('limit') if request.args.get('limit') and int(request.args.get('limit')) <= 150 else 25
-    query += "LIMIT %s"
-    params += (limit,)
+        offset = request.args.get('skip') if request.args.get('skip') else 0
+        query += "OFFSET %s "
+        params += (offset,)
+        limit = request.args.get('limit') if request.args.get('limit') and int(request.args.get('limit')) <= 150 else 25
+        query += "LIMIT %s"
+        params += (limit,)
 
-    cursor.execute(query, params)
-    results = cursor.fetchall()
+        cursor.execute(query, params)
+        results = cursor.fetchall()
     return jsonify(results)
 
 @legacy.route('/api/lookup/cache/<id>')
 def lookup_cache(id):
     if (request.args.get('service') is None):
         return make_response('Bad request', 400)
-    cursor = get_cursor()
-    query = "SELECT * FROM lookup WHERE id = %s AND service = %s"
-    params = (id, request.args.get('service'))
-    cursor.execute(query, params)
-    results = cursor.fetchall()
+    with get_cursor() as cursor:
+        query = "SELECT * FROM lookup WHERE id = %s AND service = %s"
+        params = (id, request.args.get('service'))
+        cursor.execute(query, params)
+        results = cursor.fetchall()
     response = make_response(jsonify({ "name": results[0]['name'] if len(results) > 0 else '' }))
     return response
 
@@ -715,60 +676,60 @@ def lookup_cache(id):
 def user_search(service, user):
     if (request.args.get('q') and len(request.args.get('q')) > 35):
         return make_response('Bad request', 400)
-    cursor = get_cursor()
-    query = "SELECT * FROM posts WHERE \"user\" = %s AND service = %s "
-    params = (user, service)
-    query += "AND to_tsvector(content || ' ' || title) @@ websearch_to_tsquery(%s) "
-    params += (request.args.get('q'),)
-    query += "ORDER BY published desc "
+    with get_cursor() as cursor:
+        query = "SELECT * FROM posts WHERE \"user\" = %s AND service = %s "
+        params = (user, service)
+        query += "AND to_tsvector(content || ' ' || title) @@ websearch_to_tsquery(%s) "
+        params += (request.args.get('q'),)
+        query += "ORDER BY published desc "
 
-    offset = request.args.get('o') if request.args.get('o') else 0
-    query += "OFFSET %s "
-    params += (offset,)
-    limit = request.args.get('limit') if request.args.get('limit') and int(request.args.get('limit')) <= 150 else 25
-    query += "LIMIT %s"
-    params += (limit,)
+        offset = request.args.get('o') if request.args.get('o') else 0
+        query += "OFFSET %s "
+        params += (offset,)
+        limit = request.args.get('limit') if request.args.get('limit') and int(request.args.get('limit')) <= 150 else 25
+        query += "LIMIT %s"
+        params += (limit,)
 
-    cursor.execute(query, params)
-    results = cursor.fetchall()
+        cursor.execute(query, params)
+        results = cursor.fetchall()
     return jsonify(results)
 
 @legacy.route('/api/<service>/user/<user>/post/<post>')
 def post_api(service, user, post):
-    cursor = get_cursor()
-    query = "SELECT * FROM posts WHERE id = %s AND \"user\" = %s AND service = %s ORDER BY added asc"
-    params = (post, user, service)
-    cursor.execute(query, params)
+    with get_cursor() as cursor:
+        query = "SELECT * FROM posts WHERE id = %s AND \"user\" = %s AND service = %s ORDER BY added asc"
+        params = (post, user, service)
+        cursor.execute(query, params)
     results = cursor.fetchall()
     return jsonify(results)
 
 @legacy.route('/api/<service>/user/<user>/post/<post>/flag')
 def flag_api(service, user, post):
-    cursor = get_cursor()
-    query = "SELECT * FROM booru_flags WHERE id = %s AND \"user\" = %s AND service = %s"
-    params = (post, user, service)
-    cursor.execute(query, params)
-    results = cursor.fetchall()
+    with get_cursor() as cursor:
+        query = "SELECT * FROM booru_flags WHERE id = %s AND \"user\" = %s AND service = %s"
+        params = (post, user, service)
+        cursor.execute(query, params)
+        results = cursor.fetchall()
     return "", 200 if len(results) else 404
 
 @legacy.route('/api/<service>/user/<user>/post/<post>/flag', methods=["POST"])
 def new_flag_api(service, user, post):
-    cursor = get_cursor()
-    query = "SELECT * FROM posts WHERE id = %s AND \"user\" = %s AND service = %s"
-    params = (post, user, service)
-    cursor.execute(query, params)
-    results = cursor.fetchall()
-    if len(results) == 0:
-        return "", 404
+    with get_cursor() as cursor:
+        query = "SELECT * FROM posts WHERE id = %s AND \"user\" = %s AND service = %s"
+        params = (post, user, service)
+        cursor.execute(query, params)
+        results = cursor.fetchall()
+        if len(results) == 0:
+            return "", 404
 
-    cursor2 = get_cursor()
-    query2 = "SELECT * FROM booru_flags WHERE id = %s AND \"user\" = %s AND service = %s"
-    params2 = (post, user, service)
-    cursor2.execute(query2, params2)
-    results2 = cursor.fetchall()
-    if len(results2) > 0:
-        # conflict; flag already exists
-        return "", 409
+    with get_cursor() as cursor:
+        query2 = "SELECT * FROM booru_flags WHERE id = %s AND \"user\" = %s AND service = %s"
+        params2 = (post, user, service)
+        cursor.execute(query2, params2)
+        results2 = cursor.fetchall()
+        if len(results2) > 0:
+            # conflict; flag already exists
+            return "", 409
 
     scrub = Cleaner(tags = [])
     columns = ['id','"user"','service']
@@ -782,26 +743,26 @@ def new_flag_api(service, user, post):
         fields = ','.join(columns),
         values = ','.join(data)
     )
-    cursor3 = get_cursor()
-    cursor3.execute(query, params)
+    with get_cursor() as cursor:
+        cursor.execute(query, params)
 
     return "", 200
 
 @legacy.route('/api/<service>/user/<id>')
 @cache.cached(key_prefix=make_cache_key)
 def user_api(service, id):
-    cursor = get_cursor()
-    query = "SELECT * FROM posts WHERE \"user\" = %s AND service = %s ORDER BY published desc "
-    params = (id, service)
+    with get_cursor() as cursor:
+        query = "SELECT * FROM posts WHERE \"user\" = %s AND service = %s ORDER BY published desc "
+        params = (id, service)
 
-    offset = request.args.get('o') if request.args.get('o') else 0
-    query += "OFFSET %s "
-    params += (offset,)
-    limit = request.args.get('limit') if request.args.get('limit') and int(request.args.get('limit')) <= 50 else 25
-    query += "LIMIT %s"
-    params += (limit,)
+        offset = request.args.get('o') if request.args.get('o') else 0
+        query += "OFFSET %s "
+        params += (offset,)
+        limit = request.args.get('limit') if request.args.get('limit') and int(request.args.get('limit')) <= 50 else 25
+        query += "LIMIT %s"
+        params += (limit,)
 
-    cursor.execute(query, params)
-    results = cursor.fetchall()
+        cursor.execute(query, params)
+        results = cursor.fetchall()
 
     return jsonify(results)

@@ -2,6 +2,7 @@ from flask import g, current_app
 import psycopg2
 from psycopg2 import pool
 from psycopg2.extras import RealDictCursor
+from contextlib import contextmanager
 from os import getenv
 
 pool = None
@@ -17,15 +18,27 @@ def init():
             port = getenv('PGPORT') or 5432,
             cursor_factory = RealDictCursor
         )
-    except Exception as error:
-        print("Failed to connect to the database: ", error)
-    return pool
+    except Exception as e:
+        print(f"Unable to connect to the database: {e} ")
 
-def get_pool():
-    return pool
+@contextmanager
+def get_conn(key = None):
+    try:
+        with pool.getconn(key) as conn:
+            yield conn
+    except:
+        raise
+    finally:
+        pool.putconn(conn, key)
 
-def get_cursor():
-    if 'cursor' not in g:
-        g.connection = pool.getconn()
-        g.cursor = g.connection.cursor()
-    return g.cursor
+@contextmanager
+def get_cursor(key = None):
+    try:
+        with pool.getconn(key) as conn:
+            conn.autocommit = True
+            with conn.cursor() as cur:
+                yield cur
+    except:
+        raise
+    finally:
+        pool.putconn(conn, key)
