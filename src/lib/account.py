@@ -28,10 +28,10 @@ def load_account(account_id = None, reload = False):
     key = 'account:' + str(account_id)
     account = redis.get(key)
     if account is None or reload:
-        with get_cursor() as cursor:
-            query = 'select id, username, created_at from account where id = %s'
-            cursor.execute(query, (account_id,))
-            account = cursor.fetchone()
+        cursor = get_cursor()
+        query = 'select id, username, created_at from account where id = %s'
+        cursor.execute(query, (account_id,))
+        account = cursor.fetchone()
         redis.set(key, serialize_account(account))
     else:
         account = deserialize_account(account)
@@ -39,10 +39,10 @@ def load_account(account_id = None, reload = False):
     return account
 
 def get_login_info_for_username(username):
-    with get_cursor() as cursor:
-        query = 'select id, password_hash from account where username = %s'
-        cursor.execute(query, (username,))
-        return cursor.fetchone()
+    cursor = get_cursor()
+    query = 'select id, password_hash from account where username = %s'
+    cursor.execute(query, (username,))
+    return cursor.fetchone()
 
 def is_logged_in():
     if 'account_id' in session:
@@ -50,10 +50,10 @@ def is_logged_in():
     return False
 
 def is_username_taken(username):
-    with get_cursor() as cursor:
-        query = 'select id from account where username = %s'
-        cursor.execute(query, (username,))
-        return cursor.fetchone() is not None
+    cursor = get_cursor()
+    query = 'select id from account where username = %s'
+    cursor.execute(query, (username,))
+    return cursor.fetchone() is not None
 
 def create_account(username, password, favorites):
     account_id = None
@@ -65,10 +65,10 @@ def create_account(username, password, favorites):
 
         scrub = Cleaner(tags = [])
 
-        with get_cursor() as cursor:
-            query = "insert into account (username, password_hash) values (%s, %s) returning id"
-            cursor.execute(query, (scrub.clean(username), password_hash,))
-            account_id = cursor.fetchone()['id']
+        cursor = get_cursor()
+        query = "insert into account (username, password_hash) values (%s, %s) returning id"
+        cursor.execute(query, (scrub.clean(username), password_hash,))
+        account_id = cursor.fetchone()['id']
     finally:
         account_create_lock.release()
 

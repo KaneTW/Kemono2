@@ -3,6 +3,7 @@ from flask import Blueprint, redirect, url_for, g
 from ..utils.utils import make_cache_key
 from ..internals.cache.redis import get_conn
 from ..internals.cache.flask_cache import cache
+from ..internals.database.database import get_cursor
 
 from ..lib.artist import get_artist, get_random_artist_keys
 from ..lib.post import get_post, get_random_posts_keys
