@@ -153,6 +153,48 @@ def get_artist_last_updated(service, artist_id, reload = False):
 
     return last_updated
 
+def get_artists_by_update_time(offset, reload = False):
+    redis = get_conn()
+    key = 'artists_by_update_time:' + str(offset)
+    artists = redis.get(key)
+    if artists is None or reload:
+        cursor = get_cursor()
+        query = "SELECT posts.user, service, max(added) FROM posts GROUP BY posts.user, service ORDER BY max(added) desc "
+        params = ()
+        query += "OFFSET %s "
+        params += (offset,)
+        query += "LIMIT 25"
+        cursor.execute(query, (params,))
+        artists = cursor.fetchall()
+        redis.set(key, serialize_updated_artists(artists), ex = 600)
+    else:
+        artists = deserialize_updated_artists(artists)
+    return artists
+
+
+def get_all_artists_by_update_time(offset = 0, reload = False):
+    redis = get_conn()
+    key = 'all_artists_by_update_time'
+    artists = redis.get(key)
+    if artists is None or reload:
+        cursor = get_cursor()
+        query = "SELECT posts.user, service, max(added) FROM posts GROUP BY posts.user, service"
+        cursor.execute(query)
+        artists = cursor.fetchall()
+        redis.set(key, serialize_updated_artists(artists), ex = 600)
+    else:
+        artists = deserialize_updated_artists(artists)
+    return artists
+
+
+def serialize_updated_artists(artists):
+    artists = copy.deepcopy(artists)
+    return ujson.dumps(list(map(lambda artist: prepare_artist_updated_fields(artist), artists)))
+
+def deserialize_updated_artists(artists_str):
+    artists = ujson.loads(artists_str)
+    return list(map(lambda artist: rebuild_artist_updated_fields(artist), artists))
+
 def serialize_artists(artists):
     artists = copy.deepcopy(artists)
     return ujson.dumps(list(map(lambda artist: prepare_artist_fields(artist), artists)))
@@ -170,6 +212,14 @@ def deserialize_artist(artist_str):
     artist = ujson.loads(artist_str)
     if artist is not None:
         artist = rebuild_artist_fields(artist)
+    return artist
+
+def prepare_artist_updated_fields(artist):
+    artist['max'] = artist['max'].isoformat()
+    return artist
+
+def rebuild_artist_updated_fields(artist):
+    artist['max'] = dateutil.parser.parse(artist['max'])
     return artist
 
 def prepare_artist_fields(artist):

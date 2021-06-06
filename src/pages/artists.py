@@ -5,7 +5,7 @@ import re
 from ..utils.utils import sort_dict_list_by, offset, take, limit_int, parse_int
 from ..internals.cache.flask_cache import cache
 from ..internals.database.database import get_cursor
-from ..lib.artist import get_all_non_discord_artists, get_artist, get_artist_post_count, get_artists_by_service, get_top_artists_by_faves, get_count_of_artists_faved
+from ..lib.artist import get_all_non_discord_artists, get_artist, get_artist_post_count, get_artists_by_service, get_top_artists_by_faves, get_count_of_artists_faved, get_artists_by_update_time, get_all_artists_by_update_time
 from ..lib.post import get_artist_posts, get_all_posts_by_artist, is_post_flagged, get_render_data_for_posts
 from ..lib.favorites import is_artist_favorited
 from ..lib.account import load_account
@@ -47,6 +47,45 @@ def list():
         base = base
     ), 200)
     response.headers['Cache-Control'] = 's-maxage=60'
+    return response
+
+@artists.route('/artists/updated')
+def updated():
+    props = {
+        'currentPage': 'artists'
+    }
+    base = request.args.to_dict()
+    base.pop('o', None)
+
+    offset = int(request.args.get('o') or 0)
+    limit = 25
+
+    props['limit'] = limit
+
+    posts_results = get_artists_by_update_time(offset=offset)
+    props["count"] = len(get_all_artists_by_update_time())
+
+    base = request.args.to_dict()
+    base.pop('o', None)
+
+    results = []
+    for post in posts_results:
+        user_result = get_artist(post['service'], post['user'])
+        if not user_result:
+            continue
+        results.append({
+            "id": post['user'],
+            "name": user_result['name'],
+            "service": post['service'],
+            "updated": post['max']
+        })
+    response = make_response(render_template(
+        'updated.html',
+        base = base,
+        props = props,
+        results = results
+    ), 200)
+    response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
     return response
 
 @artists.route('/<service>/user/<artist_id>')
