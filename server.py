@@ -24,7 +24,6 @@ from src.pages.post import post
 from src.pages.account import account
 from src.pages.favorites import favorites
 from src.pages.help import help_app
-from src.pages.proxy import proxy_app
 from src.pages.importer import importer_page
 
 app = Flask(
@@ -42,7 +41,6 @@ app.register_blueprint(post)
 app.register_blueprint(account)
 app.register_blueprint(favorites)
 app.register_blueprint(help_app, url_prefix='/help')
-app.register_blueprint(proxy_app, url_prefix='/proxy')
 app.register_blueprint(importer_page)
 
 app.config.from_pyfile('flask.cfg')
