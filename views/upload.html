@@ -16,7 +16,6 @@
     enctype="multipart/form-data"
     style="margin: 0;"
     method="post"
-    onsubmit="return (typeof submitted == 'undefined') ? (submitted = true) : !submitted"
   >
     {% if request.args.get('service') %}
       <div>

@@ -7,7 +7,6 @@
     novalidate="novalidate"
     action="/requests"
     method="get"
-    onsubmit="return (typeof submitted == 'undefined') ? (submitted = true) : !submitted"
   >
     <div>
       <label for="q">Title</label>
@@ -145,7 +144,6 @@
                 <form
                   action="/requests/{{ ticket.get('id') }}/vote_up"
                   method="post"
-                  onsubmit="return (typeof submitted == 'undefined') ? (submitted = true) : !submitted"
                 >
                   <span>{{ ticket.get('votes') }} {{ 'vote' if ticket.get('votes') == 1 else 'votes' }}</span>
                   <label class="a" style="cursor:pointer" for="voteup-{{ ticket.get('id') }}">(+)</label>
