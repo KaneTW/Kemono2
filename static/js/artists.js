@@ -110,7 +110,8 @@ function load() {
   `;
 
   Array.prototype.forEach.call(document.getElementsByClassName('paginator-button'), btn => {
-    btn.addEventListener('click', _ => {
+    btn.addEventListener('click', e => {
+      skip = Number(e.target.getAttribute('data-value'))
       filter();
       load();
     })
