@@ -29,17 +29,12 @@ def list():
     limit = 25
 
     (results, total_count) = ([], 0)
-    if commit is not None:
-        (results, total_count) = get_artist_search_results(q, service, sort_by, order, offset, limit)
-        props['display'] = 'search results'
-    else:
-        results = get_top_artists_by_faves(offset, limit)
-        total_count = get_count_of_artists_faved()
-        props['display'] = 'most popular artists'
+    results = get_top_artists_by_faves(offset, limit)
+    total_count = get_count_of_artists_faved()
+    props['display'] = 'most popular artists'
 
     props['count'] = total_count
     props['limit'] = limit
-
     response = make_response(render_template(
         'artists.html',
         props = props,

@@ -5,9 +5,7 @@
       autocomplete="off"
       class="search-form"
       novalidate="novalidate"
-      action="{{ url_for('artists.list') }}"
       accept-charset="UTF-8"
-      method="get"
     >
       <div>
         <label for="q">Name</label>
@@ -16,7 +14,6 @@
           name="q"
           id="q"
           autocomplete="off"
-          value="{{ request.args.get('q') if request.args.get('q') }}"
         >
         <small class="subtitle" style="margin-left: 5px;">Leave blank to list all</small>
       </div>
@@ -24,31 +21,30 @@
         <label for="service">Service</label>
         <select id="service" name="service">
           <option value="">All</option>
-          <option value="patreon" {{ 'selected' if request.args.get('service') == 'patreon' }}>Patreon</option>
-          <option value="fanbox" {{ 'selected' if request.args.get('service') == 'fanbox' }}>Pixiv Fanbox</option>
-          <option value="gumroad" {{ 'selected' if request.args.get('service') == 'gumroad' }}>Gumroad</option>
-          <option value="subscribestar" {{ 'selected' if request.args.get('service') == 'subscribestar' }}>SubscribeStar</option>
-          <option value="discord" {{ 'selected' if request.args.get('service') == 'discord' }}>Discord</option>
-          <option value="dlsite" {{ 'selected' if request.args.get('service') == 'dlsite' }}>DLsite</option>
+          <option value="patreon">Patreon</option>
+          <option value="fanbox">Pixiv Fanbox</option>
+          <option value="gumroad">Gumroad</option>
+          <option value="subscribestar">SubscribeStar</option>
+          <option value="discord">Discord</option>
+          <option value="dlsite">DLsite</option>
         </select>
       </div>
       <div>
         <label for="sort_by">Sort by</label>
         <select id="sort_by" name="sort_by">
-          <option value="indexed" {{ 'selected' if request.args.get('sort_by') == 'indexed' }}>Date Indexed</option>
-          <option value="name" {{ 'selected' if request.args.get('sort_by') == 'name' }}>Alphabetical Order</option>
-          <option value="service" {{ 'selected' if request.args.get('sort_by') == 'service' }}>Service</option>
+          <option value="indexed" >Date Indexed</option>
+          <option value="name">Alphabetical Order</option>
+          <option value="service">Service</option>
         </select>
-        <select name="order">
-          <option value="desc" {{ 'selected' if request.args.get('order') == 'desc'}}>Descending</option>
+        <select id="order" name="order">
+          <option value="desc">Descending</option>
           <option value="asc">Ascending</option>
         </select>
       </div>
-      <input type="submit" name="commit" value="Search" data-disable-with="Search">
     </form>
     {% if props['display'] %}
       <div style="text-align: center;">
-        <h3 class="subtitle">Displaying {{ props['display'] }}</h3>
+        <h3 id="display-status" class="subtitle">Displaying {{ props['display'] }}</h3>
       </div>
     {% endif %}
     {% include 'components/artist_list.html' %}

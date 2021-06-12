@@ -1,44 +1,143 @@
-window.onload = () => {
-  Array.from(document.querySelectorAll('.user-icon')).forEach(icon => {
-    switch (icon.getAttribute('data-service')) {
-      case 'patreon': {
-        fetch(`/proxy/patreon/user/${icon.getAttribute('data-user')}`)
-          .then(res => res.json())
-          .then(user => {
-            const avatar = user.included ? user.included[0].attributes.avatar_photo_url : user.data.attributes.image_url;
-            icon.setAttribute('style', `background-image: url('${avatar}');`);
-          });
-        break;
-      }
-      case 'fanbox': {
-        require(['https://unpkg.com/unraw@1.2.5/dist/index.min.js'], unraw => {
-          fetch(`/proxy/fanbox/user/${icon.getAttribute('data-user')}`)
-            .then(res => res.json())
-            .then(user => {
-              const avatar = unraw.unraw(user.body.user.iconUrl);
-              icon.setAttribute('style', `background-image: url('${avatar}');`);
-            });
-        });
-        break;
-      }
-      case 'subscribestar': {
-        fetch(`/proxy/subscribestar/user/${icon.getAttribute('data-user')}`)
-          .then(res => res.json())
-          .then(user => {
-            const avatar = user.avatar;
-            icon.setAttribute('style', `background-image: url('${avatar}');`);
-          });
-        break;
-      }
-      case 'gumroad': {
-        fetch(`/proxy/gumroad/user/${icon.getAttribute('data-user')}`)
-          .then(res => res.json())
-          .then(user => {
-            const avatar = user.avatar;
-            icon.setAttribute('style', `background-image: url('${avatar}');`);
-          });
-        break;
-      }
-    }
+var creators;
+var filtered_creators;
+var skip = 0;
+var limit = 25;
+
+const range = (start, end) => {
+  const length = end - start;
+  return Array.from({ length }, (_, i) => start + i);
+}
+
+const paginator = () => {
+  var rng; // range
+  rng = skip >= 100 ? range(Math.ceil((skip / limit)) - 2, Math.ceil((skip / limit)) + 3) : range(0, 7)
+  return `
+    <small>Showing ${ skip + 1 } - ${ skip + limit } of ${ creators.length }</small>
+    <menu>
+      ${skip >= limit ? `<li><a href="#" class="paginator-button" data-value="${skip - limit}" title="Previous page">&lt;</a></li>` : '<li class="subtitle">&lt;</li>'}
+      ${skip >= 100 ? `
+        <li><a href="#" class="paginator-button" data-value="0">1</a></li>
+        <li>...</li>
+      ` : ''}
+      ${rng.map(page => {
+        if (filtered_creators.length > page * limit) {
+          if (page * limit == skip) {
+            return `<li>${page + 1}</li>`
+          } else {
+            return `<li><a href="#" class="paginator-button" data-value="${page * limit}">${page + 1}</a></li>`
+          }
+        }
+      }).join('')}
+      ${range(0, Math.ceil((skip / limit))).map((page, i, arr) => {
+        if (i == arr.length && filtered_creators.length - skip >= 100 && filtered_creators.length > 175) {
+          return `
+            <li>...</li>
+            <li><a href="#" class="paginator-button" data-value="${page * limit}">${Math.ceil((skip / limit))}</a></li>
+          `
+        }
+      }).join('')}
+      ${filtered_creators.length - skip > limit ? `
+        <li><a href="#" class="paginator-button" data-value="${skip + limit}" title="Next page">&gt;</a></li>
+      ` : `
+        <li class="subtitle">&gt;</li>
+      `}
+    </menu>
+  `
+}
+
+function filter() {
+  filtered_creators = creators
+    .filter(creator => creator.service === (document.getElementById('service').value || creator.service))
+    .sort((a, b) => document.getElementById('sort_by') === 'indexed' ? Date.parse(a.indexed) - Date.parse(b.indexed) : a[document.getElementById('sort_by').value].localeCompare(b[document.getElementById('sort_by').value]))
+    .filter(creator => creator.name.includes(document.getElementById('q').value))
+
+  if (document.getElementById('order').value === 'desc') {
+    filtered_creators.reverse()
+  }
+}
+
+function load() {
+  document.getElementById('display-status').innerHTML = 'Displaying search results';
+  document.getElementById('vertical-views').innerHTML = `
+    <div class="paginator" id="paginator-top">
+      ${paginator()}
+    </div>
+    <table class="search-results" width="100%">
+      <thead>
+        <tr>
+          <th width="50px">Icon</th>
+          <th>Name</th>
+          <th>Service</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${filtered_creators.length ? '' : `
+          <tr>
+            <td></td>
+            <td class="subtitle">No artists found for your query.</td>
+            <td></td>
+          </tr>
+        `}
+        ${filtered_creators.slice(skip, skip + 25).map(artist => `
+          <tr class="artist-row">
+            <td>
+              <a href="/${ artist.service }/${ artist.service === 'discord' ? 'server' : 'user' }/${artist.id}">
+                <div class="user-icon" style="background-image: url('/icons/${ artist.service }/${ artist.id }');"></div>
+              </a>
+            </td>
+            <td>
+              <a href="/${ artist.service }/${ artist.service === 'discord' ? 'server' : 'user' }/${artist.id}">${ artist.name }</a>
+            </td>
+            <td>
+              ${
+                ({
+                  'patreon': 'Patreon',
+                  'fanbox': 'Pixiv Fanbox',
+                  'subscribestar': 'SubscribeStar',
+                  'gumroad': 'Gumroad',
+                  'discord': 'Discord',
+                  'dlsite': 'DLsite'
+                })[artist.service]
+              }
+            </td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+    <div class="paginator" id="paginator-bottom">
+      ${paginator()}
+    </div>
+  `;
+
+  Array.prototype.forEach.call(document.getElementsByClassName('paginator-button'), btn => {
+    btn.addEventListener('click', _ => {
+      filter();
+      load();
+    })
   });
+}
+
+window.onload = () => {
+  fetch('/api/creators')
+    .then(data => data.json())
+    .then(data => {
+      creators = data;
+      filtered_creators = data;
+      document.getElementById('q').addEventListener('input', e => {
+        filter();
+        load();
+      })
+      document.getElementById('service').addEventListener('change', () => {
+        filter();
+        load();
+      });
+      document.getElementById('sort_by').addEventListener('change', () => {
+        filter();
+        load();
+      })
+      document.getElementById('order').addEventListener('change', () => {
+        filter();
+        load();
+      })
+    })
 };

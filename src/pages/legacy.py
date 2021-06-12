@@ -529,6 +529,14 @@ def upload():
         "resumableIdentifier": resumable.repo.file_id
     })
 
+@legacy.route('/api/creators')
+def creators():
+    cursor = get_cursor()
+    query = "SELECT * FROM lookup"
+    cursor.execute(query)
+    results = cursor.fetchall()
+    return make_response(jsonify(results), 200)
+
 @legacy.route('/api/bans')
 def bans():
     cursor = get_cursor()
