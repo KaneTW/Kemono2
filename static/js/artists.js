@@ -52,7 +52,13 @@ function filter() {
   }
   filtered_creators = filtered_creators
     .filter(creator => creator.service === (document.getElementById('service').value || creator.service))
-    .sort((a, b) => document.getElementById('sort_by') === 'indexed' ? Date.parse(a.indexed) - Date.parse(b.indexed) : a[document.getElementById('sort_by').value].localeCompare(b[document.getElementById('sort_by').value]))
+    .sort((a, b) => {
+      if (document.getElementById('order').value === 'desc') {
+        return document.getElementById('sort_by') === 'indexed' ? Date.parse(a.indexed) - Date.parse(b.indexed) : a[document.getElementById('sort_by').value].localeCompare(b[document.getElementById('sort_by').value])
+      } else {
+        return document.getElementById('sort_by') === 'indexed' ? Date.parse(b.indexed) - Date.parse(a.indexed) : b[document.getElementById('sort_by').value].localeCompare(a[document.getElementById('sort_by').value])
+      }
+    })
     .filter(creator => creator.name.match(new RegExp(document.getElementById('q').value, 'i')))
 }
 
