@@ -46,14 +46,14 @@ const paginator = () => {
 }
 
 function filter() {
-  filtered_creators = creators
-    .filter(creator => creator.service === (document.getElementById('service').value || creator.service))
-    .sort((a, b) => document.getElementById('sort_by') === 'indexed' ? Date.parse(a.indexed) - Date.parse(b.indexed) : a[document.getElementById('sort_by').value].localeCompare(b[document.getElementById('sort_by').value]))
-    .filter(creator => creator.name.toLowerCase().indexOf(document.getElementById('q').value) !== -1)
-
+  filtered_creators = creators;
   if (document.getElementById('order').value === 'desc') {
     filtered_creators.reverse()
   }
+  filtered_creators = filtered_creators
+    .filter(creator => creator.service === (document.getElementById('service').value || creator.service))
+    .sort((a, b) => document.getElementById('sort_by') === 'indexed' ? Date.parse(a.indexed) - Date.parse(b.indexed) : a[document.getElementById('sort_by').value].localeCompare(b[document.getElementById('sort_by').value]))
+    .filter(creator => creator.name.match(new RegExp(document.getElementById('q').value, 'i')))
 }
 
 function load() {
