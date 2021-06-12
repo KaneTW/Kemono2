@@ -12,7 +12,7 @@ const paginator = () => {
   var rng; // range
   rng = skip >= 100 ? range(Math.ceil((skip / limit)) - 2, Math.ceil((skip / limit)) + 3) : range(0, 7)
   return `
-    <small>Showing ${ skip + 1 } - ${ skip + limit } of ${ creators.length }</small>
+    <small>Showing ${ skip + 1 } - ${ skip + limit } of ${ filtered_creators.length }</small>
     <menu>
       ${skip >= limit ? `<li><a href="#" class="paginator-button" data-value="${skip - limit}" title="Previous page">&lt;</a></li>` : '<li class="subtitle">&lt;</li>'}
       ${skip >= 100 ? `
@@ -28,11 +28,11 @@ const paginator = () => {
           }
         }
       }).join('')}
-      ${range(0, Math.ceil((skip / limit))).map((page, i, arr) => {
+      ${range(0, Math.ceil((filtered_creators.length / limit))).map((page, i, arr) => {
         if (i === arr.length - 1 && filtered_creators.length - skip >= 100 && filtered_creators.length > 175) {
           return `
             <li>...</li>
-            <li><a href="#" class="paginator-button" data-value="${page * limit}">${Math.ceil((skip / limit))}</a></li>
+            <li><a href="#" class="paginator-button" data-value="${page * limit}">${Math.ceil((filtered_creators.length / limit))}</a></li>
           `
         }
       }).join('')}
