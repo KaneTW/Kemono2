@@ -29,7 +29,7 @@ const paginator = () => {
         }
       }).join('')}
       ${range(0, Math.ceil((skip / limit))).map((page, i, arr) => {
-        if (i == arr.length && filtered_creators.length - skip >= 100 && filtered_creators.length > 175) {
+        if (i === arr.length - 1 && filtered_creators.length - skip >= 100 && filtered_creators.length > 175) {
           return `
             <li>...</li>
             <li><a href="#" class="paginator-button" data-value="${page * limit}">${Math.ceil((skip / limit))}</a></li>
@@ -49,7 +49,7 @@ function filter() {
   filtered_creators = creators
     .filter(creator => creator.service === (document.getElementById('service').value || creator.service))
     .sort((a, b) => document.getElementById('sort_by') === 'indexed' ? Date.parse(a.indexed) - Date.parse(b.indexed) : a[document.getElementById('sort_by').value].localeCompare(b[document.getElementById('sort_by').value]))
-    .filter(creator => creator.name.includes(document.getElementById('q').value))
+    .filter(creator => creator.name.toLowerCase().indexOf(document.getElementById('q').value) !== -1)
 
   if (document.getElementById('order').value === 'desc') {
     filtered_creators.reverse()
