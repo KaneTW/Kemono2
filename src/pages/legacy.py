@@ -532,7 +532,7 @@ def upload():
 @legacy.route('/api/creators')
 def creators():
     cursor = get_cursor()
-    query = "SELECT * FROM lookup"
+    query = "SELECT * FROM lookup WHERE service != 'discord-channel'"
     cursor.execute(query)
     results = cursor.fetchall()
     return make_response(jsonify(results), 200)
