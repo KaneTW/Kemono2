@@ -128,6 +128,7 @@ window.onload = () => {
   fetch('/api/creators')
     .then(data => data.json())
     .then(data => {
+      document.getElementById('loading').innerHTML = '';
       creators = data;
       filtered_creators = data;
       document.getElementById('q').addEventListener('input', e => {

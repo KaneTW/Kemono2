@@ -1,6 +1,11 @@
 {% extends 'components/shell.html' %}
 {% block content %}
   <div class="page" id="page">
+    <div class="no-posts" id="loading">
+      <span class="subtitle">
+        Loading creator index... (please wait before searching)
+      </span>
+    </div>
     <form
       autocomplete="off"
       class="search-form"
