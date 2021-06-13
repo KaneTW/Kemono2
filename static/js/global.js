@@ -28,6 +28,23 @@
       input.value = serialized;
     }
   }
+
+  if (localStorage.getItem('logged_in')) {
+    document.getElementById('account-buttons').innerHTML += `
+      <li><a href="/favorites">[Favorites]</a></li>
+      <li><a id="logout" href="/account/logout">[Logout]</a></li>
+    `
+    document.getElementById('logout').addEventListener('click', e => {
+      e.preventDefault();
+      localStorage.removeItem('logged_in');
+      localStorage.removeItem('favs');
+      location.href = '/account/logout';
+    })
+  } else {
+    document.getElementById('account-buttons').innerHTML += `
+      <li><a href="/account/login">[Login]</a></li>
+    `
+  }
 })();
 
 /**

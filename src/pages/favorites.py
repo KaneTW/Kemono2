@@ -1,4 +1,4 @@
-from flask import Blueprint, request, make_response, render_template, session, redirect, flash, url_for, current_app
+from flask import Blueprint, request, make_response, render_template, session, redirect, flash, url_for, current_app, jsonify
 
 from ..utils.utils import make_cache_key, get_value, restrict_value, sort_dict_list_by, take, offset, parse_int
 from ..lib.account import load_account
@@ -7,6 +7,24 @@ from ..lib.security import is_password_compromised
 from ..internals.cache.flask_cache import cache
 
 favorites = Blueprint('favorites', __name__)
+
+@favorites.route('/api/favorites', methods=['GET'])
+def api_list():
+    account = load_account()
+    if account is None:
+        return "", 401
+
+    favorites = []
+    fave_type = get_value(request.args, 'type', 'artist')
+    if fave_type == 'post':
+        favorites = get_favorite_posts(account['id'], reload=True)
+    else:
+        favorites = get_favorite_artists(account['id'], reload=True)
+
+    results = favorites
+    response = make_response(jsonify(results), 200)
+    response.headers['Cache-Control'] = 's-maxage=60'
+    return response
 
 @favorites.route('/favorites', methods=['GET'])
 def list():

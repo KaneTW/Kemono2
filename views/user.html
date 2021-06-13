@@ -19,15 +19,6 @@
       {% endif %}
         <div class="user-header-info-{{ props.service }}"></div>
       </a>
-      {% if props.favorited %}
-        <a href="javascript:unfavorite_artist('{{ props.artist.service }}', '{{ props.artist.id }}');" class="user-header-favorite">
-          <span style="color: #FFD700;">★</span>
-        </a>
-      {% else %}
-        <a href="javascript:favorite_artist('{{ props.artist.service }}', '{{ props.artist.id }}');" class="user-header-favorite">
-          ☆
-        </a>
-      {% endif %}
     </div>
   </div>
 </div>
