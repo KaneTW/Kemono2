@@ -59,7 +59,7 @@ function filter() {
         return document.getElementById('sort_by') === 'indexed' ? Date.parse(b.indexed) - Date.parse(a.indexed) : b[document.getElementById('sort_by').value].localeCompare(a[document.getElementById('sort_by').value])
       }
     })
-    .filter(creator => creator.name.match(new RegExp(document.getElementById('q').value, 'i')))
+    .filter(creator => creator.name.match(new RegExp(document.getElementById('q').value.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'i')))
 }
 
 function load() {
