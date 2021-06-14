@@ -124,28 +124,28 @@ function load() {
   });
 }
 
-window.onload = () => {
-  fetch('/api/creators')
-    .then(data => data.json())
-    .then(data => {
-      document.getElementById('loading').innerHTML = '';
-      creators = data;
-      filtered_creators = data;
-      document.getElementById('q').addEventListener('input', e => {
-        filter();
-        load();
-      })
-      document.getElementById('service').addEventListener('change', () => {
-        filter();
-        load();
-      });
-      document.getElementById('sort_by').addEventListener('change', () => {
-        filter();
-        load();
-      })
-      document.getElementById('order').addEventListener('change', () => {
-        filter();
-        load();
-      })
+document.getElementById('search-form').addEventListener('submit', e => e.preventDefault())
+
+fetch('/api/creators')
+  .then(data => data.json())
+  .then(data => {
+    document.getElementById('loading').innerHTML = '';
+    creators = data;
+    filtered_creators = data;
+    document.getElementById('q').addEventListener('input', e => {
+      filter();
+      load();
     })
-};
+    document.getElementById('service').addEventListener('change', () => {
+      filter();
+      load();
+    });
+    document.getElementById('sort_by').addEventListener('change', () => {
+      filter();
+      load();
+    })
+    document.getElementById('order').addEventListener('change', () => {
+      filter();
+      load();
+    })
+  })
