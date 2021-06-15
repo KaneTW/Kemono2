@@ -16,8 +16,6 @@ const loadMessages = async (channelId, skip = 0) => {
     let dls = '';
     let avatarurl = '';
     let embeds = '';
-    console.log(msg.content)
-    console.log(msg.content.match(/<:.+?:\d+>/g))
     if (msg.content) {
       let emojis = msg.content.match(/<:.+?:\d+>/g)
       if (emojis) {
