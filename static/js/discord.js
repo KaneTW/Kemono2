@@ -21,7 +21,7 @@ const loadMessages = async (channelId, skip = 0) => {
       if (emojis) {
         emojis.forEach(emoji => {
           var emoji_code = emoji.match(/\d+/g)[0];
-          msg.content.replace(new RegExp(emoji.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'g'), `<img class="emoji" src="https://cdn.discordapp.com/emojis/${emoji_code}">`);
+          msg.content.replace(emoji, `<img class="emoji" src="https://cdn.discordapp.com/emojis/${emoji_code}">`);
         });
       }
     }
