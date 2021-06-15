@@ -3,7 +3,7 @@ from flask import Blueprint, request, make_response, render_template, session, r
 import urllib
 import json
 
-from ..utils.utils import make_cache_key, get_value
+from ..utils.utils import make_cache_key, get_value, set_query_parameter
 from ..lib.account import load_account, is_username_taken, attempt_login, create_account
 from ..lib.security import is_password_compromised
 from ..internals.cache.flask_cache import cache
@@ -50,9 +50,9 @@ def post_login():
 
     redir = get_value(request.args, 'redir')
     if redir is not None:
-        return redirect(redir)
+        return redirect(set_query_parameter(redir, 'logged_in', 'yes'))
 
-    return redirect(url_for('artists.list'))
+    return redirect(set_query_parameter(url_for('artists.list'), 'logged_in', 'yes'))
 
 @account.route('/account/logout')
 def logout():

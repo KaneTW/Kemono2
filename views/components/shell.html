@@ -37,6 +37,11 @@
       <meta name="id" content="{{ props.posts[0].id }}"/>
     {% endif %}
     {% block scripts %}
+      {% if request.args.logged_in %}
+        <script>
+          localStorage.setItem('logged_in', 'yes');
+        </script>
+      {% endif %}
       <script src="{{ url_for('static', filename='js/global.js') }}" defer></script>
     {% endblock %}
     {% block scripts_extra %}

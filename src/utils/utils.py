@@ -1,6 +1,16 @@
+from urllib.parse import urlencode, parse_qs, urlsplit, urlunsplit
 from datetime import datetime
 from flask import request, g
 import json
+
+def set_query_parameter(url, param_name, param_value):
+    scheme, netloc, path, query_string, fragment = urlsplit(url)
+    query_params = parse_qs(query_string)
+
+    query_params[param_name] = [param_value]
+    new_query_string = urlencode(query_params, doseq=True)
+
+    return urlunsplit((scheme, netloc, path, new_query_string, fragment))
 
 def make_cache_key(*args, **kwargs):
     return request.full_path
