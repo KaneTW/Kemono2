@@ -43,6 +43,7 @@
 {% for preview in previews %}
   {% if preview.type == 'thumbnail' %}
     <a class="fileThumb" href="{{ preview.path }}">
+      {# TODO: move backup image logic to the script #}
       <img
         data-src="/thumbnail{{ preview.path }}"
         src="/thumbnail{{ preview.path }}"

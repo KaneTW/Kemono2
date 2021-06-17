@@ -21,6 +21,7 @@ const devServer = {
   contentBase: path.resolve(__dirname, "static"),
   watchContentBase: true,
   hot: false,
+  liveReload: true,
 }
 
 /**
@@ -28,12 +29,12 @@ const devServer = {
  */
 const webpackConfigDev = {
   mode: "development",
-  devtool: "inline-source-map",
+  devtool: "eval-source-map",
   devServer: devServer,
   plugins: [
     new MiniCssExtractPlugin({
-      filename: "static/css/[name].css",
-      chunkFilename: "static/css/[id].chunk.css"
+      filename: "static/bundle/css/[name].css",
+      chunkFilename: "static/bundle/css/[id].chunk.css"
     }),
     new CopyWebpackPlugin({
       patterns: [
@@ -62,19 +63,23 @@ const webpackConfigDev = {
         ],
       },
       {
-        test: /\.(png|jpg|jpeg|gif|webp|svg)$/i,
+        test: /\.(png|jpg|jpeg|gif|webp)$/i,
         type: 'asset/resource',
       },
       {
         test: /\.(woff|woff2|eot|ttf|otf)$/i,
         type: 'asset/resource',
       },
+      {
+        test: /\.svg$/i,
+        type: 'asset/resource',
+      }
     ]
   },
   output: {
     path: path.resolve(__dirname, "dev"),
-    filename: "static/js/[name].bundle.js",
-    assetModuleFilename: "static/assets/[name][ext][query]",
+    filename: "static/bundle/js/[name].bundle.js",
+    assetModuleFilename: "static/bundle/assets/[name][ext][query]",
     clean: true,
   }
 }

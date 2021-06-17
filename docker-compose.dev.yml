@@ -26,6 +26,7 @@ services:
       - .env
     environment:
       - FLASK_ENV=development
+      - KEMONO_SITE=http://localhost:5000
       - PGUSER=nano
       - PGPASSWORD=shinonome
       - PGDATABASE=kemonodb
@@ -37,6 +38,7 @@ services:
     volumes:
       - .:/app
       - frontend-assets-dev:/app/dist:ro
+      - data-dev:/storage
     sysctls:
       net.core.somaxconn: 500
     healthcheck:

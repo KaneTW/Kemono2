@@ -16,10 +16,16 @@ const templatePath = {
  */
 const webpackConfig = {
   entry: {
-    index: "./src/js/index.js"
+    index: "./src/js/global.js"
   },
   plugins: [
     // components
+    new HTMLWebpackPlugin({
+      template: "./src/" + templatePath.components("_index"),
+      filename: templatePath.components("_index"),
+      chunks: [],
+      minify: false
+    }),
     new HTMLWebpackPlugin({
       template: "./src/" + templatePath.components("artist_list"),
       filename: templatePath.components("artist_list"),
@@ -29,6 +35,18 @@ const webpackConfig = {
     new HTMLWebpackPlugin({
       template: "./src/" + templatePath.components("card"),
       filename: templatePath.components("card"),
+      chunks: [],
+      minify: false
+    }),
+	new HTMLWebpackPlugin({
+      template: "./src/" + templatePath.components("fancy_image"),
+      filename: templatePath.components("fancy_image"),
+      chunks: [],
+      minify: false
+    }),
+	new HTMLWebpackPlugin({
+      template: "./src/" + templatePath.components("fancy_link"),
+      filename: templatePath.components("fancy_link"),
       chunks: [],
       minify: false
     }),
@@ -53,6 +71,12 @@ const webpackConfig = {
     new HTMLWebpackPlugin({
       template: "./src/" + templatePath.components("import_sidebar"),
       filename: templatePath.components("import_sidebar"),
+      chunks: [],
+      minify: false
+    }),
+	new HTMLWebpackPlugin({
+      template: "./src/" + templatePath.components("loading_icon"),
+      filename: templatePath.components("loading_icon"),
       chunks: [],
       minify: false
     }),
@@ -268,10 +292,10 @@ const webpackConfig = {
       minify: false
     }),
     new HTMLWebpackPlugin({
-      template: "./src/" + templatePath.base("user"),
-      filename: templatePath.base("user"),
+      template: "./src/pages/user.html",
+      filename: "pages/user.html",
       chunks: [],
-      minify: false
+      minify: false,
     }),    
   ],
   resolve: {
@@ -281,6 +305,7 @@ const webpackConfig = {
       ["@wp/css"]: path.resolve(__dirname, "src/css"),
       ["@wp/pages"]: path.resolve(__dirname, "src/pages"),
       ["@wp/assets"]: path.resolve(__dirname, "src/assets"),
+      ["@wp/api"]: path.resolve(__dirname, "src/api"),
     }
   }
 }

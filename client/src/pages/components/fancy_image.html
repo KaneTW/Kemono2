@@ -1,0 +1,35 @@
+{% from "components/fancy_link.html" import fancy_link %}
+
+{% macro fancy_image(src, alt=src, srcset=src, is_inline=true) %}
+  {% if is_inline %}
+    <span class="fancy-image">
+      {{ __image(src, alt, srcset) }}
+    </span>
+  {% else %}
+    <div class="fancy-image">
+      {{ __image(src, alt, srcset) }}
+    </div>
+  {% endif %}
+{% endmacro %}
+
+{% macro image_link(src, alt=src, srcset=src, is_inline=true) %}
+  <a 
+    class="fancy-image {{ 'fancy-image--block' if not is_inline }}"
+    href="{{ src }}"
+  >
+    {{ __image(src, alt, srcset) }}
+  </a>
+{% endmacro %}
+
+{% macro __image(src, alt=src, srcset=src) %}
+  <picture class="fancy-image__picture">
+    <img 
+      class="fancy-image__image"
+      src="{{ src }}" 
+      alt="{{ alt }}"
+      title="{{ alt }}"
+      srcset="{{ srcset }}"
+      loading="lazy"
+    >
+  </picture>
+{% endmacro %}

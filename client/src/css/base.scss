@@ -1,0 +1,113 @@
+@use "variables.scss" as *;
+
+html {
+  box-sizing: border-box;
+  height: 100%;
+  font-size: 100%;
+  font-family: Helvetica, sans-serif;
+  padding: 0;
+  margin: 0;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+  // TODO: fix this rule
+  color: var(--colour0-primary);
+}
+
+body {
+  display: flex;
+  flex-flow: column nowrap;
+
+  color: var(--colour0-primary);
+  background-color: var(--colour1-primary);
+  padding: 0;
+  margin: 0;
+
+  & > * {
+    flex: 0 1 auto;
+    padding: 0.5em 2em;
+
+    @media (max-width: $width-phone) {
+      padding: 0.5em 1em;
+    }
+  }
+}
+
+main {
+  flex: 1 1 auto;
+  margin: 0.5em 0;
+}
+
+h1 {
+  font-size: 2.2rem;
+  font-weight: bold;
+}
+
+h2, 
+h3 {
+  font-weight: normal;
+}
+
+a {
+  color: #87CEFA;
+
+  &:visited {
+    text-decoration: none;
+  }
+
+  &:link {
+    text-decoration: none;
+  }
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+button, 
+input, 
+select, 
+textarea, 
+.pure-g [class *= "pure-u"] {
+  font-family: Helvetica, sans-serif;
+}
+
+label {
+  cursor: pointer;
+}
+
+button {
+  cursor: pointer;
+
+  // prevents onclick events from firind on children
+  & > * {
+    pointer-events: none;
+  }
+}
+
+textarea {
+  width: calc(100% - 2px);
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  min-height: 3rem;
+  box-shadow: inset 0 1px 3px #1f2024;
+  background:#3a3d43;
+  border: none;
+}
+
+pre {
+  white-space: pre-wrap;       /* Since CSS 2.1 */
+  white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+  white-space: -pre-wrap;      /* Opera 4-6 */
+  white-space: -o-pre-wrap;    /* Opera 7 */
+  word-wrap: break-word;       /* Internet Explorer 5.5+ */
+}
+
+select * {
+  color: #000;
+}
