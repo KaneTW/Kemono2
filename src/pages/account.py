@@ -19,7 +19,7 @@ def get_login():
 
     account = load_account()
     if account is not None:
-        return redirect(url_for('artists.list'))
+        return redirect(set_query_parameter(url_for('artists.list'), 'logged_in', 'yes'))
 
     query = request.query_string.decode('utf-8')
     if len(query) > 0:
