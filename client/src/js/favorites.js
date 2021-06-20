@@ -43,12 +43,12 @@ export function saveFavourites() {
   localStorage.setItem("favs", JSON.stringify(localFavs));
 }
 
-/**
- * @param {string} id 
- */
-function findFavouriteArtist(fav) {
-  return favourites.get(fav);
-}
+// /**
+//  * @param {string} id 
+//  */
+// function findFavouriteArtist(fav) {
+//   return favourites.get(fav);
+// }
 
 /**
  * @param {string} id 
@@ -76,13 +76,13 @@ export async function addFavourite(id, service) {
  * @param {string} service 
  */
 export async function removeFavourite(id, service) {
-  const response = await unfavoriteArtist(service, id);
+  const isUnfavorited = await unfavoriteArtist(service, id);
 
-  if (!response) {
+  if (!isUnfavorited) {
     return false
   }
 
-  const isDeleted = favourites.delete(id);
+  const isDeleted = favourites.delete( uniqueID({ id, service }) );
   return isDeleted;
 }
 

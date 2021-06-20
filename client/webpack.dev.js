@@ -17,11 +17,11 @@ const devServer = {
     poll: 500,
     aggregateTimeout: 500
   },
-  publicPath: "/",
   contentBase: path.resolve(__dirname, "static"),
   watchContentBase: true,
   hot: false,
   liveReload: true,
+  overlay: true
 }
 
 /**
@@ -80,6 +80,7 @@ const webpackConfigDev = {
     path: path.resolve(__dirname, "dev"),
     filename: "static/bundle/js/[name].bundle.js",
     assetModuleFilename: "static/bundle/assets/[name][ext][query]",
+    publicPath: "/",
     clean: true,
   }
 }

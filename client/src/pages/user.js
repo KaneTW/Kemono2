@@ -64,9 +64,11 @@ function handleFavouriting(id, service) {
 
     } catch (error) {
       alert(error)
-      icon.textContent = oldIcon;
+      
 
     } finally {
+      loadingIcon.remove();
+      icon.textContent = oldIcon;
       button.disabled = false;
       button.classList.remove("user-header__favourite--loading");
     }

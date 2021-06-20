@@ -16,7 +16,7 @@ const templatePath = {
  */
 const webpackConfig = {
   entry: {
-    index: "./src/js/global.js"
+    global: "./src/js/global.js"
   },
   plugins: [
     // components
@@ -107,7 +107,7 @@ const webpackConfig = {
     new HTMLWebpackPlugin({
       template: "./src/" + templatePath.components("shell"),
       filename: templatePath.components("shell"),
-      chunks: ["index"],
+      chunks: ["global"],
       minify: false
     }),
     new HTMLWebpackPlugin({

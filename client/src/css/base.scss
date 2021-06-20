@@ -20,11 +20,13 @@ html {
 body {
   display: flex;
   flex-flow: column nowrap;
-
+  align-items: stretch;
+  // TODO: remove it after rewriting all pages
+  max-width: 1280px;
   color: var(--colour0-primary);
   background-color: var(--colour1-primary);
   padding: 0;
-  margin: 0;
+  margin: 0 auto;
 
   & > * {
     flex: 0 1 auto;
@@ -38,6 +40,7 @@ body {
 
 main {
   flex: 1 1 auto;
+  
   margin: 0.5em 0;
 }
 

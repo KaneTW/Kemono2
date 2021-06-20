@@ -55,6 +55,9 @@ services:
     environment: 
       - NODE_ENV=development
     volumes:
+      # quick hack to allow webpack config updates between reups
+      - ./client/webpack.config.js:/app/webpack.config.js
+      - ./client/webpack.dev.js:/app/webpack.dev.js
       - ./client/src:/app/src
       - ./client/static:/app/static
       - frontend-assets-dev:/app/dev
