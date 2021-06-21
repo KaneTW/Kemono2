@@ -70,7 +70,7 @@ services:
     # ports:
     #  - 5432:5432
   kemono-archiver:
-    image: openyiff/kitsune
+    image: ghcr.io/openyiff/kitsune:dev
     container_name: kemono-archiver
     restart: unless-stopped
     depends_on:
