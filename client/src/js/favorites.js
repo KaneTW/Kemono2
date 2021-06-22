@@ -43,12 +43,13 @@ export function saveFavourites() {
   localStorage.setItem("favs", JSON.stringify(localFavs));
 }
 
-// /**
-//  * @param {string} id 
-//  */
-// function findFavouriteArtist(fav) {
-//   return favourites.get(fav);
-// }
+/**
+ * @param {string} id 
+ * @param {string} service
+ */
+export function findFavouriteArtist(id, service) {
+  return favourites.get(uniqueID({ id, service }));
+}
 
 /**
  * @param {string} id 

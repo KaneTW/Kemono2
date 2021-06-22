@@ -77,19 +77,8 @@
           </span>
           <span>Upload file</span>
         </a>
-        <button 
-          class="user-header__favourite {{ 'user-header__favourite--unfav' if props.favorited }}" 
-          type="button"
-        >
-          <span class="user-header__fav-icon">
-            {{ "★" if props.favorited else "☆"}}
-          </span>
-          <span class="user-header__fav-text">
-            {{ "Unfavorite" if props.favorited else "Favorite" }}
-          </span>
-        </button>
       </div>
-      
+    
     </div>
   </header>
   
@@ -99,5 +88,9 @@
 {% endblock %}
 
 {% block components %}
+  <button class="user-header__favourite" type="button">
+    <span class="user-header__fav-icon">☆</span>
+    <span class="user-header__fav-text">Favorite</span>
+  </button>
   {{ loading_icon() }}
 {% endblock components %}

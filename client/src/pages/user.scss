@@ -109,6 +109,10 @@
 
     &--loading {
       cursor: progress;
+
+      & .user-header__fav-icon {
+        display: none;
+      }
     }
   }
 
