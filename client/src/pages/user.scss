@@ -54,6 +54,10 @@
     flex-flow: row wrap;
     align-items: center;
 
+    & span {
+      font-weight: 700;
+    }
+
     &-image {
       flex: 0 0 1.75em;
       padding-right: 0.5em;
