@@ -76,15 +76,22 @@ export async function addFavourite(id, service) {
  * @param {string} id 
  * @param {string} service 
  */
-export async function removeFavourite(id, service) {
+ export async function removeFavourite(id, service) {
   const isUnfavorited = await unfavoriteArtist(service, id);
 
   if (!isUnfavorited) {
-    return false
+    return false;
   }
 
   const isDeleted = favourites.delete( uniqueID({ id, service }) );
-  return isDeleted;
+
+  if (!isDeleted) {
+    return false;
+  }
+
+  localStorage.setItem("favs", JSON.stringify(favourites.values()));
+
+  return true;
 }
 
 /**
