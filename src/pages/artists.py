@@ -81,6 +81,7 @@ def get(service, artist_id):
         'service': service,
         'session': session
     }
+
     base = request.args.to_dict()
     base.pop('o', None)
     base["service"] = service
@@ -117,8 +118,8 @@ def get(service, artist_id):
     response = make_response(render_template(
         'user.html',
         props = props,
-        results = posts,
         base = base,
+        results = posts,
         result_previews = result_previews,
         result_attachments = result_attachments,
         result_flagged = result_flagged,
@@ -163,22 +164,31 @@ def get_artist_post_page(artist_id, service, offset, limit):
     return (posts, total_count)
 
 def make_artist_display_data(artist):
-    data = {}
-    if artist['service'] == 'patreon':
-        data['service'] = 'Patreon';
-        data['proxy'] = '/proxy/patreon/user/' + str(artist['id']);
-        data['href'] = 'https://www.patreon.com/user?u=' + str(artist['id']);
-    elif artist['service'] == 'fanbox':
-        data['service'] = 'Fanbox';
-        data['href'] = 'https://www.pixiv.net/fanbox/creator/' + str(artist['id']);
-    elif artist['service'] == 'gumroad':
-        data['service'] = 'Gumroad';
-        data['href'] = 'https://gumroad.com/' + str(artist['id']);
-    elif artist['service'] == 'subscribestar':
-        data['service'] = 'SubscribeStar';
-        data['href'] = 'https://subscribestar.adult/' + str(artist['id']);
-    elif artist['service'] == 'dlsite':
-        data['service'] = 'DLsite';
-        data['href'] = 'https://www.dlsite.com/eng/circle/profile/=/maker_id/' + str(artist['id']);
+    artist_id = str(artist['id'])
+    service_name = artist['service']
+    data_by_service_name = {
+        'patreon': {
+            'service': 'Patreon',
+            'href': f"https://www.patreon.com/user?u={artist_id}",
+        },
+        'fanbox': {
+            'service': 'Fanbox',
+            'href': f"https://www.pixiv.net/fanbox/creator/{artist_id}",
+        },
+        'gumroad': {
+            'service': 'Gumroad',
+            'href': f"https://gumroad.com/{artist_id}",
+        },
+        'subscribestar': {
+            'service': 'SubscribeStar',
+            'href': f"https://subscribestar.adult/{artist_id}",
+        },
+        'dlsite': {
+            'service': 'DLsite',
+            'href': f"https://www.dlsite.com/eng/circle/profile/=/maker_id/{artist_id}",
+        },
+    }
+    data = data_by_service_name[service_name]
+    data['proxy'] = f"/{service_name}/user/{artist_id}"
 
     return data

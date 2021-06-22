@@ -6,6 +6,7 @@
       "@wp/js/*": ["./js/*"],
       "@wp/css/*": ["./css/*"],
       "@wp/assets/*": ["./assets/*"],
+      "@wp/api/*": ["./api/*"],
     },
     "target": "es2015",
     "module": "esnext",

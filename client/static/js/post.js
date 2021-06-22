@@ -12,7 +12,7 @@ function favorite_post(service, user, post_id) {
     method: 'POST'
   }).then(res => {
     if (res.redirected) {
-      window.location = add_url_param(res.url, 'redir', window.location.pathname);
+      window.location = addURLParam(res.url, 'redir', window.location.pathname);
     } else if (res.ok) {
       location.reload();
     } else {
@@ -26,7 +26,7 @@ function unfavorite_post(service, user, post_id) {
     method: "DELETE"
   }).then(res => {
     if (res.redirected) {
-      window.location =  add_url_param(res.url, 'redir', window.location.pathname);;
+      window.location = addURLParam(res.url, 'redir', window.location.pathname);;
     } else if (res.ok) {
       location.reload();
     } else {
@@ -44,3 +44,16 @@ Array.prototype.forEach.call(document.getElementsByClassName('flag'), function (
     );
   })
 });
+
+/**
+ * TODO: remove it after moving to webpack.
+ * @param {string} url 
+ * @param {string} paramName 
+ * @param {string} paramValue 
+ * @returns {string}
+ */
+ function addURLParam(url, paramName, paramValue) {
+  var newURL = new URL(url);
+  newURL.searchParams.set(paramName, paramValue);
+  return newURL.toString();
+}

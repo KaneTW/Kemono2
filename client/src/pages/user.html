@@ -1,27 +1,103 @@
 {% extends 'components/shell.html' %}
+
+{% from "components/loading_icon.html" import loading_icon %}
+
+{% set paysite_icons = {
+  'patreon': '/static/patreon.svg',
+  'fanbox': '/static/fanbox.svg',
+  'gumroad': '/static/gumroad.svg',
+  'subscribestar': '/static/subscribestar.png',
+  'dlsite': '/static/dlsite.png'
+} %}
+
+{% block meta %}
+  <meta name="id" content="{{ props.id }}">
+  <meta name="service" content="{{ props.service }}">
+  <link rel="canonical" href="{{ g.canonical_url }}">
+{% endblock meta %}
+
+{% block opengraph %}
+  <meta property="og:title" content="{{ props.name ~ ' | ' ~ props.service }}">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Kemono">
+  <meta property="og:image" content="/icons/{{ props.service }}/{{ props.id }}">
+  <meta property="og:url" content="{{ g.canonical_url }}">
+{% endblock opengraph %}
+
 {% block content %}
-<!-- originally recent.js -->
-<div class="user-header" style="background-image: url('/banners/{{ props.service }}/{{ props.id }}');">
-  <div class="user-header-avatar" style="background-image: url('/icons/{{ props.service }}/{{ props.id }}');"></div>
-  <div class="user-header-info">
-    <div id="user-header-info-top" class="user-header-info-top">
-      <a href="/{{ props.service }}/user/{{ props.id }}"><span class="user-header-info-title">{{ props.name }}</span></a>
-      {% if props.service == "patreon" %}
-      <a target="_blank" rel="noreferrer" href="https://www.patreon.com/user?u={{ props.id }}">
-      {% elif props.service == "fanbox" %}
-      <a target="_blank" rel="noreferrer" href="https://www.pixiv.net/fanbox/creator/{{ props.id }}">
-      {% elif props.service == "subscribestar" %}
-      <a target="_blank" rel="noreferrer" href="https://subscribestar.adult/{{ props.id }}">
-      {% elif props.service == "gumroad" %}
-      <a target="_blank" rel="noreferrer" href="https://gumroad.com/{{ props.id }}">
-      {% elif props.service == "dlsite" %}
-      <a target="_blank" rel="noreferrer" href="https://www.dlsite.com/eng/circle/profile/=/maker_id/{{ props.id }}">
-      {% endif %}
-        <div class="user-header-info-{{ props.service }}"></div>
-      </a>
+<section class="site-section site-section--user">
+  <header 
+    class="user-header" 
+    itemscope
+    itemtype="https://schema.org/Person"
+  >
+    <div class="user-header__background">
+      <img 
+        src="/banners/{{ props.service }}/{{ props.id }}" 
+      >
     </div>
-  </div>
-</div>
-<script src="{{ url_for('static', filename='js/user.js') }}"></script>
-{% include 'components/post_list.html' %}
+    <div 
+      class="user-header__avatar" 
+    >
+      <img 
+        src="/icons/{{ props.service }}/{{ props.id }}" 
+      >
+    </div>
+
+    <div class="user-header__info">
+      <h1 
+        id="user-header__info-top"
+        class="user-header__name" 
+      >
+        <a 
+          class="user-header__profile"
+          target="_blank" 
+          rel="noreferrer"
+          href="{{ props.display_data.href }}"
+          itemprop="url" 
+        > 
+          <span class="user-header__profile-image">
+            <img 
+            src="{{ paysite_icons[props.service] }}" 
+          >
+          </span>
+          <span itemprop="name">{{ props.name }}</span>
+        </a>
+      </h1>
+      
+      <div class="user-header__actions">
+        <a
+          class="user-header__upload"
+          href="/posts/upload?service={{ props.service }}&user={{ props.id }}"
+        > 
+          <span>
+            <img 
+              src="/static/upload.svg" 
+            >
+          </span>
+          <span>Upload file</span>
+        </a>
+        <button 
+          class="user-header__favourite {{ 'user-header__favourite--unfav' if props.favorited }}" 
+          type="button"
+        >
+          <span class="user-header__fav-icon">
+            {{ "★" if props.favorited else "☆"}}
+          </span>
+          <span class="user-header__fav-text">
+            {{ "Unfavorite" if props.favorited else "Favorite" }}
+          </span>
+        </button>
+      </div>
+      
+    </div>
+  </header>
+  
+  {# TODO: rewrite as a macro #}
+  {% include 'components/post_list.html' %}
+</section>
 {% endblock %}
+
+{% block components %}
+  {{ loading_icon() }}
+{% endblock components %}

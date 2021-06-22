@@ -1,0 +1,17 @@
+{% macro fancy_link(url, is_noop=false) %}
+  {% if is_noop %}
+    <a
+      class="fancy-link"
+      target="_blank" 
+      rel="noopener noreferrer"
+      href="{{ url }}" 
+    >
+    </a>
+  {% else %}
+    <a
+      class="fancy-link"
+      href="{{ url }}" 
+    >
+    </a>
+  {% endif %}
+{% endmacro %}
