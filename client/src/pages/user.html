@@ -17,7 +17,14 @@
 {% endblock meta %}
 
 {% block opengraph %}
-  <meta property="og:title" content="{{ props.name ~ ' | ' ~ props.service }}">
+  <meta property="og:title" content="{{ props.name ~ ' | ' ~ {
+    'patreon': 'Patreon',
+    'fanbox': 'Pixiv Fanbox',
+    'subscribestar': 'SubscribeStar',
+    'gumroad': 'Gumroad',
+    'discord': 'Discord',
+    'dlsite': 'DLsite'
+  }.get(props.service, '') ~ ' on Kemono' }}">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Kemono">
   <meta property="og:image" content="/icons/{{ props.service }}/{{ props.id }}">
