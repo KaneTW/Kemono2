@@ -32,15 +32,12 @@ export async function initFavorites() {
 }
 
 export function saveFavourites() {
-  /**
-   * @type {FavoriteItem[]}
-   */
-  let localFavs = [];
-  favourites.forEach(favItem => {
-    localFavs.push(favItem);
-  })
-
-  localStorage.setItem("favs", JSON.stringify(localFavs));
+  if (localStorage.getItem("favs")) {
+    localStorage.setItem(
+      "favs", 
+      JSON.stringify( favourites.values() )
+    );
+  }  
 }
 
 /**
@@ -84,7 +81,14 @@ export async function removeFavourite(id, service) {
   }
 
   const isDeleted = favourites.delete( uniqueID({ id, service }) );
-  return isDeleted;
+
+  if (!isDeleted) {
+    return false;
+  }
+
+  localStorage.setItem("favs", JSON.stringify(favourites.values()));
+
+  return true;
 }
 
 /**
