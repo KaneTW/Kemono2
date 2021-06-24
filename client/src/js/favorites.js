@@ -9,26 +9,28 @@ const favourites = new Map();
 window.addEventListener("beforeunload", saveFavourites);
 
 export async function initFavorites() {
-  let isLoggedIn = localStorage.getItem('logged_in');
+  let storageFavs = localStorage.getItem('favs');
+  /**
+   * @type {FavoriteItem[]}
+   */
+  let parsedFavs;
 
-  if (isLoggedIn) {
-    let storageFavs = localStorage.getItem('favs');
-    /**
-     * @type {FavoriteItem[]}
-     */
-    let favList;
+  if (!storageFavs) {
+    const favs = await retrieveFavorites();
 
-    if (!storageFavs) {
-      favList = await retrieveFavorites();
-    } else {
-      favList = JSON.parse(storageFavs);
+    if (favs) {
+      localStorage.setItem("favs", favs);
     }
-  
-    favList.forEach(favItem => {
+    
+  }
+
+  parsedFavs = JSON.parse(storageFavs);
+
+  if (parsedFavs.length !== 0) {
+    parsedFavs.forEach(favItem => {
       favourites.set(uniqueID(favItem), favItem);
     });  
   }
-  
 }
 
 export function saveFavourites() {
@@ -77,7 +79,10 @@ export async function removeFavourite(id, service) {
   const isUnfavorited = await unfavoriteArtist(service, id);
 
   if (!isUnfavorited) {
-    return false
+    // querying on fail because the server returns error even on success
+    const favItems = await retrieveFavorites();
+    localStorage.setItem("favs", favItems);
+    return true
   }
 
   const isDeleted = favourites.delete( uniqueID({ id, service }) );

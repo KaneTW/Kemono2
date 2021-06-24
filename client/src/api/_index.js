@@ -11,14 +11,18 @@ export const errorList = new Map([
 export async function retrieveFavorites() {
   try {
     const response = await kemonoFetch("/api/favorites");
-    /**
-     * @type {FavoriteItem[]}
-     */
-    const favs = await response.json();
 
+    if (!response.ok) {
+      throw new Error(`Error ${response.status}: ${response.statusText}`);
+    }
+    /**
+     * @type {string}
+     */
+    const favs = await response.text();
     return favs;
     
   } catch (error) {
+    console.log(error);
     alert(error);
   }
 
