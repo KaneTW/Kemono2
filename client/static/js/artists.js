@@ -102,7 +102,8 @@ function load() {
                   'subscribestar': 'SubscribeStar',
                   'gumroad': 'Gumroad',
                   'discord': 'Discord',
-                  'dlsite': 'DLsite'
+                  'dlsite': 'DLsite',
+                  'fantia': 'Fantia'
                 })[artist.service]
               }
             </td>

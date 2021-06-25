@@ -187,6 +187,10 @@ def make_artist_display_data(artist):
             'service': 'DLsite',
             'href': f"https://www.dlsite.com/eng/circle/profile/=/maker_id/{artist_id}",
         },
+        'fantia': {
+            'service': 'Fantia',
+            'href': f"https://fantia.jp/fanclubs/{artist_id}",
+        },
     }
     data = data_by_service_name[service_name]
     data['proxy'] = f"/{service_name}/user/{artist_id}"

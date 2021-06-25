@@ -39,6 +39,13 @@ window.onload = async () => {
         href = `https://www.dlsite.com/eng/circle/profile/=/maker_id/${ban.id}`;
         break;
       }
+      case 'fantia': {
+        service = 'Fantia';
+        const cacheData = await fetch(`/api/lookup/cache/${ban.id}?service=fantia`);
+        cache = await cacheData.json();
+        href = `https://fantia.jp/fanclubs/${ban.id}`;
+        break;
+      }
     }
     document.getElementById('bans').innerHTML += `
       <li>
