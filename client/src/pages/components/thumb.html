@@ -3,6 +3,7 @@
     <div class="thumb thumb-with-image {{ class if class else 'thumb-standard' }}">
       {# TODO: move backup image logic to the script #}
       <img 
+        class="thumb-image"
         src="/thumbnail{{ src|replace('https://kemono.party', '') }}" 
       >
       <div class="thumb-with-image-overlay">
