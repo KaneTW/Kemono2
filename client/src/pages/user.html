@@ -46,9 +46,11 @@
     <div 
       class="user-header__avatar" 
     >
-      <img 
-        src="/icons/{{ props.service }}/{{ props.id }}" 
-      >
+      <a href="/{{ props.service }}/user/{{ props.id }}">
+        <img 
+          src="/icons/{{ props.service }}/{{ props.id }}" 
+        >
+      </a>
     </div>
 
     <div class="user-header__info">
