@@ -1,5 +1,3 @@
-{% from "components/fancy_link.html" import fancy_link %}
-
 {% macro fancy_image(src, alt=src, srcset=src, is_inline=true) %}
   {% if is_inline %}
     <span class="fancy-image">
@@ -12,14 +10,15 @@
   {% endif %}
 {% endmacro %}
 
-{% macro image_link(src, alt=src, srcset=src, is_inline=true) %}
+{# TODO: write as separate component #}
+{# {% macro image_link(src, alt=src, srcset=src, is_inline=true) %}
   <a 
     class="fancy-image {{ 'fancy-image--block' if not is_inline }}"
     href="{{ src }}"
   >
     {{ __image(src, alt, srcset) }}
   </a>
-{% endmacro %}
+{% endmacro %} #}
 
 {% macro __image(src, alt=src, srcset=src) %}
   <picture class="fancy-image__picture">

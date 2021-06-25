@@ -2,10 +2,10 @@
  * The map of error names and their messages.
  */
 export const errorList = new Map([
-  ["001", "Could not save favorite post."],
-  ["002", "Could not remove favorite post."],
-  ["003", "Could not save favorite artist."],
-  ["004", "Could not remove favorite artist."],
+  ["001", "Could not favorite post."],
+  ["002", "Could not unfavorite post."],
+  ["003", "Could not favorite artist."],
+  ["004", "Could not unfavorite artist."],
 ]);
 
 export async function retrieveFavorites() {
@@ -22,7 +22,6 @@ export async function retrieveFavorites() {
     return favs;
     
   } catch (error) {
-    console.log(error);
     alert(error);
   }
 
@@ -81,10 +80,8 @@ export async function unfavoriteArtist(service, userID) {
  * @returns {Promise<Response>}
  */
 async function kemonoFetch(endpoint, options) {
-  const url = new URL(endpoint, location.origin).toString();
-
   try {
-    const response = await fetch(url, options);
+    const response = await fetch(endpoint, options);
 
     if (response.redirected) {
       location = addURLParam(response.url, "redir", location.pathname);

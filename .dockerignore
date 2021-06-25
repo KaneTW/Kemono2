@@ -1,3 +1,4 @@
+storage/
 dist/
 client/
 __pycache__

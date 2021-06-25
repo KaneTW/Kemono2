@@ -11,7 +11,7 @@ const baseConfig = require("./webpack.config");
  */
 const webpackConfigProd = {
   mode: "production",
-  devtool: "source-map",
+  // devtool: "source-map",
   plugins: [
     new CopyWebpackPlugin({
       patterns: [
@@ -98,7 +98,7 @@ const webpackConfigProd = {
     path: path.resolve(__dirname, "dist"),
     filename: "static/bundle/js/[name]-[contenthash].bundle.js",
     assetModuleFilename: "static/bundle/assets/[name]-[contenthash][ext][query]",
-    sourceMapFilename: "source-maps/[file].map[query]",
+    // sourceMapFilename: "source-maps/[file].map[query]",
     publicPath: "/",
     clean: true,
   },
