@@ -19,6 +19,21 @@ docker-compose --file docker-compose.dev.yml up
 ```
 Open `http://localhost:5000/` in the browser.
 
+#### Database
+
+Assuming the dev setup is running:
+
+1. Retrieve a database dump.
+2. Run this command in the folder of said dump:
+    ```sh
+    cat db-filename.dump | gunzip | docker exec --interactive kemono-db psql --username=nano kemonodb
+    ```
+3. Restart the archiver to trigger migrations:
+    ```sh
+    docker restart kemono-archiver
+    ```
+    If that didn't start the migrations, refer to [FAQ section](#my-dump-doesnt-migrate) for manual instructions.
+
 ### Build
 ```sh
 docker-compose build
@@ -45,3 +60,31 @@ set FLASK_APP=server.py
 set FLASK_ENV=development
 flask run
 ```
+
+## Frequently Asked Questions
+
+### __My dump doesn't migrate.__
+Assuming the running setup:
+
+1. Enter into database container:
+    ```sh
+    docker exec --interactive --tty kemono-db psql --username=nano kemonodb
+    ```
+2. Check the contents of the `posts` table:
+    ```sql
+    SELECT * FROM posts;
+    ```
+    Most likely it has 0 rows.
+3. Move contents of `booru_posts` to `posts`:
+    ```sql
+    INSERT INTO posts SELECT * FROM booru_posts ON CONFLICT DO NOTHING;
+    ```
+4. Restart the archiver:
+    ```sh
+    docker restart kemono-archiver
+    ```
+    If you see a bunch of log entries from `kemono-db`, then it means archiver is doing the job.
+5. In case the frontend still doesn't show the artists/posts, clear redis cache:
+    ```sh
+    docker exec kemono-redis redis-cli FLUSHALL
+    ```
