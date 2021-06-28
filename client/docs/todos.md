@@ -1,14 +1,12 @@
 # Issues
 
-## HTML
+## Webpack
+- SASS uses its own module name resolution mechanism which differs from the current webpack setup. Specifically `config.resolve.alias` rules will not apply to filenames in `@use "";` expression.
+- Figure out how to set up source maps.
+## HTML/Templates
 
-### Templates
-
-#### `user.html`
-- artist unfav button returns an error in prod 
-
-#### `post.html`
-- Clicking fav button doesn't change the button even on reload. It does get updated. Favoriting it second time doesn't trigger unfav.
+### `user.html`
+- AJAX search.
 
 ## CSS
 ## JS

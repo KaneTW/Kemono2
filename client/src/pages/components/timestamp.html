@@ -1,0 +1,14 @@
+{% macro timestamp(time, class_name) %}
+  {# `datetime` value should be ISO string #}
+  <time
+    class="timestamp {{ class_name }}" 
+    datetime="{{ time }}"
+  >
+    {% if not caller %}
+      {# this is formatted value #}
+      {{ time }}
+    {% else %}
+      {{ caller() }}
+    {% endif %}
+  </time>
+{% endmacro %}

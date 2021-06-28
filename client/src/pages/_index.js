@@ -1,6 +1,7 @@
 import { initComponentFactory } from "@wp/pages/components/_index";
 import { userPage } from "./user";
 import { registerPage } from "./register";
+import { postPage } from "./post";
 
 const main = document.querySelector("main");
 /**
@@ -12,7 +13,8 @@ const footer = document.querySelector(".global-footer");
  */
 const pages = new Map([
   ["user", userPage],
-  ["register", registerPage]
+  ["register", registerPage],
+  ["post", postPage]
 ]);
 
 initComponentFactory(footer);
@@ -45,6 +47,7 @@ export function initSections() {
       e.preventDefault();
       localStorage.removeItem('logged_in');
       localStorage.removeItem('favs');
+      localStorage.removeItem('post_favs');
       location.href = '/account/logout';
     })
   } else {

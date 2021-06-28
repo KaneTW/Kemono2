@@ -20,7 +20,6 @@ docker-compose --file docker-compose.dev.yml up
 Open `http://localhost:5000/` in the browser.
 
 #### Database
-
 Assuming the dev setup is running:
 
 1. Retrieve a database dump.
@@ -33,6 +32,19 @@ Assuming the dev setup is running:
     docker restart kemono-archiver
     ```
     If that didn't start the migrations, refer to [FAQ section](#my-dump-doesnt-migrate) for manual instructions.
+
+#### Files
+Assuming the dev setup is running:
+
+1. Retrieve the files in required folder structure.
+2. Copy them into nginx image:
+    ```sh
+    docker cp ./ kemono-nginx:/storage
+    ```
+3. Add required permissions to that folder:
+    ```sh
+    docker exec kemono-nginx chown --recursive nginx /storage
+    ```
 
 ### Build
 ```sh

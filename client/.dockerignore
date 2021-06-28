@@ -1,3 +1,7 @@
+# webpack output
+**/dev
+**/dist
+
 **/.classpath
 **/.dockerignore
 **/.env

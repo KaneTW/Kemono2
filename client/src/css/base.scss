@@ -110,6 +110,17 @@ pre {
   word-wrap: break-word;       /* Internet Explorer 5.5+ */
 }
 
+select {
+  background-image: linear-gradient(#282a2e, #111111);
+  border-color: #111;
+  border-radius: 5px;
+  text-align-last: center;
+}
+
 select * {
+  color: #000;
+}
+
+select::-ms-expand {
   color: #000;
 }

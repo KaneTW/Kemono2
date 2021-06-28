@@ -1,4 +1,4 @@
-import { addFavourite, findFavouriteArtist, removeFavourite } from "@wp/js/favorites";
+import { addFavouriteArtist, findFavouriteArtist, removeFavouriteArtist } from "@wp/js/favorites";
 import { createComponent } from "./components/_index";
 
 /** 
@@ -61,9 +61,8 @@ function handleFavouriting(id, service) {
     button.insertBefore(loadingIcon, text);
     
     try {
-
       if (button.classList.contains("user-header__favourite--unfav")) {
-        const isRemoved = await removeFavourite(id, service);
+        const isRemoved = await removeFavouriteArtist(id, service);
 
         if (isRemoved) {
           button.classList.remove("user-header__favourite--unfav");
@@ -72,7 +71,7 @@ function handleFavouriting(id, service) {
         }
         
       } else {
-        const isAdded = await addFavourite(id, service);
+        const isAdded = await addFavouriteArtist(id, service);
 
         if (isAdded) {
           button.classList.add("user-header__favourite--unfav");
@@ -83,7 +82,6 @@ function handleFavouriting(id, service) {
       }
     } catch (error) {
       alert(error);
-      icon.textContent = oldIcon;
       
     } finally {
       loadingIcon.remove();

@@ -1,0 +1,180 @@
+@use "../css/variables.scss" as *;
+
+.post {
+
+  &__nav-list {
+    display: flex;
+    height: 2rem;
+    align-items: center;
+    justify-content: space-between;
+    list-style: none;
+    padding: 0;
+    margin: 0.5rem;
+  }
+
+  &__header {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: flex-start;
+    align-items: center;
+    background: var(--colour1-secondary);
+    border: solid hsla(0, 0%, 50%, 0.7) $size-thin;
+    border-radius: 10px 10px 0 0;
+    overflow: hidden;
+  }
+
+  &__user {
+    text-align: center;
+    border-right: solid hsla(0, 0%, 50%, 0.7) $size-thin;
+    padding: 0.5em;
+  }
+
+  &__user-profile {
+    max-height: 160px;
+    max-width: 160px;
+  }
+
+  &__user-avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 10px;
+  }
+
+  &__user-name {
+    font-size: 1.25em;
+    display: inline-block;
+  }
+
+  &__info {
+    padding: 0.5em;
+    padding-left: 2em;
+
+    & > * {
+      margin: 0.75rem 0;
+    }
+  }
+
+  &__title {}
+
+  &__published {
+    color: var(--colour0-secondary);
+  }
+
+  &__actions {
+    font-size: 1.5em;
+    
+
+    & > * {
+      margin-right: 1em;
+      user-select: none;
+  
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+  }
+
+  &__flag {
+    display: inline-block;
+    color: hsl(3, 100%, 69%);
+    font-weight: bold;
+    text-shadow: 
+    hsl(0, 0%, 0%) 0px 0px 3px, 
+    hsl(0, 0%, 0%) -1px -1px 0px, 
+    hsl(0, 0%, 0%) 1px 1px 0px;
+    background-color: transparent;
+    border:transparent;
+
+    // hack to overwrite * selector color
+    & span {
+      color: hsl(3, 100%, 69%);
+    }
+
+    &--flagged {
+      color: hsl(0, 0%, 45%);
+
+      // hack to overwrite * selector color
+      & span {
+        color: hsl(0, 0%, 45%);
+      }
+    }
+
+    &--loading {
+      cursor: progress;
+
+      & .post__flag-icon {
+        display: none;
+      }
+    }
+  }
+
+  &__fav {
+    color: hsl(0, 0%, 100%);
+    font-weight: bold;
+    text-shadow: 
+    hsl(0, 0%, 0%) 0px 0px 3px, 
+    hsl(0, 0%, 0%) -1px -1px 0px, 
+    hsl(0, 0%, 0%) 1px 1px 0px;
+    background-color: transparent;
+    border:transparent;
+    
+    &--unfav {
+      color: hsl(51, 100%, 50%);
+
+      // hack to overwrite * selector color
+      & span {
+        color: hsl(51, 100%, 50%);
+      }
+    }
+
+    &--loading {
+      cursor: progress;
+
+      & .post__fav-icon {
+        display: none;
+      }
+    }
+  }
+
+  &__body {
+    border: solid hsl(0, 0%, 50%) $size-thin;
+    border-top: 0;
+    border-radius: 0 0 10px 10px;
+    padding: 0.5em;
+  }
+
+  &__content {
+    margin: 0;
+  }
+
+  &__files {
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+  }
+
+  &__thumbnail {
+    margin: 0.5em 0;
+  }
+
+  @media (max-width: $width-phone) {
+    &__header {
+      flex-flow: column nowrap;
+      align-items: stretch;
+    }
+
+    &__info {
+      padding-left: 0.5em;
+    }
+
+    &__user {
+      border-right: none;
+      border-bottom: solid hsla(0, 0%, 50%, 0.7) $size-thin;
+    }
+
+    &__user-profile {
+      margin: 0 auto;
+    }
+  }
+}

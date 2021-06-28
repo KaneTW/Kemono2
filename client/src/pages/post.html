@@ -1,41 +1,195 @@
 {% extends 'components/shell.html' %}
-{% block content %}
-<div class="page" id="page">
-  {% if post %}
-    <div class="nav-links">
-      <ul>
-        <li>
-          <a class="prev" href="/{{ post.service }}/user/{{ post.user }}/post/{{ post.id }}/prev">‹ previous</a>
-          <a class="next" href="/{{ post.service }}/user/{{ post.user }}/post/{{ post.id }}/next">next ›</a>
-        </li>
-      </ul>
-    </div>
-    <div class="pure-g">
-      <div class="pure-u-1 pure-u-sm-1 pure-u-md-1-5">
-        <a href="/{{ post.service }}/user/{{ post.user }}">
-          <div class="jumbo">
-            <div class="jumbo-user">
-              <div class="jumbo-user-avatar" style="background-image: url('/icons/{{ post.service }}/{{ post.user }}');"></div>
-              <span>View all posts</span>
-            </div>
+
+{% set post_title = post.title ~ " by " ~ props.artist.name ~ " from " ~ post.service ~ " | Kemono" if props.artist else post.title ~ " | Kemono" %}
+
+{% macro post_view(post, attachments, previews) %}
+  {% if post.service == 'dlsite' and post.attachments|length > 1 %}
+    <p class="subtitle">
+      This DLsite post was received as a split set of multiple files due to file size. Download all the files, then open the .exe file to compile them into a single one.
+    </p>
+  {% endif %}
+  
+  {% for attachment in attachments %}
+    <a 
+      href="{{ attachment.path }}" 
+      target="_blank"
+    >
+      Download {{ attachment.name }}
+    </a>
+  {% endfor %}
+
+  <p class="post__content">
+    {{ post.content|safe }}
+  </p>
+
+  <div class="post__files">
+    {% for preview in previews %}
+      {% if preview.type == 'thumbnail' %}
+        <div class="post__thumbnail">
+          <a class="fileThumb" href="{{ preview.path }}">
+            {# TODO: move backup image logic to the script #}
+            <img
+              data-src="/thumbnail{{ preview.path }}"
+              src="/thumbnail{{ preview.path }}"
+              loading="lazy"
+            >
+          </a>
+        </div>
+      {% elif preview.type == 'embed' %}
+        <a 
+          href="{{ preview.url }}" 
+          target="_blank"
+        >
+          <div class="embed-view">
+            <h2 
+              class="{{'subtitle' if not preview.subject}}"
+            >
+              {{ preview.subject if preview.subject else '(No title)' }}
+            </h2>
+            {% if preview.description %}
+              <p>
+                {{ preview.description }}
+              </p>
+            {% endif %}
           </div>
         </a>
+      {% endif %}
+    {% endfor %}
+  </div>
+  
+{% endmacro %}
+
+{% block title %}
+  <title>
+    {{ post_title }}
+  </title>
+{% endblock title %}
+
+{% block meta %}
+  <meta name="service" content="{{ post.service }}">
+  <meta name="id" content="{{ post.id }}">
+  <meta name="user" content="{{ post.user }}">
+  {% if post.published %}
+    <meta name="published" content="{{ post.published }}">
+  {% endif %}
+{% endblock meta %}
+
+{% block opengraph %}
+  <meta property="og:title" content="{{ post_title }}">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Kemono">
+  <meta property="og:image" content="/icons/{{ post.service }}/{{ post.user }}">
+  <meta property="og:url" content="{{ g.canonical_url }}">
+{% endblock opengraph %}
+
+{% block content %}
+<section class="site-section site-section--post" id="page">
+  {% if post %}
+    <nav class="post__nav-links">
+      <ul class="post__nav-list">
+        <li class="post__nav-item">
+          <a 
+            class="post__nav-link prev" 
+            href="/{{ post.service }}/user/{{ post.user }}/post/{{ post.id }}/prev"
+          >
+            ‹ previous
+          </a> 
+        </li>
+        <li class="post__nav-item">
+          <a 
+            class="post__nav-link next" 
+            href="/{{ post.service }}/user/{{ post.user }}/post/{{ post.id }}/next"
+          >
+            next ›
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <header class="post__header">
+      <div class="post__user">
+        <div
+          class="post__user-profile" 
+        >
+          <a href="/{{ post.service }}/user/{{ post.user }}">
+            <img 
+              class="post__user-avatar"
+              src="/icons/{{ post.service }}/{{ post.user }}"
+            > 
+          </a>
+        </div>
+        <div>
+          <a
+            class="post__user-name" 
+            href="/{{ post.service }}/user/{{ post.user }}">
+            {{ props.artist.name if props.artist else "Artist's page"}}
+          </a>
+        </div>
       </div>
-      <div class="pure-u-1 pure-u-sm-1 pure-u-md-4-5">
-        {% set previews = result_previews %}
-        {% set attachments = result_attachments %}
-        {% set after_kitsune = props.after_kitsune %}
-        {% with post=post %}
-          {% include 'components/post_view.html' %}
-        {% endwith %}
+      <div class="post__info">
+        {# TODO: check what's toggle is for #}
+        <h1 for="toggle-{{ post.id }}" class="post__title">
+          {# title hidden with subscribestar posts to prevent redundancy #}
+          {% if post.service != 'subscribestar' %}
+            {% if post_link_in_title %}
+              <a 
+                href="/{{ post.service }}/user/{{ post.user }}/post/{{ post.id }}" 
+                target="_blank"
+              >
+                {{ post.title }}
+              </a>
+            {% else %}
+              {{ post.title }}
+            {% endif %}
+          {% endif %}
+        </h1>
+        {% if post.published %}
+          <div for="toggle-{{ post.id }}"  class="post__published">
+            {{ timestamp(post.published) }}
+          </div>
+        {% endif %}
+        <div class="post__actions">
+          {% if props.flagged %}
+            <span 
+              class="post__flag post__flag--flagged" 
+            >
+              <span class="post__flag-icon">⚑</span>
+              <span>Flagged</span>
+            </span>
+          {% else %}
+            <button
+              class="post__flag"
+              type="button"
+            >
+              <span class="post__flag-icon">⚑</span>
+              <span>Flag</span>
+            </button>
+          {% endif %}
+        </div>
       </div>
+    </header>
+
+    <div class="post__body">
+      {{ post_view(post, result_attachments, result_previews) }}
     </div>
   {% else %}
-    <div class="no-posts">
-      <h1 class="subtitle">Nobody here but us chickens!</h1>
-    </div>
+    <h1 class="subtitle no-posts">Nobody here but us chickens!</h1>
   {% endif %}
-</div>
-<script src="{{ url_for('static', filename='js/post.js') }}"></script>
-<script src="{{ url_for('static', filename='js/expander.js') }}"></script>
+</section>
 {% endblock %}
+
+{% block components %}
+  <button 
+    class="post__fav"
+    type="button"
+  >
+    <span class="post__fav-icon">☆</span>
+    <span>Favorite</span>
+  </button>
+  <span 
+    class="post__flag post__flag--flagged" 
+  >
+    <span>⚑</span>
+    <span>Flagged</span>
+  </span>
+{% endblock components %}

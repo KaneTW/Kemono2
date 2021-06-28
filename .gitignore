@@ -1,3 +1,6 @@
+# Webpack dev server temp files
+client/dev
+
 # Dev file server
 storage/
 

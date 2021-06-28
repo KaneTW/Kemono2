@@ -1,0 +1,30 @@
+/* Attributes */
+// only selectors by attributes 
+// and their pseudo-classes/elements go there
+// base tags are for easier grouping/folding
+
+input {
+
+  &[type="submit"] {
+    min-height: 24px;
+    text-align: center;
+    background-image: linear-gradient(#282a2e, #111111);
+    border-radius: 5px;
+    border: 0;
+  }
+
+  &[type="text"], 
+  &[type="password"], 
+  &[type="number"] {
+    border-radius: 5px;
+    box-shadow: inset 0 1px 3px #1f2024;
+    background:#3a3d43;
+    color: #fff;
+    border: 0;
+  }
+
+  &[type="checkbox"],
+  &[type="radio"] {
+    cursor: pointer;
+  }
+}

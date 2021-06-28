@@ -4,7 +4,7 @@ export function registerPage() {
 
 function populate_favorites() {
   var input = document.getElementById('serialized-favorites');
-  var favorites = localStorage.favorites;
+  var favorites = localStorage.getItem("favorites");
   var to_serialize = [];
   if (input && favorites) {
     var artists = favorites.split(',');

@@ -6,10 +6,11 @@
       "@wp/js/*": ["./js/*"],
       "@wp/css/*": ["./css/*"],
       "@wp/assets/*": ["./assets/*"],
-      "@wp/api/*": ["./api/*"],
+      "@wp/api": ["./api/_index.js"],
     },
-    "target": "es2015",
-    "module": "esnext",
+    "target": "es6",
+    "module": "es6",
+    "lib": ["dom", "dom.iterable"],
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true
   }

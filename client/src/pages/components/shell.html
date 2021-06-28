@@ -1,12 +1,17 @@
+{% from 'components/loading_icon.html' import loading_icon %}
+{% from 'components/timestamp.html' import timestamp %}
+
 <!DOCTYPE html>
 <html prefix="og: https://ogp.me/ns#">
   <head>
     <script>var page_data = {{ render_page_data()|safe }}</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>
-      {{ props.name ~ " | Kemono" if props.name else "Kemono" }}
-    </title>
+    {% block title %}
+      <title>
+        {{ props.name ~ " | Kemono" if props.name else "Kemono" }}
+      </title>
+    {% endblock title %}
     <link rel="shortcut icon" href="/static/favicon.ico">
     
     {% block meta %}
@@ -35,7 +40,7 @@
       <meta property="og:title" content="{{ props.name ~ ' | Kemono' if props.name else 'Kemono' }}">
       <meta property="og:type" content="website">
       <meta property="og:site_name" content="Kemono">
-      <meta property="og:image" content="/favicon.ico">
+      <meta property="og:image" content="/static/kemono-logo.svg">
       <meta property="og:url" content="{{ g.canonical_url }}">
     {% endblock opengraph %}
 
@@ -52,6 +57,11 @@
         </script>
       {% endif %}
     {% endblock scripts %}
+
+    {% block bundler_output %}
+      {# quick hack until writing proper loader #}
+      <%= htmlWebpackPlugin.tags.headTags %>
+    {% endblock bundler_output %}
 
     {% block scripts_extra %}
     {% endblock scripts_extra %}
@@ -72,6 +82,8 @@
         class="component-container" 
         hidden
       >
+        {{ timestamp("") }}
+        {{ loading_icon() }}
         {% block components %}
         {% endblock components %}
       </div>

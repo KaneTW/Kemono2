@@ -1,18 +1,64 @@
-import { favoriteArtist, retrieveFavorites, unfavoriteArtist } from "@wp/api/_index";
+import { kemonoAPI } from "@wp/api";
 
 export async function initFavorites() {
-  let storageFavs = localStorage.getItem('favs');
+  let artistFavs = localStorage.getItem('favs');
+  let postFavs = localStorage.getItem('post_favs');
 
-  if (!storageFavs) {
+  if (!artistFavs) {
     /**
      * @type {string}
      */
-    const favs = await retrieveFavorites();
+    const favs = await kemonoAPI.favorites.retrieveFavoriteArtists();
 
     if (favs) {
       localStorage.setItem("favs", favs);
     }
   }
+
+  if (!postFavs) {
+    /**
+     * @type {string}
+     */
+    const favs = await kemonoAPI.favorites.retrieveFavoritePosts();
+
+    if (favs) {
+      localStorage.setItem("post_favs", favs);
+    }
+  }
+}
+
+/**
+ * @param {string} id 
+ * @param {string} service 
+ */
+export async function addFavouriteArtist(id, service) {
+  const isFavorited = await kemonoAPI.favorites.favoriteArtist(service, id);
+
+  if (!isFavorited) {
+    return false;
+  }
+
+  const newFavs = await kemonoAPI.favorites.retrieveFavoriteArtists();
+  localStorage.setItem("favs", newFavs);
+
+  return true;
+}
+
+/**
+ * @param {string} id 
+ * @param {string} service 
+ */
+export async function removeFavouriteArtist(id, service) {
+  const isUnfavorited = await kemonoAPI.favorites.unfavoriteArtist(service, id);
+
+  if (!isUnfavorited) {
+    return false
+  }
+
+  const favItems = await kemonoAPI.favorites.retrieveFavoriteArtists();
+  localStorage.setItem("favs", favItems);
+
+  return true;
 }
 
 /**
@@ -37,46 +83,62 @@ export function findFavouriteArtist(id, service) {
 }
 
 /**
- * @param {string} id 
  * @param {string} service 
+ * @param {string} user 
+ * @param {string} postID 
  */
-export async function addFavourite(id, service) {
-  const isFavorited = await favoriteArtist(service, id);
+export async function addFavouritePost(service, user, postID) {
+  const isFavorited = await kemonoAPI.favorites.favoritePost(service, user, postID);
 
   if (!isFavorited) {
     return false;
   }
 
-  const newFavs = await retrieveFavorites();
-  localStorage.setItem("favs", newFavs);
+  const newFavs = await kemonoAPI.favorites.retrieveFavoritePosts();
+  localStorage.setItem("post_favs", newFavs);
 
   return true;
-}
+};
 
 /**
- * @param {string} id 
  * @param {string} service 
+ * @param {string} user 
+ * @param {string} postID 
+ * @returns 
  */
-export async function removeFavourite(id, service) {
-  const isUnfavorited = await unfavoriteArtist(service, id);
+export async function removeFavouritePost(service, user, postID) {
+  const isUnfavorited = await kemonoAPI.favorites.unfavoritePost(service, user, postID);
 
   if (!isUnfavorited) {
     return false
   }
 
-  const favItems = await retrieveFavorites();
-  localStorage.setItem("favs", favItems);
+  const favItems = await kemonoAPI.favorites.retrieveFavoritePosts();
+  localStorage.setItem("post_favs", favItems);
 
   return true;
-}
+};
 
 /**
- * Combines `id` and `service` into a single entry
- * for the memory storage purposes.
- * Because IDs by themselves are only guarantied
- * to be unique within a service.
- * @param {FavoriteItem} fav
+ * @param {string} service 
+ * @param {string} user 
+ * @param {string} postID 
  */
-function uniqueID(fav) {
-  return `${fav.id}-${fav.service}`;
+export function findFavouritePost(service, user, postID) {
+  /**
+   * @type {KemonoAPI.Favorites.Post[]}
+   */
+  const favList = JSON.parse(localStorage.getItem("post_favs"));
+
+  if (!favList) {
+    return undefined;
+  }
+  const favPost = favList.find((favItem) => {
+    const isMatch = favItem.id === postID 
+      && favItem.service === service
+      && favItem.user === user;
+    return isMatch;
+  });
+
+  return favPost;
 }

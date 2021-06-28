@@ -1,3 +1,5 @@
+export { LoadingIcon } from "./loading_icon";
+
 /**
  * @type {Map<string, HTMLElement>}
  */
@@ -16,6 +18,8 @@ export function initComponentFactory(footer) {
   componentElements.forEach((component) => {
     components.set(component.className, component);
   });
+  
+  container.remove();
 }
 
 /**

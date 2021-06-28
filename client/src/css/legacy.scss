@@ -1,5 +1,5 @@
 /* 
-  TODO: Spread the styles around component/block files. 
+  TODO: Spread the styles around page/component/block files. 
 */
 
 .flash_messages {
@@ -46,19 +46,6 @@
   text-align: center;
 }
 
-.nav-links ul {
-  list-style: none;
-  margin: 0.5rem;
-  padding: 0;
-}
-
-.nav-links li {
-  display: flex;
-  height: 2rem;
-  align-items: center;
-  justify-content: space-between;
-}
-
 .activity-view {
   padding: 5px;
   margin: 0.5rem;
@@ -92,11 +79,11 @@
   padding: 10px;
   margin: 0.5rem;
   border-radius: 0.25rem;
-  background: #3a3d43;
-}
+  background: hsl(220, 7%, 25%);
 
-.jumbo p {
-  margin: 0;
+  & p {
+    margin: 0;
+  }
 }
 
 .jumbo-user {
@@ -127,36 +114,20 @@
   right: 0.5rem;
 }
 
-.flag {
-  color: #ff6961;
-  cursor: pointer;
-}
-
-.flag-disabled {
-  color: #737373;
-}
-
 .visually-hidden {
   position: absolute;
   left: -100vw;
 }
-
-@keyframes fadeInOpacity {
-	0% {
-		opacity: 0;
-	}
-	100% {
-		opacity: 1;
-	}
-}
-
 
 .card {
   height: 500px;
   background: #3a3d43;
   border-radius: 2px;
   margin: 0.5rem;
-  box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 1px 5px 0 rgba(0,0,0,0.12), 0 3px 1px -2px rgba(0,0,0,0.2);
+  box-shadow: 
+    0 2px 2px 0 rgba(0,0,0,0.14), 
+    0 1px 5px 0 rgba(0,0,0,0.12), 
+    0 3px 1px -2px rgba(0,0,0,0.2);
   position: relative;
 }
 
@@ -165,7 +136,10 @@
   background: #3a3d43;
   border-radius: 2px;
   margin: 0.5rem;
-  box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 1px 5px 0 rgba(0,0,0,0.12), 0 3px 1px -2px rgba(0,0,0,0.2);
+  box-shadow: 
+    0 2px 2px 0 rgba(0,0,0,0.14), 
+    0 1px 5px 0 rgba(0,0,0,0.12), 
+    0 3px 1px -2px rgba(0,0,0,0.2);
   position: relative;
   overflow-y: auto;
 }
@@ -255,7 +229,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-image: url(/static/loading.gif);
+  background-image: url("@wp/assets/loading.gif");
   background-position: center;
   background-repeat: no-repeat;
   position: relative;
@@ -291,7 +265,8 @@
   margin: auto;
 }
 
-.thumb h3, .thumb p {
+.thumb h3, 
+.thumb p {
   color: #fff;
 }
 
@@ -308,34 +283,8 @@
   word-break: break-word;
 }
 
-select {
-  background-image: linear-gradient(#282a2e, #111111);
-  border-color: #111;
-  border-radius: 5px;
-  text-align-last: center;
-}
-
-select::-ms-expand {
-  color: #000;
-}
-
 .search-input {
   text-align: center;
-}
-
-input[type="text"], 
-input[type="password"], 
-input[type="number"] {
-  border-radius: 5px;
-  box-shadow: inset 0 1px 3px #1f2024;
-  background:#3a3d43;
-  color: #fff;
-  border: 0;
-}
-
-input[type="checkbox"],
-input[type="radio"] {
-  cursor: pointer;
 }
 
 /* headers */
@@ -351,10 +300,6 @@ input[type="radio"] {
   display:none;
 }
 
-.sep {
-  height: 0.5em;
-}
-
 .subheader li {
   color: #fff;
   display: inline;
@@ -362,7 +307,8 @@ input[type="radio"] {
   margin: 0 0.5em 0 0;
 }
 
-.subheader li a:visited, .subheader li a:link {
+.subheader li a:visited, 
+.subheader li a:link {
   color: #fff;
 }
 
@@ -381,7 +327,8 @@ input[type="radio"] {
   margin: 0 0.5em 0 0;
 }
 
-.header li a:visited, .header li a:link {
+.header li a:visited, 
+.header li a:link {
   color: #fff;
 }
 
@@ -420,10 +367,10 @@ input[type="radio"] {
 }
 
 menu li {
+  display: inline;
+  list-style-type: none;
   margin: 0;
   padding: 0 .2em;
-  list-style-type: none;
-  display: inline;
 }
 
 /* importer */
@@ -436,14 +383,6 @@ menu li {
 
 .importer-form * {
   display: block;
-}
-
-input[type="submit"] {
-  border-radius: 5px;
-  min-height: 24px;
-  background-image: linear-gradient(#282a2e, #111111);
-  text-align: center;
-  border: 0;
 }
 
 /* posts */
