@@ -30,8 +30,9 @@
   }
 
   &__user-profile {
-    max-height: 160px;
-    max-width: 160px;
+    width: 160px;
+    height: 160px;
+    margin: 0 auto;
   }
 
   &__user-avatar {
@@ -171,10 +172,6 @@
     &__user {
       border-right: none;
       border-bottom: solid hsla(0, 0%, 50%, 0.7) $size-thin;
-    }
-
-    &__user-profile {
-      margin: 0 auto;
     }
   }
 }
