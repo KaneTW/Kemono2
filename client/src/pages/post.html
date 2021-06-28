@@ -1,6 +1,14 @@
 {% extends 'components/shell.html' %}
 
-{% set post_title = post.title ~ " by " ~ props.artist.name ~ " from " ~ post.service ~ " | Kemono" if props.artist else post.title ~ " | Kemono" %}
+{% set post_title = post.title ~ " by " ~ props.artist.name ~ " from " ~ {
+  'patreon': 'Patreon',
+  'fanbox': 'Pixiv Fanbox',
+  'subscribestar': 'SubscribeStar',
+  'gumroad': 'Gumroad',
+  'discord': 'Discord',
+  'dlsite': 'DLsite',
+  'fantia': 'Fantia'
+}.get(props.service, '') ~ " | Kemono" if props.artist else post.title ~ " | Kemono" %}
 
 {% macro post_view(post, attachments, previews) %}
   {% if post.service == 'dlsite' and post.attachments|length > 1 %}
