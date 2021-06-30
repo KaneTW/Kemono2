@@ -33,6 +33,7 @@ const webpackConfig = {
       ["@wp/css"]: path.join(projectPath, "css"),
       ["@wp/assets"]: path.join(projectPath, "assets"),
       ["@wp/api"]: path.join(projectPath, "api", "_index.js"),
+      ["@wp/utils"]: path.join(projectPath, "utils", "_index.js"),
     }
   }
 }
