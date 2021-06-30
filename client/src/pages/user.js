@@ -12,7 +12,7 @@ export async function userPage(section) {
    */
   const buttonsPanel = section.querySelector(".user-header__actions");
 
-  initButtons(buttonsPanel, artistID, artistService);
+  await initButtons(buttonsPanel, artistID, artistService);
 }
 
 /**
@@ -20,12 +20,12 @@ export async function userPage(section) {
  * @param {string} artistID 
  * @param {string} artistService 
  */
-function initButtons(panelElement, artistID, artistService) {
+async function initButtons(panelElement, artistID, artistService) {
   /**
    * @type {HTMLButtonElement}
    */
   const favButton = createComponent("user-header__favourite");
-  const favItem = findFavouriteArtist(artistID, artistService);
+  const favItem = await findFavouriteArtist(artistID, artistService);
 
   if (localStorage.getItem('logged_in') && favItem) {
     favButton.classList.add("user-header__favourite--unfav");

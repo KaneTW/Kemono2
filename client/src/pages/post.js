@@ -11,7 +11,7 @@ const meta = {
 /** 
  * @param {HTMLElement} section
  */
-export function postPage(section) {
+export async function postPage(section) {
   /**
    * @type {HTMLElement}
    */
@@ -22,13 +22,13 @@ export function postPage(section) {
   meta.postID = document.head.querySelector("[name='id']").content;
   section.addEventListener('click', Expander);
 
-  initButtons(buttonPanel);
+  await initButtons(buttonPanel);
 }
 
 /**
  * @param {HTMLElement} buttonPanel 
  */
-function initButtons(buttonPanel) {
+async function initButtons(buttonPanel) {
   /**
    * @type {HTMLButtonElement}
    */
@@ -37,7 +37,7 @@ function initButtons(buttonPanel) {
    * @type {HTMLButtonElement}
    */
   const favButton = createComponent("post__fav");
-  const isFavorited = findFavouritePost(meta.service, meta.user, meta.postID);
+  const isFavorited = await findFavouritePost(meta.service, meta.user, meta.postID);
 
   if (isFavorited) {
     const [icon, text] = favButton.children;
