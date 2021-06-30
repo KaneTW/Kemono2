@@ -7,6 +7,8 @@ export const errorList = new Map([
   ["003", "Could not favorite artist."],
   ["004", "Could not unfavorite artist."],
   ["005", "There might already be a flag here."],
+  ["006", "Could not retrieve the list of bans."],
+  ["007", "Could not retrieve banned artist."],
 ]);
 
 /**

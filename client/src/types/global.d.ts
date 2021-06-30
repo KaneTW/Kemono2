@@ -2,6 +2,7 @@ interface KemonoAPI {
   errors: Map<string, string>,
   favorites: KemonoAPI.Favorites,
   posts: KemonoAPI.Posts
+  api: KemonoAPI.API
 }
 
 namespace KemonoAPI {
@@ -43,5 +44,21 @@ namespace KemonoAPI {
 
   interface Posts {
     attemptFlag: (service: string, user: string, post_id: string) => Promise<boolean>
+  }
+
+  interface API {
+    bans: () => Promise<API.BanItem[]>
+    bannedArtist: (id:string, service:string) => Promise<API.BannedArtist>
+  }
+
+  namespace API {
+    interface BanItem {
+      id: string
+      service: string
+    }
+
+    interface BannedArtist {
+      name: string
+    }
   }
 }

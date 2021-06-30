@@ -1,0 +1,55 @@
+{% macro fancy_link(url, text=url, is_noop=true) %}
+  <a
+    class="fancy-link"
+    {{ 'target="_blank"' if is_noop }}
+    {{ 'rel="noopener noreferrer"' if is_noop }}
+    href="{{ url }}" 
+  >
+    {% if not caller %}
+      {{ text }}
+    {% else %}
+      {{ caller() }}
+    {% endif %}
+  </a>
+{% endmacro %}
+
+{% macro download_link(url, text=url) %}
+  <a 
+    class="fancy-link fancy-link--download" 
+    href="{{ url }}"
+    download
+  >
+    {% if not caller %}
+      {{ text }}
+    {% else %}
+      {{ caller() }}
+    {% endif %}
+  </a>
+{% endmacro %}
+
+{% macro kemono_link(url, text=url) %}
+  <a
+    class="fancy-link fancy-link--kemono" 
+    href="{{ url }}"
+    target="_self"
+  >
+    {% if not caller %}
+      {{ text }}
+    {% else %}
+      {{ caller() }}
+    {% endif %}
+  </a>
+{% endmacro %}
+
+{% macro local_link(id, text) %}
+  <a
+    class="fancy-link fancy-link--local" 
+    href="#{{ id }}"
+  >
+    {% if not caller %}
+      {{ text }}
+    {% else %}
+      {{ caller() }}
+    {% endif %}
+  </a>
+{% endmacro %}

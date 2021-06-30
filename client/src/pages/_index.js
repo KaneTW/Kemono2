@@ -1,5 +1,6 @@
 import { initComponentFactory } from "@wp/components";
 import { initShell } from "./components/shell";
+import { bansPage } from "./bans";
 import { userPage } from "./user";
 import { registerPage } from "./register";
 import { postPage } from "./post";
@@ -12,7 +13,8 @@ const pages = new Map([
   ["user", userPage],
   ["register", registerPage],
   ["post", postPage],
-  ["importer", importerPage]
+  ["importer", importerPage],
+  ["bans", bansPage],
 ]);
 
 /**
