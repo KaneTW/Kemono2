@@ -142,7 +142,17 @@
     border: solid hsl(0, 0%, 50%) $size-thin;
     border-top: 0;
     border-radius: 0 0 10px 10px;
-    padding: 0.5em;
+    padding: $size-small;
+  }
+
+  &__attachments {
+    list-style: none;
+    padding: $size-small;
+    margin: 0;
+  }
+
+  &__attachment {
+    padding: $size-little 0;
   }
 
   &__content {

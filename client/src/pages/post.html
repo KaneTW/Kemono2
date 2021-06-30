@@ -17,14 +17,19 @@
     </p>
   {% endif %}
   
-  {% for attachment in attachments %}
-    <a 
-      href="{{ attachment.path }}" 
-      target="_blank"
-    >
-      Download {{ attachment.name }}
-    </a>
-  {% endfor %}
+  <ul class="post__attachments">
+    {% for attachment in attachments %}
+      <li class="post__attachment">
+        <a
+          class="post__attachment-link"
+          href="{{ attachment.path }}" 
+          target="_blank"
+        >
+          Download {{ attachment.name }}
+        </a>
+      </li>
+    {% endfor %}
+  </ul>
 
   <p class="post__content">
     {{ post.content|safe }}
