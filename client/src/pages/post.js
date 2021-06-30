@@ -148,7 +148,7 @@ function handleFavouriting(service, user, postID) {
         const isFavorited = await addFavouritePost(service, user, postID);
 
         if (isFavorited) {
-          button.classList.add("user-header__favourite--unfav");
+          button.classList.add("post__fav--unfav");
           icon.textContent = "★";
           text.textContent = "Unfavorite";
         }
