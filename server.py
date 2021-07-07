@@ -15,7 +15,7 @@ import src.internals.cache.redis as redis
 from src.internals.cache.flask_cache import cache
 from src.lib.ab_test import get_all_variants
 from src.lib.account import is_logged_in
-from src.utils.utils import url_is_for_non_logged_file_extension, render_page_data
+from src.utils.utils import url_is_for_non_logged_file_extension, render_page_data, paysites, paysite_list
 
 from src.pages.home import home
 from src.pages.legacy import legacy
@@ -64,6 +64,8 @@ redis.init()
 def do_init_stuff():
     g.page_data = {}
     g.request_start_time = datetime.datetime.now()
+    g.paysite_list = paysite_list
+    g.paysites = paysites
     g.origin = getenv("KEMONO_SITE")
     g.canonical_url = urljoin(getenv("KEMONO_SITE"), request.path)
     session.permanent = True

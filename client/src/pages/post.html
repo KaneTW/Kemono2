@@ -1,14 +1,11 @@
 {% extends 'components/shell.html' %}
 
-{% set post_title = post.title ~ " by " ~ props.artist.name ~ " from " ~ {
-  'patreon': 'Patreon',
-  'fanbox': 'Pixiv Fanbox',
-  'subscribestar': 'SubscribeStar',
-  'gumroad': 'Gumroad',
-  'discord': 'Discord',
-  'dlsite': 'DLsite',
-  'fantia': 'Fantia'
-}.get(props.service, '') ~ " | Kemono" if props.artist else post.title ~ " | Kemono" %}
+{% from 'components/timestamp.html' import timestamp %}
+{% from 'components/links.html' import kemono_link, local_link %}
+{% from 'components/fancy_image.html' import fancy_image, background_image %}
+
+{% set paysite = g.paysites[props.service] %}
+{% set page_title = post.title ~ " by " ~ props.artist.name ~ " from " ~ paysite.title ~ " | Kemono" if props.artist else post.title ~ " | Kemono" %}
 
 {% macro post_view(post, attachments, previews) %}
   {% if post.service == 'dlsite' and post.attachments|length > 1 %}
@@ -74,7 +71,7 @@
 
 {% block title %}
   <title>
-    {{ post_title }}
+    {{ page_title }}
   </title>
 {% endblock title %}
 
@@ -88,7 +85,7 @@
 {% endblock meta %}
 
 {% block opengraph %}
-  <meta property="og:title" content="{{ post_title }}">
+  <meta property="og:title" content="{{ page_title }}">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Kemono">
   <meta property="og:image" content="/icons/{{ post.service }}/{{ post.user }}">
@@ -121,6 +118,7 @@
 
     <header class="post__header">
       <div class="post__user">
+        {{ background_image('/banners/' ~ post.service ~ '/' ~ post.user) }}
         <div
           class="post__user-profile" 
         >
@@ -185,6 +183,53 @@
     <div class="post__body">
       {{ post_view(post, result_attachments, result_previews) }}
     </div>
+
+    <footer class="post__footer">
+      <h2 class="site-section__subheading">Comments</h2>
+      {# TODO: comment filters #}
+      <div class="post__comments {{ 'post__comments--no-comments' if not comments }}">
+        {% for comment in comments %}
+          {% set is_user = comment.commenter == post.user %}
+          <article 
+            class="comment {{ 'comment--user' if is_user }}" 
+            id="{{ comment.id }}"
+          >
+            <header class="comment__header">
+              {% if is_user %}
+              
+                {% call kemono_link(comment.id, class_name="comment__icon") %}
+                  {{ fancy_image('/icons/' ~ post.service ~ '/' ~ post.user) }}
+                {% endcall %}
+
+                {% call local_link(comment.id, class_name="comment__name") %}
+                  {{ props.artist.name if props.artist else 'Artist' }}
+                {% endcall %}
+
+              {% else %}
+                {{ local_link(comment.id, 'Anonymous', "comment__name") }}
+              {% endif %}
+            </header>
+            <section class="comment__body">
+              {% if comment.parent_id %}
+                <div class="comment__reply">
+                  <a href="#{{ comment.parent_id }}">
+                    >>{{comment.parent_id}}
+                  </a>
+                </div>
+              {% endif %} 
+              {{ comment.content | safe }}
+            </section>
+            <footer class="comment__footer">
+              {{ timestamp(comment.published) }}
+            </footer>
+          </article>
+        {% else %}
+          <p class="subtitle">No comments found for this post.</p>
+        {% endfor %}
+      </div>
+      
+    </footer>
+    
   {% else %}
     <h1 class="subtitle no-posts">Nobody here but us chickens!</h1>
   {% endif %}

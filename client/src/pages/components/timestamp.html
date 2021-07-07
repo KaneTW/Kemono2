@@ -1,12 +1,12 @@
-{% macro timestamp(time, class_name) %}
-  {# `datetime` value should be ISO string #}
+{% macro timestamp(time, is_relative=false, class_name=none) %}
+  {# `datetime` value should be an ISO string #}
   <time
-    class="timestamp {{ class_name }}" 
+    class="timestamp {{ class_name if class_name }}" 
     datetime="{{ time }}"
   >
     {% if not caller %}
-      {# this is formatted value #}
-      {{ time }}
+      {# this is going to be the formatted value according to `is_relative` #}
+      {{ time if not is_relative else time}}
     {% else %}
       {{ caller() }}
     {% endif %}

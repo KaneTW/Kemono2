@@ -16,15 +16,16 @@
     display: flex;
     flex-flow: row nowrap;
     justify-content: flex-start;
-    align-items: center;
-    background: var(--colour1-secondary);
+    align-items: stretch;
     border: solid hsla(0, 0%, 50%, 0.7) $size-thin;
     border-radius: 10px 10px 0 0;
     overflow: hidden;
   }
 
   &__user {
+    position: relative;
     text-align: center;
+    background-color: hsla(0, 0%, 0%, 0.7);
     border-right: solid hsla(0, 0%, 50%, 0.7) $size-thin;
     padding: 0.5em;
   }
@@ -48,6 +49,11 @@
   }
 
   &__info {
+    flex: 1 1 auto;
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center;
+    background-color: var(--colour1-secondary);
     padding: 0.5em;
     padding-left: 2em;
 
@@ -139,9 +145,8 @@
   }
 
   &__body {
-    border: solid hsl(0, 0%, 50%) $size-thin;
-    border-top: 0;
-    border-radius: 0 0 10px 10px;
+    border-left: solid hsl(0, 0%, 50%) $size-thin;
+    border-right: solid hsl(0, 0%, 50%) $size-thin;
     padding: $size-small;
   }
 
@@ -169,6 +174,27 @@
     margin: 0.5em 0;
   }
 
+  &__footer {
+    border: solid hsl(0, 0%, 50%) $size-thin;
+    border-radius: 0 0 10px 10px;
+    padding: $size-small;
+  }
+
+  &__comments {
+
+    &--no-comments {
+      text-align: center;
+    }
+
+    & > * {
+      margin-bottom: $size-normal;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+
   @media (max-width: $width-phone) {
     &__header {
       flex-flow: column nowrap;
@@ -183,5 +209,44 @@
       border-right: none;
       border-bottom: solid hsla(0, 0%, 50%, 0.7) $size-thin;
     }
+  }
+}
+
+.comment {
+  border-radius: 10px;
+  border: $size-thin solid var(--colour1-secondary);
+  max-width: $width-mobile;
+
+  & > * {
+    padding: $size-small;
+  }
+
+  &--user {
+    background-color: var(--colour1-secondary);
+    border: none;
+  }
+
+  &__header {
+    border-bottom: $size-nano solid var(--colour1-secondary);
+  }
+
+  &__reply {}
+
+  &__profile {}
+
+  &__icon {
+    display: inline-block;
+    border-radius: 5px;
+    overflow: hidden;
+    width: 1em;
+    height: 1em;
+  }
+
+  &__name {}
+
+  &__body {}
+
+  &__footer {
+    border-top: $size-nano solid var(--colour1-secondary);
   }
 }

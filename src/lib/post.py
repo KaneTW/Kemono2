@@ -48,6 +48,20 @@ def get_post(post_id, artist_id, service, reload = False):
         post = deserialize_post(post)
     return post
 
+def get_post_comments(post_id, service, reload = False):
+    redis = get_conn()
+    key = 'comments:' + service + ':' + str(post_id)
+    comments = redis.get(key)
+    if comments is None or reload:
+        cursor = get_cursor()
+        query = 'SELECT * FROM comments WHERE post_id = %s AND service = %s'
+        cursor.execute(query, (post_id, service))
+        comments = cursor.fetchall()
+        redis.set(key, serialize_comments(comments), ex = 600)
+    else:
+        comments = deserialize_comments(comments)
+    return comments
+
 def get_all_posts_by_artist(artist_id, service, reload = False):
     redis = get_conn()
     key = 'posts_by_artist:' + service + ':' + str(artist_id)
@@ -233,6 +247,14 @@ def deserialize_posts(posts_str):
     posts = ujson.loads(posts_str)
     return list(map(lambda post: rebuild_post_fields(post), posts))
 
+def serialize_comments(comments):
+    comments = copy.deepcopy(comments)
+    return ujson.dumps(list(map(lambda post: prepare_comment_fields(post), comments)))
+
+def deserialize_comments(comments_str):
+    comments = ujson.loads(comments_str)
+    return list(map(lambda post: rebuild_comment_fields(post), comments))
+
 def serialize_post(post):
     if post is not None:
         post = prepare_post_fields(copy.deepcopy(post))
@@ -255,3 +277,13 @@ def rebuild_post_fields(post):
     post['published'] = dateutil.parser.parse(post['published']) if post['published'] else None
     post['edited'] = dateutil.parser.parse(post['edited']) if post['edited'] else None
     return post
+
+def prepare_comment_fields(comment):
+    comment['added'] = comment['added'].isoformat()
+    comment['published'] = comment['published'].isoformat() if comment['published'] else None
+    return comment
+
+def rebuild_comment_fields(comment):
+    comment['added'] = dateutil.parser.parse(comment['added'])
+    comment['published'] = dateutil.parser.parse(comment['published']) if comment['published'] else None
+    return comment

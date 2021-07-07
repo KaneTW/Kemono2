@@ -6,7 +6,7 @@ import re
 from ..utils.utils import make_cache_key
 from ..internals.cache.flask_cache import cache
 from ..internals.database.database import get_cursor
-from ..lib.post import get_post, is_post_flagged, get_next_post_id, get_previous_post_id
+from ..lib.post import get_post, is_post_flagged, get_next_post_id, get_previous_post_id, get_post_comments
 from ..lib.artist import get_artist
 from ..lib.favorites import is_post_favorited
 from ..lib.account import load_account
@@ -51,6 +51,8 @@ def get(service, artist_id, post_id):
     if post is None:
         response = redirect(url_for('artists.get', service = service, artist_id = artist_id))
         return response
+
+    comments = get_post_comments(post_id, service)
 
     favorited = False
     account = load_account()
@@ -99,6 +101,7 @@ def get(service, artist_id, post_id):
         'post.html',
         props = props,
         post = post,
+        comments = comments,
         result_previews = previews,
         result_attachments = attachments,
     ), 200)
