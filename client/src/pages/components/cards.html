@@ -2,58 +2,56 @@
 
 {% macro post_card(post) %}
   {% set src = post.file.path if post.file.path and post.file.path|lower|regex_match("\.(gif|jpe?g|jpe|png|webp)$") %}
-  <a href="/{{ post.service }}/user/{{ post.user }}/post/{{ post.id }}">
-    <article 
-      class="post-card post-card--legacy {{ 'post-card--preview' if src }}"
-      data-id="{{ post.id }}"
-      data-service="{{ post.service }}"
-      data-user="{{ post.user }}"
-    > 
-      {% if src %}
-        <div class="post-card__image-container">
-          {# TODO: move backup image logic to the script #}
-          <img 
-            class="post-card__image"
-            src="/thumbnail{{ src|replace('https://kemono.party', '') }}" 
-          >
+  <article 
+    class="post-card post-card--legacy {{ 'post-card--preview' if src }}"
+    data-id="{{ post.id }}"
+    data-service="{{ post.service }}"
+    data-user="{{ post.user }}"
+  > 
+    {% if src %}
+      <div class="post-card__image-container">
+        {# TODO: move backup image logic to the script #}
+        <img 
+          class="post-card__image"
+          src="/thumbnail{{ src|replace('https://kemono.party', '') }}" 
+        >
+      </div>
+    {% endif %}
+    <header class="post-card__header">  
+      <h2 class="post-card__heading">
+        <a 
+          href="/{{ post.service }}/user/{{ post.user }}/post/{{ post.id }}" 
+        >
+          {{ post.title }}
+        </a>
+      </h2>
+      <p class="post-card__user">
+        By <span class="post-card__name">{{ post.user }}</span>
+      </p>
+    </header>
+    
+    <section class="post-card__body">
+      {# {{ post.content|safe }} #}
+      {# {{ post.content|striptags }} #}
+      <div class="comment__aux">
+        <div class="post__service">
+          {{ g.paysites[post.service].title }}
         </div>
-      {% endif %}
-      <header class="post-card__header">  
-        <h2 class="post-card__heading">
-          <a 
-            href="/{{ post.service }}/user/{{ post.user }}/post/{{ post.id }}" 
-          >
-            {{ post.title }}
-          </a>
-        </h2>
-        <p class="post-card__user">
-          By <span class="post-card__name">{{ post.user }}</span>
-        </p>
-      </header>
-
-      <section class="post-card__body">
-        {# {{ post.content|safe }} #}
-        {# {{ post.content|striptags }} #}
-        <div class="comment__aux">
-          <div class="post__service">
-            {{ g.paysites[post.service].title }}
-          </div>
-          {% if post.published %}
-            <div>
-              {{ timestamp(post.published) }}
-            </div>
-          {% endif %}
+        {% if post.published %}
           <div>
-            {% if post.attachments|length %}
-              {{ post.attachments|length }} {{ 'attachment' if post.attachments|length == 1 else 'attachments' }}
-            {% else %}
-              No attachments
-            {% endif %}
+            {{ timestamp(post.published) }}
           </div>
+        {% endif %}
+        <div>
+          {% if post.attachments|length %}
+            {{ post.attachments|length }} {{ 'attachment' if post.attachments|length == 1 else 'attachments' }}
+          {% else %}
+            No attachments
+          {% endif %}
         </div>
-      </section>
-    </article>
-  </a>  
+      </div>
+    </section>
+  </article>      
 {% endmacro %}
 
 {% macro user_card() %}
