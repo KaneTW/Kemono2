@@ -1,0 +1,36 @@
+@use "../../css/variables" as *;
+
+.card-list {
+
+  &--legacy {
+    --card-size: 200px;
+  }
+
+  &--feature {
+    --card-size: #{$width-feature};
+  }
+
+  &--mobile {
+    --card-size: #{$width-mobile};
+  }
+
+  &--phone {
+    --card-size: #{$width-phone};
+  }
+
+  &--tablet {
+    --card-size: #{$width-tablet};
+  }
+
+  &__items {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
+    align-items: stretch;
+
+    & > * {
+      flex: 0 0 var(--card-size);
+      margin: $size-small;
+    }
+  }
+}
