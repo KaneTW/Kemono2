@@ -1,7 +1,10 @@
 {% from 'components/timestamp.html' import timestamp %}
+{% from 'components/buttons.html' import button %}
+{% from 'components/links.html' import fancy_link %}
 
 {% macro post_card(post) %}
   {% set src = post.file.path if post.file.path and post.file.path|lower|regex_match("\.(gif|jpe?g|jpe|png|webp)$") %}
+  {% set post_link = g.freesites.kemono.post.link(post.service, post.user, post.id) %}
   <article 
     class="post-card post-card--legacy {{ 'post-card--preview' if src }}"
     data-id="{{ post.id }}"
@@ -9,18 +12,21 @@
     data-user="{{ post.user }}"
   > 
     {% if src %}
-      <div class="post-card__image-container">
-        {# TODO: move backup image logic to the script #}
-        <img 
-          class="post-card__image"
-          src="/thumbnail{{ src|replace('https://kemono.party', '') }}" 
-        >
+      <div class="post-card__view">
+        {{ button('Info', 'post-card__button', false) }}
       </div>
+      <div class="post-card__image-container">
+          {# TODO: move backup image logic to the script #}
+          <img 
+            class="post-card__image"
+            src="/thumbnail{{ src|replace('https://kemono.party', '') }}" 
+          >
+        </div>
     {% endif %}
     <header class="post-card__header">  
       <h2 class="post-card__heading">
         <a 
-          href="/{{ post.service }}/user/{{ post.user }}/post/{{ post.id }}" 
+          href="/{{ post_link }}" 
         >
           {{ post.title }}
         </a>
@@ -48,6 +54,9 @@
           {% else %}
             No attachments
           {% endif %}
+        </div>
+        <div class="post-card__link">
+          {{ fancy_link(post_link, 'Go to post') }}
         </div>
       </div>
     </section>

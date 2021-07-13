@@ -1,0 +1,7 @@
+{% macro button(text, class_name=none, is_focusable=true) %}
+  <button 
+    class="button {{ class_name if class_name}}" 
+    type="button"
+    {{ 'tabindex=-1' if not is_focusable }}
+  >{{ text if not caller else caller() }}</button>
+{% endmacro %}

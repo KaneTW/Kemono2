@@ -3,6 +3,18 @@ from datetime import datetime
 from flask import request, g
 import json
 
+freesites = {
+    "kemono": {
+        "title": "Kemono",
+        "user": {
+            "profile": lambda: f""
+        },
+        "post": {
+            "link": lambda service, user_id, post_id: f"/{service}/user/{user_id}/post/{post_id}"
+        }
+    }
+}
+
 paysite_list = [
     "patreon",
     "fanbox",
