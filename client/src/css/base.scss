@@ -14,9 +14,7 @@ html {
 *::before,
 *::after {
   box-sizing: inherit;
-  // TODO: fix this rule
-  color: var(--colour0-primary);
-  // transition-duration: var(--duration-global);
+  margin: 0;
 }
 
 body {
@@ -40,11 +38,7 @@ body {
   }
 }
 
-main {
-  // TODO: remove it after rewriting all pages
-  // max-width: 1280px;
-
-}
+main {}
 
 h1 {
   font-size: 1.7rem;
@@ -55,6 +49,7 @@ h1 {
 h2 {
   font-size: 1.6rem;
   font-weight: normal;
+  line-height: 1.35;
   margin: 0;
 }
 
@@ -83,29 +78,17 @@ h6 {
 }
 
 a {
-  color: hsl(203, 92%, 75%);
-  &:visited {
-    text-decoration: none;
-  }
-
-  &:link {
-    text-decoration: none;
-  }
-}
-
-// TODO: think the styles through
-/*
-a {
-  --local-colour1-primary: var(--anchour-color1-primary);
-  --local-colour1-secondary: var(--anchour-color1-secondary);
+  --local-colour1-primary: var(--anchour-colour1-primary);
+  --local-colour1-secondary: var(--anchour-colour1-secondary);
   --local-colour2-primary: var(--anchour-colour2-primary);
   --local-colour2-secondary: var(--anchour-colour2-secondary);
 
   outline: none;
   text-decoration: none;
-  padding: 2px;
   border-bottom: $size-nano solid transparent;
+  padding: 2px;
   transition-property: color, border-color, background-color;
+  transition-duration: var(--duration-global);
 
   &:link {
     color: var(--local-colour1-primary);
@@ -117,20 +100,20 @@ a {
   
   &:focus {
     background-color: var(--local-colour2-primary);
-    border-bottom-color: inherit;
+    border-bottom-color: var(--local-colour1-primary);
   }
   
   &:hover {
-    background-color: var(--local-colour2-primary);
-    border-bottom-color: inherit;
+    background-color: var(--local-colour2-secondary);
+    border-bottom-color: var(--local-colour1-primary);
   }
   
   &:active {
-    color: var(--local-colour2-primary);
     background-color: var(--local-colour1-primary);
+    color: var(--local-colour2-primary);
+    border-bottom-color: var(--local-colour2-primary);
   }
 }
-*/
 
 img {
   max-width: 100%;
@@ -171,16 +154,14 @@ textarea {
 
 pre {
   white-space: pre-wrap;       /* Since CSS 2.1 */
-  white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
-  white-space: -pre-wrap;      /* Opera 4-6 */
-  white-space: -o-pre-wrap;    /* Opera 7 */
   word-wrap: break-word;       /* Internet Explorer 5.5+ */
 }
 
 select {
+  color: var(--colour0-primary);
   background-image: linear-gradient(#282a2e, #111111);
-  border-color: #111;
   border-radius: 5px;
+  border-color: #111;
   text-align-last: center;
 }
 

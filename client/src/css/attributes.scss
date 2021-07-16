@@ -1,14 +1,63 @@
+@use "./variables" as *;
 /* Attributes */
 // only selectors by attributes 
 // and their pseudo-classes/elements go there
 // base tags are for easier grouping/folding
+
+a {
+  // internal links
+  // &[href^=#{$kemono-site}],
+  &[href^="/"], 
+  &[href^="./"], 
+  &[href^="../"] {
+    --local-colour1-primary: var(--anchour-internal-colour1-primary);
+    --local-colour1-secondary: var(--anchour-internal-colour1-secondary);
+    --local-colour2-primary: var(--anchour-internal-colour2-primary);
+    --local-colour2-secondary: var(--anchour-internal-colour2-secondary);
+  }
+
+  // local links
+  &[href^="#"] {
+    --local-colour1-primary: var(--anchour-local-colour1-primary);
+    // the same color because visited state is irrelevant
+    --local-colour1-secondary: var(--anchour-local-colour1-primary);
+    --local-colour2-primary: var(--anchour-local-colour2-primary);
+    --local-colour2-secondary: var(--anchour-local-colour2-secondary);
+  }
+
+  // email links
+  &[href^="mailto:"] {
+    
+    // &::before {
+    //   content: "\1F4E7"; // email icon
+    //   padding-right: $size-little;
+    // }
+
+    &::after {
+      content: " (\01f4e8\02197\01f441)"; // mail sent, NE arrow, eye
+    }
+  }
+
+  // telephone links
+  &[href^="tel:"] {
+
+    &::before {
+      content: "\260e"; // phone icon
+      padding-right: $size-little;
+    }
+  }
+}
 
 input {
 
   &[type="submit"] {
     min-height: 24px;
     text-align: center;
-    background-image: linear-gradient(#282a2e, #111111);
+    color: var(--colour0-primary);
+    background-image: linear-gradient(
+      hsl(220, 7%, 17%), 
+      hsl(0, 0%, 7%)
+    );
     border-radius: 5px;
     border: 0;
   }
@@ -17,9 +66,9 @@ input {
   &[type="password"], 
   &[type="number"] {
     border-radius: 5px;
-    box-shadow: inset 0 1px 3px #1f2024;
-    background:#3a3d43;
-    color: #fff;
+    box-shadow: inset 0 1px 3px hsl(228, 7%, 13%);
+    background:hsl(220, 7%, 25%);
+    color: var(--colour0-primary);
     border: 0;
   }
 

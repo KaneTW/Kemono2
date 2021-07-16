@@ -1,39 +1,23 @@
-{% macro fancy_image(src, srcset=src, is_inline=true, alt="") %}
-  {% if is_inline %}
-    <span class="fancy-image">
-      {{ __image(src, srcset, alt) }}
-    </span>
-  {% else %}
-    <div class="fancy-image">
-      {{ __image(src, srcset, alt) }}
-    </div>
-  {% endif %}
+{% macro fancy_image(src, srcset=src, is_lazy=true, alt="", class_name=none) %}
+  <span class="fancy-image {{ class_name if class_name }}">
+    {{ base_image(src, srcset, is_lazy, alt) }}
+  </span>
 {% endmacro %}
 
-{% macro background_image(src, srcset=src, class_name=none) %}
+{% macro background_image(src, srcset=src, is_lazy=true, class_name=none) %}
   <div class="fancy-image fancy-image--background {{ class_name if class_name }}">
-    {{ __image(src, srcset, alt="") }}
+    {{ base_image(src, srcset, is_lazy, alt="") }}
   </div>
 {% endmacro %}
 
-{% macro __image(src, srcset=src, lazy=true, alt="", class_name=none) %}
+{% macro base_image(src, srcset=src, is_lazy=true, alt="") %}
   <picture class="fancy-image__picture">
     <img 
       class="fancy-image__image"
       src="{{ src }}" 
       alt="{{ alt }}"
       srcset="{{ srcset }}"
-      loading="{{ 'lazy' if lazy else 'eager' }}"
+      loading="{{ 'lazy' if is_lazy else 'eager' }}"
     >
   </picture>
 {% endmacro %}
-
-{# TODO: write as separate component #}
-{# {% macro image_link(src, alt=src, srcset=src, is_inline=true) %}
-  <a 
-    class="fancy-image {{ 'fancy-image--block' if not is_inline }}"
-    href="{{ src }}"
-  >
-    {{ __image(src, alt, srcset) }}
-  </a>
-{% endmacro %} #}

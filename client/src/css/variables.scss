@@ -30,14 +30,33 @@ $button-min-height: 44px;
 
   --favourite-colour1-primary: hsl(51, 100%, 50%);
   --favourite-colour2-primary: hsl(60, 100%, 30%);
-  // links
-  --anchour-color1-primary: hsl(200, 100%, 80%);
-  --anchour-color1-secondary: hsl(200, 60%, 60%);
-  --anchour-colour2-primary: hsl(210, 100%, 20%);
-  --anchour-colour2-secondary: hsl(210, 70%, 30%);
 
   --positive-colour1-secondary: hsl(120, 100%, 30%);
 
+  /* Links */
+  // external
+  --anchour-colour1-primary: hsl(200, 100%, 80%);
+  --anchour-colour1-secondary: hsla(210, 70%, 70%);
+  --anchour-colour2-primary: hsl(240, 100%, 40%);
+  --anchour-colour2-secondary: hsla(230, 70%, 40%);
+  // internal
+  --anchour-internal-colour1-primary: hsl(20, 100%, 80%);
+  --anchour-internal-colour1-secondary: hsla(20, 70%, 70%);
+  --anchour-internal-colour2-primary: hsl(30, 100%, 20%);
+  --anchour-internal-colour2-secondary: hsla(30, 80%, 20%);
+  // local
+  --anchour-local-colour1-primary: hsl(260, 100%, 80%);
+  --anchour-local-colour1-secondary: hsla(260, 70%, 70%);
+  --anchour-local-colour2-primary: hsl(280, 100%, 30%);
+  --anchour-local-colour2-secondary: hsla(280, 70%, 30%);
+  // email
+  // --anchour-email-colour1-primary: hsl(260, 100%, 80%);
+  // --anchour-email-colour1-secondary: hsla(260, 70%, 70%);
+  // --anchour-email-colour2-primary: hsl(280, 100%, 30%);
+  // --anchour-email-colour2-secondary: hsla(280, 70%, 30%);
+  /* END Links */
+
+  // durations
   --duration-fast: 250ms;
   --duration-global: var(--duration-fast);
 }

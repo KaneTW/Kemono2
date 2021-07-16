@@ -1,30 +1,21 @@
-{# TODO: complete the macros #}
-{% macro fancy_link(url, text=url, class_name=none, is_noop=true) %}
+{% macro fancy_link(url, text=url, is_noop=true, class_name=none ) %}
   <a
     class="fancy-link {{ class_name if class_name }}"
     {{ 'target="_blank"' if is_noop }}
     {{ 'rel="noopener noreferrer"' if is_noop }}
     href="{{ url }}" 
   >
-    {% if not caller %}
-      {{ text }}
-    {% else %}
-      {{ caller() }}
-    {% endif %}
+    {{ text if not caller else caller() }}
   </a>
 {% endmacro %}
 
-{% macro download_link(url, text=url) %}
+{% macro download_link(url, text=url, file_name=text, class_name=none) %}
   <a 
-    class="fancy-link fancy-link--download" 
+    class="fancy-link fancy-link--download {{ class_name if class_name }}" 
     href="{{ url }}"
-    download
+    download="{{ file_name }}"
   >
-    {% if not caller %}
-      {{ text }}
-    {% else %}
-      {{ caller() }}
-    {% endif %}
+    {{ text if not caller else caller() }}
   </a>
 {% endmacro %}
 
@@ -34,11 +25,7 @@
     href="{{ url }}"
     target="_self"
   >
-    {% if not caller %}
-      {{ text }}
-    {% else %}
-      {{ caller() }}
-    {% endif %}
+    {{ text if not caller else caller() }}
   </a>
 {% endmacro %}
 
@@ -47,10 +34,17 @@
     class="fancy-link fancy-link--local {{ class_name if class_name }}" 
     href="#{{ id }}"
   >
-    {% if not caller %}
-      {{ text }}
-    {% else %}
-      {{ caller() }}
-    {% endif %}
+    {{ text if not caller else caller() }}
+  </a>
+{% endmacro %}
+
+{% macro email_link(email, text=email, class_name=none) %}
+  <a 
+    class="fancy-link fancy-link--email {{ class_name if class_name }}"
+    href="mailto:{{ email }}"
+    target="_blank" 
+    rel="noopener noreferrer" 
+  >
+    {{ text if not caller else caller() }}
   </a>
 {% endmacro %}

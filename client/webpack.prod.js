@@ -1,11 +1,11 @@
 const path = require("path");
-const CopyWebpackPlugin = require("copy-webpack-plugin");
+
 const MiniCSSExtractPlugin = require("mini-css-extract-plugin");
 // const FaviconsWebpackPlugin = require('favicons-webpack-plugin');
 const { merge } = require("webpack-merge");
 
 const baseConfig = require("./webpack.config");
-
+const { kemonoSite } = require("./configs/vars");
 /**
  * @type import("webpack").Configuration
  */
@@ -13,14 +13,6 @@ const webpackConfigProd = {
   mode: "production",
   // devtool: "source-map",
   plugins: [
-    new CopyWebpackPlugin({
-      patterns: [
-        {
-          from: "static",
-          to: "static"
-        }
-      ]
-    }),
     new MiniCSSExtractPlugin({
       filename: "static/bundle/css/[name]-[contenthash].css",
       chunkFilename: "static/bundle/css/[id]-[contenthash].chunk.css"
@@ -55,8 +47,14 @@ const webpackConfigProd = {
         test: /\.s[ac]ss$/i,
         exclude: /\.module\.s[ac]ss$/i,
         use: [
-          MiniCSSExtractPlugin.loader, 
-          'css-loader',
+          MiniCSSExtractPlugin.loader,
+          {
+            loader: 'css-loader',
+            // options: {
+            //   sourceMap: true,
+            // }
+          }, 
+          
           {
             loader: "postcss-loader",
             options: {
@@ -67,7 +65,14 @@ const webpackConfigProd = {
               }
             }
           },
-          "sass-loader"
+          {
+            loader: "sass-loader",
+            options: {
+              // sourceMap: true,
+              additionalData: `$kemono-site: ${kemonoSite};`
+            }
+          }
+          
         ],
       },
 

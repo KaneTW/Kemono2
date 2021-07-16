@@ -9,6 +9,7 @@ export const errorList = new Map([
   ["005", "There might already be a flag here."],
   ["006", "Could not retrieve the list of bans."],
   ["007", "Could not retrieve banned artist."],
+  ["008", "Could not retrieve artists."],
 ]);
 
 /**

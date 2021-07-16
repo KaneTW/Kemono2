@@ -54,6 +54,7 @@ services:
     container_name: kemono-frontend-dev
     environment: 
       - NODE_ENV=development
+      - KEMONO_SITE=http://localhost:5000
     volumes:
       # quick hack to allow webpack config updates between reups
       - ./client/webpack.config.js:/app/webpack.config.js

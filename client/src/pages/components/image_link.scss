@@ -1,0 +1,33 @@
+a.image-link {
+  --local-colour1-primary: transparent;
+  --local-colour1-secondary: transparent;
+  --local-colour2-primary: transparent;
+  --local-colour2-secondary: transparent;
+
+  display: inline-block;
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+
+  &:link {
+    color: var(--local-colour1-primary);
+  }
+  
+  &:visited {
+    color: var(--local-colour1-secondary);
+  }
+  
+  &:focus {
+    background: var(--local-colour2-primary);
+  }
+  
+  &:hover {
+    background: var(--local-colour2-secondary);
+  }
+  
+  &:active {
+    background: var(--local-colour1-primary);
+    color: var(--local-colour2-primary);
+  }
+}

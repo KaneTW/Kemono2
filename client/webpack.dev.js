@@ -1,10 +1,10 @@
 // const FaviconsWebpackPlugin = require("favicons-webpack-plugin");
-const CopyWebpackPlugin = require("copy-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const path = require("path");
 const { merge } = require("webpack-merge");
 
 const baseConfig = require("./webpack.config");
+const { kemonoSite } = require("./configs/vars");
 
 /**
  * @type {import("webpack-dev-server").Configuration}
@@ -36,15 +36,6 @@ const webpackConfigDev = {
       filename: "static/bundle/css/[name].css",
       chunkFilename: "static/bundle/css/[id].chunk.css"
     }),
-    new CopyWebpackPlugin({
-      patterns: [
-        {
-          from: "static",
-          to: "static"
-        }
-      ]
-    }),
-    
     // new FaviconsWebpackPlugin({
     //   logo:"./src/assets/logo/kemono-logo.svg",
     //   inject: htmlPlugin => path.basename(htmlPlugin.options.filename) === "shell.html",
@@ -58,8 +49,21 @@ const webpackConfigDev = {
         exclude: /\.module.s[ac]ss$/i,
         use: [
           MiniCssExtractPlugin.loader, 
-          'css-loader',
-          'sass-loader'
+          {
+            loader: 'css-loader',
+            options: {
+              sourceMap: true,
+            }
+          },
+          {
+            loader: 'sass-loader',
+            options: {
+              sourceMap: true,
+              // TODO: find how to prepend data properly
+              additionalData: `$kemono-site: '${kemonoSite}';`
+            }
+          }
+          
         ],
       },
       {

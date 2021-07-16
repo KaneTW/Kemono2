@@ -1,4 +1,9 @@
 {% extends 'components/shell.html' %}
+
+{% from 'components/image_link.html' import image_link %}
+{% from 'components/timestamp.html' import timestamp %}
+{# {% from 'components/links.html' import fancy_link %} #}
+
 {% block content %}
   <div class="site-section site-section--updated page" id="page">
     {% if results|length %}
@@ -6,50 +11,44 @@
         {% include 'components/paginator.html' %}
       </div>
     {% endif %}
-    {% if results|length == 0 %}
-      <div class="no-posts">
-        <p class="subtitle">No artists found for your query.</p>
-      </div>
-    {% else %}
-      <table class="search-results" width="100%">
-        <thead>
-          <tr>
-            <th width="50px"></th>
-            <th>Name</th>
-            <th>Service</th>
-            <th>Updated</th>
+    <table class="search-results" width="100%">
+      <thead>
+        <tr>
+          <th width="50px"></th>
+          <th>Name</th>
+          <th>Service</th>
+          <th>Updated</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for artist in results %}
+        {% set artist_profile = g.freesites.kemono.user.profile(artist.service, artist.id) %}
+        {% set artist_icon = g.freesites.kemono.user.icon(artist.service, artist.id) %}
+          <tr class="artist-row">
+            <td>
+              {{ image_link(
+                url=artist_profile,
+                src=artist_icon,
+                class_name='user-icon'
+              ) }}
+            </td>
+            <td>
+              <a href="{{ artist_profile }}">{{ artist.name }}</a>
+            </td>
+            <td>
+              {{ g.paysites[artist.service].title }}
+            </td>
+            <td>
+              {{ timestamp(artist.updated) }}
+            </td>
           </tr>
-        </thead>
-        <tbody>
-          {% for artist in results %}
-            <tr class="artist-row">
-              <td>
-                <a href="/{{ artist['service'] }}/{{ 'server' if artist['service'] == 'discord' else 'user' }}/{{ artist['id'] }}">
-                  <div class="user-icon" style="background-image: url('/icons/{{ artist['service'] }}/{{ artist['id'] }}');"></div>
-                </a>
-              </td>
-              <td>
-                <a href="/{{ artist['service'] }}/{{ 'server' if artist['service'] == 'discord' else 'user' }}/{{ artist['id'] }}">{{ artist['name'] }}</a>
-              </td>
-              <td>
-                {{ {
-                  'patreon': 'Patreon',
-                  'fanbox': 'Pixiv Fanbox',
-                  'subscribestar': 'SubscribeStar',
-                  'gumroad': 'Gumroad',
-                  'discord': 'Discord',
-                  'dlsite': 'DLsite',
-                  'fantia': 'Fantia'
-                }.get(artist['service'], '') }}
-              </td>
-              <td>
-                {{ artist['updated'] }}
-              </td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    {% endif %}
+        {% else %}
+          <p class="po-posts subtitle">
+            No artists found for your query.
+          </p>
+        {% endfor %}
+      </tbody>
+    </table>
     {% if results|length %}
       <div class="paginator" id="paginator-bottom">
         {% include 'components/paginator.html' %}

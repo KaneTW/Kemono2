@@ -1,4 +1,7 @@
 {% extends 'components/shell.html' %}
+
+{% from 'components/image_link.html' import image_link %}
+
 {% block content %}
   <section class="site-section site-section--artists page" id="page">
     <div class="no-posts" id="loading">
@@ -49,14 +52,17 @@
         </select>
       </div>
     </form>
-    {% if props['display'] %}
+    {% if props.display %}
       <div style="text-align: center;">
-        <h3 id="display-status" class="subtitle">Displaying {{ props['display'] }}</h3>
+        <h3 id="display-status" class="subtitle">
+          Displaying {{ props.display }}
+        </h3>
       </div>
     {% endif %}
     {% include 'components/artist_list.html' %}
-    <script src="https://unpkg.com/unfetch@4.1.0/polyfill/index.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js"></script>
-    <script src="{{ url_for('static', filename='js/artists.js') }}"></script>
   <section>
 {% endblock %}
+
+{% block components %}
+  {{ image_link("") }}
+{% endblock components %}

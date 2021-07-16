@@ -217,6 +217,12 @@
   border: $size-thin solid var(--colour1-secondary);
   max-width: $width-mobile;
 
+  &:target {
+    outline-color: var(--anchour-local-colour1-primary);
+    outline-width: $size-thin;
+    outline-style: dashed;
+  }
+
   & > * {
     padding: $size-small;
   }
@@ -230,7 +236,14 @@
     border-bottom: $size-nano solid var(--colour1-secondary);
   }
 
-  &__reply {}
+  &__reply {
+    // padding: $size-little 0;
+  }
+
+  &__message {
+    line-height: 1.5;
+    margin: 0;
+  }
 
   &__profile {}
 

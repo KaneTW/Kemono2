@@ -3,6 +3,8 @@
 {% from "components/loading_icon.html" import loading_icon %}
 {% from 'components/card_list.html' import card_list %}
 {% from 'components/cards.html' import post_card %}
+{% from 'components/fancy_image.html' import background_image %}
+{% from 'components/image_link.html' import image_link %}
 
 {% set paysite = g.paysites[props.service] %}
 {% set paysite_icons = {
@@ -35,19 +37,21 @@
     itemscope
     itemtype="https://schema.org/Person"
   >
-    <div class="user-header__background">
-      <img 
-        src="/banners/{{ props.service }}/{{ props.id }}" 
-      >
-    </div>
+    {{ background_image(
+      g.freesites.kemono.user.banner(props.service, props.id),
+      is_lazy=false,
+      class_name='user-header__background'
+    ) }}
+
     <div 
       class="user-header__avatar" 
     >
-      <a href="/{{ props.service }}/user/{{ props.id }}">
-        <img 
-          src="/icons/{{ props.service }}/{{ props.id }}" 
-        >
-      </a>
+      {{ image_link(
+        url=request.path,
+        src=g.freesites.kemono.user.icon(props.service, props.id),
+        is_lazy=false,
+        is_noop=false
+      ) }}
     </div>
 
     <div class="user-header__info">
@@ -76,11 +80,12 @@
           class="user-header__upload"
           href="/posts/upload?service={{ props.service }}&user={{ props.id }}"
         > 
-          <span>
+          {# hiding the icon until the intriduction of SVG icons #}
+          {# <span>
             <img 
               src="/static/upload.svg" 
             >
-          </span>
+          </span> #}
           <span>Upload file</span>
         </a>
       </div>

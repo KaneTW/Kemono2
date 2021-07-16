@@ -1,0 +1,25 @@
+{% from 'components/fancy_image.html' import base_image %}
+{% from 'components/links.html' import fancy_link %}
+
+{% macro image_link(
+  url, 
+  src=url, 
+  alt="", 
+  srcset=src, 
+  is_lazy=true,
+  is_noop=true,
+  class_name=none
+) %}
+  {% call fancy_link(
+    url, 
+    '',
+    is_noop,
+    'image-link ' ~ (class_name if class_name)
+  ) %}
+    {% if not caller %}
+      {{ base_image(src, srcset, is_lazy, alt) }}
+    {% else %}
+      {{ caller() }}
+    {% endif %}
+  {% endcall %}
+{% endmacro %}
