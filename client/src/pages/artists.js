@@ -46,6 +46,28 @@ export async function artistsPage(section) {
    */
   const queryInput = searchForm.elements["q"];
 
+  section.addEventListener("click", (event) => {
+    /**
+     * @type {HTMLAnchorElement}
+     */
+    const button = event.target;
+
+    if (
+      button.classList.contains("paginator-button")
+      && button.dataset
+      && button.dataset.value
+    ) {
+      skip = Number(button.dataset.value);
+      filterCards(
+        orderSelect.value, 
+        serviceSelect.value, 
+        sortSelect.value, 
+        queryInput.value
+      );
+      loadCards();
+    }
+  });
+
   searchForm.addEventListener("submit", (event) => event.preventDefault());
   queryInput.addEventListener("change", (event) => {
     filterCards(
@@ -244,14 +266,6 @@ function loadCards() {
       ${createPaginator()}
     </div>
   `;
-
-  Array.prototype.forEach.call(document.getElementsByClassName('paginator-button'), btn => {
-    btn.addEventListener('click', e => {
-      skip = Number(e.target.getAttribute('data-value'))
-      filterCards();
-      loadCards();
-    })
-  });
 }
 
 /**
