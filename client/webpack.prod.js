@@ -69,7 +69,7 @@ const webpackConfigProd = {
             loader: "sass-loader",
             options: {
               // sourceMap: true,
-              additionalData: `$kemono-site: ${kemonoSite};`
+              additionalData: `$kemono-site: '${kemonoSite}';`
             }
           }
           
