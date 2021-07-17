@@ -7,6 +7,8 @@
 {% from 'components/image_link.html' import image_link %}
 
 {% set paysite = g.paysites[props.service] %}
+{% set artist_icon = g.freesites.kemono.user.icon(props.service, props.id) %}
+{% set artist_banner = g.freesites.kemono.user.banner(props.service, props.id) %}
 {% set paysite_icons = {
   'patreon': '/static/patreon.svg',
   'fanbox': '/static/fanbox.svg',
@@ -38,21 +40,18 @@
     itemtype="https://schema.org/Person"
   >
     {{ background_image(
-      g.freesites.kemono.user.banner(props.service, props.id),
+      artist_banner,
       is_lazy=false,
       class_name='user-header__background'
     ) }}
 
-    <div 
-      class="user-header__avatar" 
-    >
-      {{ image_link(
-        url=request.path,
-        src=g.freesites.kemono.user.icon(props.service, props.id),
-        is_lazy=false,
-        is_noop=false
-      ) }}
-    </div>
+    {{ image_link(
+      url=request.path,
+      src=artist_icon,
+      is_lazy=false,
+      is_noop=false,
+      class_name='user-header__avatar'
+    ) }}
 
     <div class="user-header__info">
       <h1 

@@ -4,11 +4,10 @@ a.image-link {
   --local-colour2-primary: transparent;
   --local-colour2-secondary: transparent;
 
-  display: inline-block;
   background-color: transparent;
   border: none;
   padding: 0;
-  margin: 0;
+  overflow: hidden;
 
   &:link {
     color: var(--local-colour1-primary);
@@ -29,5 +28,11 @@ a.image-link {
   &:active {
     background: var(--local-colour1-primary);
     color: var(--local-colour2-primary);
+  }
+
+  & .fancy-image__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 }

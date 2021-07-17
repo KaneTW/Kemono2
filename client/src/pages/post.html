@@ -3,9 +3,15 @@
 {% from 'components/timestamp.html' import timestamp %}
 {% from 'components/links.html' import kemono_link, local_link %}
 {% from 'components/fancy_image.html' import fancy_image, background_image %}
+{% from 'components/image_link.html' import image_link %}
+
 
 {% set paysite = g.paysites[props.service] %}
 {% set page_title = post.title ~ " by " ~ props.artist.name ~ " from " ~ paysite.title ~ " | Kemono" if props.artist else post.title ~ " | Kemono" %}
+{% set user_link = g.freesites.kemono.user.profile(post.service, post.user) %}
+{% set user_icon = g.freesites.kemono.user.icon(post.service, post.user) %}
+{% set user_banner = g.freesites.kemono.user.banner(post.service, post.user) %}
+{% set post_link = g.freesites.kemono.post.link(post.service, post.user, post.id) %}
 
 {% block title %}
   <title>
@@ -38,7 +44,7 @@
         <li class="post__nav-item">
           <a 
             class="post__nav-link prev" 
-            href="/{{ post.service }}/user/{{ post.user }}/post/{{ post.id }}/prev"
+            href="{{ post_link ~ '/prev' }}"
           >
             ‹ previous
           </a> 
@@ -46,7 +52,7 @@
         <li class="post__nav-item">
           <a 
             class="post__nav-link next" 
-            href="/{{ post.service }}/user/{{ post.user }}/post/{{ post.id }}/next"
+            href="{{ post_link ~ '/next' }}"
           >
             next ›
           </a>
@@ -56,21 +62,17 @@
 
     <header class="post__header">
       <div class="post__user">
-        {{ background_image('/banners/' ~ post.service ~ '/' ~ post.user) }}
-        <div
-          class="post__user-profile" 
-        >
-          <a href="/{{ post.service }}/user/{{ post.user }}">
-            <img 
-              class="post__user-avatar"
-              src="/icons/{{ post.service }}/{{ post.user }}"
-            > 
-          </a>
-        </div>
+        {{ background_image(user_banner) }}
+        {{ image_link(
+          url=user_link,
+          src=user_icon,
+          is_lazy=false,
+          class_name='post__user-profile'
+        ) }}
         <div>
           <a
             class="post__user-name" 
-            href="/{{ post.service }}/user/{{ post.user }}">
+            href="{{ user_link }}">
             {{ props.artist.name if props.artist else "Artist's page"}}
           </a>
         </div>
