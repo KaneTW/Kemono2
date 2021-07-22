@@ -156,7 +156,11 @@
   }
 
   &__content {
-    margin: 0;
+    line-height: 1.5;
+    
+    & p {
+      padding: $size-small 0;
+    }
   }
 
   &__files {
