@@ -1,9 +1,11 @@
 {% macro fancy_link(url, text=url, is_noop=true, class_name=none ) %}
   <a
     class="fancy-link {{ class_name if class_name }}"
-    {{ 'target="_blank"' if is_noop }}
-    {{ 'rel="noopener noreferrer"' if is_noop }}
     href="{{ url }}" 
+    {% if is_noop %}
+      target="_blank"
+      rel="noopener noreferrer"
+    {% endif %}
   >
     {{ text if not caller else caller() }}
   </a>
@@ -19,11 +21,13 @@
   </a>
 {% endmacro %}
 
-{% macro kemono_link(url, text=url, class_name=none) %}
+{% macro kemono_link(url, text=url, is_noop=true,class_name=none) %}
   <a
     class="fancy-link fancy-link--kemono {{ class_name if class_name }}" 
     href="{{ url }}"
-    target="_self"
+    {% if is_noop %}
+      target="_blank"
+    {% endif %}
   >
     {{ text if not caller else caller() }}
   </a>

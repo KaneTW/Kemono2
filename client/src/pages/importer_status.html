@@ -1,11 +1,60 @@
 {% extends 'components/shell.html' %}
+
+{% from 'components/loading_icon.html' import loading_icon %}
+{% from 'components/buttons.html' import button %}
+
+{% block title %}
+  <title>Import {{ props.import_id }}</title>
+{% endblock title %}
+
+{% block meta %}
+  <meta name="import_id" content="{{ props.import_id }}">
+{% endblock meta %}
+
 {% block content %}
-<script type="text/javascript" src="/static/js/importer_status.js"></script>
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/importer.css') }}">
-<div class="info">
-  <p>
-    <strong>Importer logs</strong><br>
-    <div class="logs" id="logs"></div>
-  </p>
-</div>
-{% endblock %}
+<section class="site-section site-section--importer-status">
+  <header class="site-section__header">
+    <h1 class="site-section__heading">Importer logs for {{ props.import_id }}</h1>
+  </header>
+  {% if props.dms %}
+    <div class="jumbo no-posts">
+      <strong>Hey!</strong>
+      <p>
+        You gave the importer permission to access your messages. To protect your anonymity, you must manually approve each one. Wait until <i>after</i> the importer says <code>Done importing DMs</code>, then go <a href="/importer/dms/{{ props.import_id }}">here</a> to choose which ones you wish to import.
+      </p>
+    </div>
+  {% endif %}
+  <div class="import">
+    <div class="import__info">
+      <div class="import__stats">
+        <div class="import__status">
+          <span>Status: </span>
+          <span>Fetching</span>
+        </div>
+        <div class="import__count import__count--invisible">
+          <span>Total: </span>
+          <span></span>
+        </div>
+      </div>
+      <div class="import__buttons">
+        {{ button('Reverse order', class_name='import__reverse') }}
+      </div>
+    </div>
+    
+    <p class="loading-placeholder">
+    {{ loading_icon() }} <span>Wait until logs load...</span>
+    </p>
+    <ol id="log-list" class="log-list">
+    </ol>
+    
+  </div>
+</section>
+{% endblock content %}
+  
+{% block components %}
+  {{ log_item() }}
+{% endblock components %}
+
+{% macro log_item() %}
+  <li class="log-list__item"></li>
+{% endmacro %}

@@ -1,0 +1,46 @@
+{# TODO: use it somewhere #}
+{% extends 'components/shell.html' %}
+
+{% from 'components/card_list.html' import card_list %}
+{% from 'components/cards.html' import dm_card %}
+
+{% set page_title = {{ "DMs from " ~ props.artist.name ~ " | Kemono" }} %}
+
+{% block title %}
+  <title>
+    {{ page_title }}
+  </title>
+{% endblock title %}
+
+{% block meta %}
+  <meta name="artist_id" content="{{ props.id }}">
+{% endblock meta %}
+
+{% block opengraph %}
+  <meta property="og:title" content="{{ page_title }}">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Kemono">
+  <meta property="og:image" content="{{ g.origin }}/static/kemono-logo.svg">
+  <meta property="og:image:width" content="150" />
+  <meta property="og:image:height" content="150" />
+  <meta property="og:url" content="{{ g.canonical_url }}">
+{% endblock opengraph %}
+
+{% block content %}
+<section class="site-section site-section--dms">
+  <header class="site-section__header">
+    <h1 class="site-section__heading">
+      Direct Messages for {{ props.artist.name }}
+    </h1>
+  </header>
+  {% call card_list("feature") %}
+    {% for dm in props.dms %}
+      {{ dm_card(dm) }}
+    {% else %}
+      <p>
+        There are no DMs for this artist.
+      </p>
+    {% endfor %}
+  {% endcall %}
+</section>
+{% endblock content %}

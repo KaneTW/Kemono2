@@ -2,7 +2,8 @@
 
 {% from "components/loading_icon.html" import loading_icon %}
 {% from 'components/card_list.html' import card_list %}
-{% from 'components/cards.html' import post_card %}
+{% from 'components/cards.html' import post_card, dm_card %}
+{% from 'components/links.html' import fancy_link %}
 {% from 'components/fancy_image.html' import background_image %}
 {% from 'components/image_link.html' import image_link %}
 
@@ -64,7 +65,7 @@
           rel="noreferrer"
           href="{{ props.display_data.href }}"
           itemprop="url" 
-        > 
+        >
           <span class="user-header__profile-image">
             <img 
             src="{{ paysite_icons[props.service] }}" 
@@ -75,11 +76,26 @@
       </h1>
       
       <div class="user-header__actions">
+        {% if props.current_page == 'dms' %}
+          {{ fancy_link(
+            url= g.freesites.kemono.user.profile(props.service, props.id),
+            text= 'Posts',
+            is_noop= false,
+            class_name= 'user-header__posts'
+          ) }}
+        {% elif props.current_page == 'posts' %}
+          {{ fancy_link(
+            url= request.path ~ "/dms",
+            text= "DMs",
+            is_noop= false,
+            class_name= 'user-header__dms'
+          ) }}
+        {% endif %}
         <a
           class="user-header__upload"
           href="/posts/upload?service={{ props.service }}&user={{ props.id }}"
         > 
-          {# hiding the icon until the intriduction of SVG icons #}
+          {# hiding the icon until the introduction of SVG icons #}
           {# <span>
             <img 
               src="/static/upload.svg" 
@@ -91,40 +107,51 @@
     </div>
   </header>
 
-  <div class="paginator" id="paginator-top">
+  {# for now doing completely separate block #}
+  {% if props.dms %}
+    {% call card_list() %}
+      {% for dm in props.dms %}
+        {{ dm_card(dm) }}    
+      {% endfor %}
+    {% endcall %}
+  {% elif results %}
+    <div class="paginator" id="paginator-top">
     {% include 'components/paginator.html' %}
-    <form
-      action="{{ request.path }}"
-      method="GET"
-      enctype="application/x-www-form-urlencoded"
-    >
-      <input
-        type="text"
-        name="q"
-        id="q"
-        autocomplete="off"
-        value="{{ request.args.get('q') if request.args.get('q') }}"
-        placeholder="search for posts..."
-        class="search-input"
+      <form
+        action="{{ request.path }}"
+        method="GET"
+        enctype="application/x-www-form-urlencoded"
       >
-      <input type="submit" style="display: none;">
-    </form>
-  </div>
+        <input
+          type="text"
+          name="q"
+          id="q"
+          autocomplete="off"
+          value="{{ request.args.get('q') if request.args.get('q') }}"
+          placeholder="search for posts..."
+          class="search-input"
+        >
+        <input type="submit" style="display: none;">
+      </form>
+    </div>
 
-  {% call card_list() %}
-    {% for post in results %}
-      {{ post_card(post) }}
-    {% else %}
-      <h2 class="subtitle">Nobody here but us chickens!</h1>
+    {% call card_list() %}
+      {% for post in results %}
+        {{ post_card(post) }}
+      {% endfor %}
+    {% endcall %}
+
+    <div class="paginator" id="paginator-bottom">
+      {% include 'components/paginator.html' %}
+    </div>
+  {% else %}
+    <div class="no-results">
+      <h2 class="site-section__subheading">Nobody here but us chickens!</h1>
       <p class="subtitle">
-        There are either no more posts beyond this page, or this user hasn't been imported.
+        There are either no more {{'DMs' if props.current_page == 'dms' else 'posts'}} beyond this page, or this user hasn't been imported.
       </p>
-    {% endfor %}
-  {% endcall %}
-
-  <div class="paginator" id="paginator-bottom">
-    {% include 'components/paginator.html' %}
-  </div>
+    </div>
+  {% endif %}
 
 </section>
 {% endblock %}

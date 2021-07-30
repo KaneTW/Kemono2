@@ -61,6 +61,8 @@ services:
       - ./client/webpack.dev.js:/app/webpack.dev.js
       - ./client/src:/app/src
       - ./client/static:/app/static
+      # and another one for misc configs
+      - ./client/configs:/app/configs
       - frontend-assets-dev:/app/dev
     stdin_open: true
   kemono-db:

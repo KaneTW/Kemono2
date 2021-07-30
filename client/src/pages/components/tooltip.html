@@ -1,0 +1,22 @@
+{% from 'components/buttons.html' import button %}
+{% from 'components/links.html' import kemono_link %}
+
+{% macro tooltip() %}
+  <div 
+    id="flying-tooltip" 
+    class="tooltip"
+  > 
+    {{ button('Close', 'tooltip__close') }}
+    {{ caller() }}
+  </div>
+{% endmacro %}
+
+{% macro register_message(action_name) %}
+  <p class="tooltip__message tooltip__message--register">
+    <span class="tooltip__action">{{ action_name }}</span> is only available to registered users.
+    <br>
+    Visit {{ kemono_link('/account/login', 'login page') }} if you have an account.
+    <br>
+    Otherwise visit {{ kemono_link('/account/register', 'registration page') }} to create one.
+  </p>
+{% endmacro %}

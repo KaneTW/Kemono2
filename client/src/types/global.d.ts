@@ -57,6 +57,7 @@ namespace KemonoAPI {
     bans: () => Promise<API.BanItem[]>
     bannedArtist: (id:string, service:string) => Promise<API.BannedArtist>
     creators: () => Promise<Artist[]>
+    logs: (importID: string) => Promise<API.LogItem[]>
   }
 
   namespace API {
@@ -67,6 +68,10 @@ namespace KemonoAPI {
 
     interface BannedArtist {
       name: string
+    }
+
+    interface LogItem {
+      
     }
   }
 }

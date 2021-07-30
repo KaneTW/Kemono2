@@ -1,11 +1,17 @@
 {% extends 'components/shell.html' %}
 
 {% from 'components/links.html' import email_link %}
+{% from 'components/tooltip.html' import register_message %}
+
+{% block title %}
+  <title>Import paywall posts/comments/DMs to Kemono.</title>
+{% endblock title %}
 
 {% block content %}
 <section class="page site-section site-section--importer" id="page">
   <h1 class="site-section__heading">Import from paysite</h1>
   <form
+    id="import-list"
     class="form form--bigger"
     action="/api/import"
     enctype="application/x-www-form-urlencoded"
@@ -14,21 +20,14 @@
     <div class="form__section">
       <label for="service" class="form__label">Paysite:</label>
       <select id="service" class="form__select" name="service">
-        {% set form_options = [
-          ("patreon", "Patreon", true),
-          ("fanbox", "Pixiv Fanbox", false),
-          ("gumroad", "Gumroad", false),
-          ("subscribestar", "SubscribeStar", false),
-          ("discord", "Discord", false),
-          ("fantia", "Fantia", false),
-        ] %}
-        {% for value, title, is_selected in form_options %}
+        {% for entry in g.paysite_list %}
+          {% set paysite = g.paysites[entry] %}
           <option 
             class="form__option"
-            value="{{ value }}"
-            {{ 'selected' if is_selected  }}
+            value="{{ entry }}"
+            {{ "selected" if loop.first }}
           >
-            {{ title }}
+            {{ paysite.title }}
           </option>
         {% endfor %}
       </select>
@@ -83,7 +82,28 @@
         value="1"
       />
       <label class="form__label" for="save-session-key">
-        I want to allow the development team to use my session for debugging (your session will be encrypted)
+        Allow administrator to use my session for debugging
+        <br>
+        <small class="form__subtitle">
+          Contributed debugging keys are encrypted using a strong RSA key that only the administrator can decipher.
+        </small>
+      </label>
+    </div>
+
+    <div id="dm-consent" class="form__section form__section--checkbox">
+      <input 
+        class="form__input"
+        type="checkbox"
+        id="save-dms" 
+        name="save_dms" 
+        value="1"
+      >
+      <label class="form__label" for="save-dms">
+        Allow the importer to access your direct messages
+        <br>
+        <small class="form__subtitle">
+          You will be able to manually approve or discard messages before they are publicly displayed.
+        </small>
       </label>
     </div>
 
@@ -110,4 +130,8 @@
     If you're having trouble with the importer, {{ email_link('kemonoparty@protonmail.com', 'contact admin') }}. 
   </p>
 </section>
-{% endblock %}
+{% endblock content %}
+
+{% block components %}
+  {{ register_message("DM import") }}
+{% endblock components %}

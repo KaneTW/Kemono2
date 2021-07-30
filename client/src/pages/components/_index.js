@@ -4,7 +4,7 @@ export { PostCard } from "./cards";
 export { FancyImage } from "./fancy_image";
 export { FancyLink } from "./links";
 export { ImageLink } from "./image_link";
-
+export { showTooltip, registerMessage} from "./tooltip";
 
 /**
  * @type {Map<string, HTMLElement>}

@@ -63,5 +63,60 @@
   </article>      
 {% endmacro %}
 
-{% macro user_card() %}
+{% macro user_card(user, class_name=none) %}
+{% endmacro %}
+
+{% macro dm_card(
+  dm,
+  is_private=false,
+  class_name=none
+) %}
+  {% set service = g.paysites[dm.service] %}
+  {% set artist_link = service.user.profile(dm.user) %}
+  
+  <article 
+    class="dm-card {{ class_name if class_name }}"
+    {% if is_private %}
+      data-id="{{ dm.id }}"
+    {% endif %}
+  >
+    {% if is_private %}
+      <header class="dm-card__header">
+        {% call fancy_link(
+          url=artist_link,
+          class_name='dms__user-link'
+        ) %}
+          <span class="dm-card__user">{{ dm.user }}</span> <span class="dm-card__service">({{ service.title }})</span>
+        {% endcall %}
+      </header>
+    {% endif %}
+    
+    <section class="dm-card__body">
+      <div class="dm-card__content">
+        {{ dm.content|safe }}
+      </div>
+      {# These values are not used for now. #}
+      {# {% if dm.file %}
+        <div class="dm-card__files">
+          {{ dm.file }}
+        </div>
+      {% endif %}
+      {% if dm.embed %}
+        <div class="dm-card__embeds">
+          {{ dm.embed }}
+        </div>
+      {% endif %} #}
+    </section>
+
+    <footer class="dm-card__footer">
+      {% if is_private %}
+        <div class="dm-card__published">
+          Published: {{ timestamp(dm.published) }}
+        </div>
+      {% endif %}
+      <div class="dm-card__added">
+        Added: {{ timestamp(dm.added) }}
+      </div>
+    </footer>
+  </article>
 {% endmacro %}

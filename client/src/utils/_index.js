@@ -106,3 +106,10 @@ export const freesites = {
     
   }
 }
+
+/**
+ * @param {number} time 
+ */
+export function waitAsync(time) {
+  return new Promise((resolve) => setTimeout(resolve, time));
+}

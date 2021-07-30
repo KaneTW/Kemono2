@@ -3,7 +3,8 @@ import { errorList, kemonoFetch } from "./kemono-fetch";
 export const api = {
   bans,
   bannedArtist,
-  creators
+  creators,
+  logs
 };
 
 async function bans() {
@@ -71,6 +72,27 @@ async function creators() {
     const artists = await response.json();
     
     return artists;
+
+  } catch (error) {
+    alert(error);
+  }
+}
+
+async function logs(importID) {
+  try {
+    const response = await kemonoFetch(`/api/logs/${importID}`, { method: "GET" });
+
+    if (!response.ok) {
+      alert(`Error 009 - ${errorList.get("009")}`);
+      return null;
+    }
+
+    /**
+     * @type {KemonoAPI.API.LogItem[]}
+     */
+    const logs = await response.json();
+    
+    return logs;
 
   } catch (error) {
     alert(error);

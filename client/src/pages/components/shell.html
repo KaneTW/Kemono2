@@ -1,5 +1,7 @@
 {% from 'components/loading_icon.html' import loading_icon %}
 {% from 'components/timestamp.html' import timestamp %}
+{% from 'components/tooltip.html' import tooltip %}
+{% from 'components/links.html' import fancy_link %}
 
 <!DOCTYPE html>
 <html prefix="og: https://ogp.me/ns#">
@@ -94,11 +96,17 @@
         class="component-container" 
         hidden
       >
+        {{ fancy_link("") }}
+        
         {{ timestamp("") }}
         {{ loading_icon() }}
         {% block components %}
         {% endblock components %}
       </div>
     </footer>
+    {% call tooltip() %}
+      <p class="tooltip__message">
+      </p>
+    {% endcall %}
   </body>
 </html>

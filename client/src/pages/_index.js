@@ -5,6 +5,8 @@ import { userPage } from "./user";
 import { registerPage } from "./register";
 import { postPage } from "./post";
 import { importerPage } from "./importer_list";
+import { importerStatusPage } from "./importer_status";
+import { importerDMSPage } from "./importer_dms";
 import { postsPage } from "./posts";
 import { artistsPage } from "./artists";
 
@@ -17,6 +19,8 @@ const pages = new Map([
   ["post", postPage],
   ["importer", importerPage],
   ["bans", bansPage],
+  ["importer-status", importerStatusPage],
+  ["importer-dms", importerDMSPage],
   ["posts", postsPage],
   ["artists", artistsPage],
 ]);
@@ -40,7 +44,7 @@ export function initSections(isLoggedIn) {
   initShell(header, isLoggedIn);
   initComponentFactory(footer);
   sections.forEach(section => {
-    const sectionName = /site-section--([a-z]+)/i.exec(section.className)[1];
+    const sectionName = /site-section--([a-z\-]+)/i.exec(section.className)[1];
 
     if (pages.has(sectionName)) {
       const sectionCallback = pages.get(sectionName);

@@ -87,10 +87,10 @@
                 href="/{{ post.service }}/user/{{ post.user }}/post/{{ post.id }}" 
                 target="_blank"
               >
-                {{ post.title }}
+                <span>{{ post.title }}</span> <span>({{ paysite.title }})</span>
               </a>
             {% else %}
-              {{ post.title }}
+              <span>{{ post.title }}</span> <span>({{ paysite.title }})</span>
             {% endif %}
           {% endif %}
         </h1>

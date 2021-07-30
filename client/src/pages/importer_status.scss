@@ -1,0 +1,97 @@
+@use "../css/variables" as *;
+
+.site-section--importer-status {
+
+  .import {
+    &__info {
+      position: sticky;
+      top: 2em;
+      right: 2em;
+      float: right;
+      background-color: var(--colour1-primary-transparent);
+      border-radius: 10px;
+      padding: $size-normal;
+
+      & > * {
+        padding-bottom: $size-normal;
+
+        &:last-child {
+          padding-bottom: 0;
+        }
+      }
+    }
+
+    &__stats {
+      display: flex;
+      flex-flow: row nowrap;
+      justify-content: flex-end;
+      align-items: center;
+      gap: $size-normal;
+    }
+
+    &__buttons {
+      display: flex;
+      flex-flow: row nowrap;
+      justify-content: flex-end;
+      align-items: center;
+      gap: $size-normal;
+    }
+
+    &__status {}
+    &__count {
+      transition-duration: var(--duration-global);
+      transition-property: visibility, opacity;
+
+      &--invisible {
+        visibility: hidden;
+        opacity: 0;
+      }
+    }
+  }
+
+  .loading-placeholder {
+    transition-duration: var(--duration-global);
+    transition-property: visibility, opacity;
+
+    &--complete {
+      position: absolute;
+      visibility: hidden;
+      opacity: 0;
+    }
+  }
+
+  // .import-id {
+  //   visibility: hidden;
+  //   transition-duration: var(--duration-global);
+  //   transition-property: visibility, opacity;
+  // }
+
+  .jumbo.no-posts {
+    background-color: hsl(211, 100%, 49%);
+    margin: 0;
+  }
+  
+  .log-list {
+    padding: 1em 0 1em 3em;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition-duration: var(--duration-global);
+    transition-property: visibility, opacity;
+
+    &--reversed {
+      flex-direction: column-reverse;
+    }
+
+    &--loaded {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    &__item {
+      line-height: 1.5;
+    }
+  }
+}

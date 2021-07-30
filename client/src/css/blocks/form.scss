@@ -1,22 +1,23 @@
+@use "../variables.scss" as *;
+
 .form {
-  box-sizing: border-box;
-  max-width: 360px;
-  padding: 1em;
+  max-width: $width-mobile;
+  padding: $size-normal;
   margin: 0 auto;
 
   &--bigger {
-    max-width: 480px;
+    max-width: $width-phone;
   }
 
   &--wide {
-    max-width: 720px;
+    max-width: $width-tablet;
   }
 
   &__section,
   &__fieldset {
-    padding-bottom: 1em;
+    padding-bottom: $size-normal;
     transition-property: opacity, visibility;
-    transition-duration: 250ms;
+    transition-duration: var(--duration-global);
 
     &:last-child {
       padding-bottom: 0;
@@ -39,7 +40,7 @@
       flex-flow: row wrap;
       justify-content: space-around;
       align-items: center;
-      gap: 1em;
+      gap: $size-normal;
 
       & .form__input {
         flex: 0 1;
@@ -81,13 +82,13 @@
   &__button,
   &__select {
     box-sizing: border-box;
-    min-height: 44px;
-    min-width: 44px;
+    min-height: $button-min-width;
+    min-width: $button-min-height;
     width: 100%;
     font-family: inherit;
     font-size: 100%;
     border-radius: 5px;
-    padding: 0.5em;
+    padding: $size-small;
   }
 
   &__subtitle {
@@ -96,18 +97,10 @@
     color: hsl(0, 0%, 45%);
   }
   
-  &__label {
-    cursor: pointer;
-  }
-  
   &__input {
     background: hsl(224, 7%, 32%);
     color: hsl(0, 0%, 100%);
     border: 0;
-  }
-  
-  &__select {
-    cursor: pointer;
   }
   
   &__option {

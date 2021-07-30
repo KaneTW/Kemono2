@@ -1,0 +1,34 @@
+@use "@wp/css/variables" as *;
+
+.tooltip {
+  --local-x: 0;
+  --local-y: 100%;
+
+  position: absolute;
+  left: var(--local-x);
+  top: var(--local-y);
+  z-index: 1;
+  max-width: $width-feature;
+  color: var(--colour0-primary);
+  background-color: var(--colour1-tertiary);
+  border-radius: 10px;
+  border:$size-thin solid var(--negative-colour1-primary);
+  padding: $size-small;
+  visibility: hidden;
+  opacity: 0;
+  transition-duration: var(--duration-global);
+  transition-property: opacity, visibility;
+
+  &--shown {
+    visibility: visible;
+    opacity: 1;
+  }
+
+  &__close {
+    float: right;
+    margin-left: $size-small;
+  }
+  &__message {
+    line-height: 1.5;
+  }
+}
