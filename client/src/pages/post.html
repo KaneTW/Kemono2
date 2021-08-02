@@ -5,9 +5,9 @@
 {% from 'components/fancy_image.html' import fancy_image, background_image %}
 {% from 'components/image_link.html' import image_link %}
 
-
 {% set paysite = g.paysites[props.service] %}
-{% set page_title = post.title ~ " by " ~ props.artist.name ~ " from " ~ paysite.title ~ " | Kemono" if props.artist else post.title ~ " | Kemono" %}
+{% set artist_name = props.artist.name if props.artist.name else props.user %}
+{% set page_title = "\"" ~ post.title ~ "\" by " ~ props.artist.name ~ " from " ~ paysite.title ~ " | Kemono" if props.artist else post.title ~ " | Kemono" %}
 {% set user_link = g.freesites.kemono.user.profile(post.service, post.user) %}
 {% set user_icon = g.freesites.kemono.user.icon(post.service, post.user) %}
 {% set user_banner = g.freesites.kemono.user.banner(post.service, post.user) %}
@@ -78,8 +78,7 @@
         </div>
       </div>
       <div class="post__info">
-        {# TODO: check what's toggle is for #}
-        <h1 for="toggle-{{ post.id }}" class="post__title">
+        <h1 class="post__title">
           {# title hidden with subscribestar posts to prevent redundancy #}
           {% if post.service != 'subscribestar' %}
             {% if post_link_in_title %}
@@ -95,7 +94,7 @@
           {% endif %}
         </h1>
         {% if post.published %}
-          <div for="toggle-{{ post.id }}"  class="post__published">
+          <div class="post__published">
             {{ timestamp(post.published) }}
           </div>
         {% endif %}
@@ -201,56 +200,67 @@
     </p>
   {% endif %}
   
-  <ul class="post__attachments">
-    {% for attachment in attachments %}
-      <li class="post__attachment">
-        <a
-          class="post__attachment-link"
-          href="{{ attachment.path }}" 
-          target="_blank"
-        >
-          Download {{ attachment.name }}
-        </a>
-      </li>
-    {% endfor %}
-  </ul>
-
-  <div class="post__content">
-    {{ post.content|safe }}
-  </div>
-
-  <div class="post__files">
-    {% for preview in previews %}
-      {% if preview.type == 'thumbnail' %}
-        <div class="post__thumbnail">
-          <a class="fileThumb" href="{{ preview.path }}">
-            {# TODO: move backup image logic to the script #}
-            <img
-              data-src="/thumbnail{{ preview.path }}"
-              src="/thumbnail{{ preview.path }}"
-              loading="lazy"
-            >
+  {% if attachments %}
+    <h2>Downloads</h2>
+    <ul class="post__attachments">
+      {% for attachment in attachments %}
+        {% set filename = '['~ artist_name ~ '(' ~ props.service ~ ')]-' ~ attachment.name ~ '-[' ~ post.user ~ '-' ~ post.id ~ ']' ~ attachment.extension %}
+        <li class="post__attachment">
+          <a
+            class="post__attachment-link"
+            href="{{ attachment.path }}" 
+            download="{{ filename }}"
+          >
+            Download {{ attachment.name }}
           </a>
-        </div>
-      {% elif preview.type == 'embed' %}
-        <a 
-          href="{{ preview.url }}" 
-          target="_blank"
-        >
-          <div class="embed-view">
-            <h2 
-              class="{{'subtitle' if not preview.subject}}"
-            >
-              {{ preview.subject if preview.subject else '(No title)' }}
-            </h2>
-            {% if preview.description %}
-              <p>
-                {{ preview.description }}
-              </p>
-            {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+  
+  {% if post.content %}
+    <h2>Content</h2>
+    <div class="post__content">
+      {{ post.content|safe }}
+    </div>
+  {% endif %}
+  
+  {% if previews %}
+    <h2>Files</h2>
+    <div class="post__files">
+      {% for preview in previews %}
+        {% if preview.type == 'thumbnail' %}
+          <div class="post__thumbnail">
+            <a class="fileThumb" href="{{ preview.path }}">
+              {# TODO: move backup image logic to the script #}
+              <img
+                data-src="/thumbnail{{ preview.path }}"
+                src="/thumbnail{{ preview.path }}"
+                loading="lazy"
+              >
+            </a>
           </div>
-        </a>
-      {% endif %}
-    {% endfor %}
-  </div>
+        {% elif preview.type == 'embed' %}
+          <a 
+            href="{{ preview.url }}" 
+            target="_blank"
+          >
+            <div class="embed-view">
+              <h3 
+                class="{{'subtitle' if not preview.subject}}"
+              >
+                {{ preview.subject if preview.subject else '(No title)' }}
+              </h2>
+              {% if preview.description %}
+                <p>
+                  {{ preview.description }}
+                </p>
+              {% endif %}
+            </div>
+          </a>
+        {% endif %}
+      {% endfor %}
+    </div>
+  {% endif %}
+  
 {% endmacro %}

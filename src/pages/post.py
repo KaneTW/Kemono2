@@ -1,4 +1,5 @@
 from flask import Blueprint, request, make_response, render_template, redirect, url_for
+from pathlib import PurePath
 
 import datetime
 import re
@@ -88,9 +89,11 @@ def get(service, artist_id, post_id):
                 'path': attachment['path'].replace('https://kemono.party','')
             })
         else:
+            file_extension = PurePath(attachment['path']).suffix
             attachments.append({
                 'path': attachment['path'],
-                'name': attachment['name']
+                'name': attachment['name'],
+                'extension': file_extension
             })
 
     props['artist'] = artist
