@@ -1,5 +1,5 @@
 import { addFavouriteArtist, findFavouriteArtist, removeFavouriteArtist, findFavouritePost } from "@wp/js/favorites";
-import { CardList, createComponent, PostCard } from "./components/_index";
+import { CardList, createComponent, PostCard, showTooltip, registerMessage } from "@wp/components";
 
 /** 
  * @param {HTMLElement} section
@@ -68,6 +68,13 @@ function handleFavouriting(id, service) {
      * @type {HTMLButtonElement}
      */
     const button = event.target;
+    const isLoggedIn = localStorage.getItem("logged_in") === "yes";
+
+    if (!isLoggedIn) {
+      showTooltip(button, registerMessage(null, "Favorites"));
+      return;
+    }
+    
     const [icon, text] = button.children;
     /**
      * @type {HTMLElement}

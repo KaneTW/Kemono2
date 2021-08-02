@@ -1,6 +1,6 @@
 import { kemonoAPI } from "@wp/api";
 import { addFavouritePost, removeFavouritePost, findFavouritePost } from "@wp/js/favorites";
-import { createComponent, LoadingIcon } from "./components/_index";
+import { createComponent, LoadingIcon, registerMessage, showTooltip } from "@wp/components";
 
 const meta = {
   service: null,
@@ -126,6 +126,12 @@ function handleFavouriting(service, user, postID) {
      * @type {HTMLButtonElement}
      */
     const button = event.currentTarget;
+    const isLoggedIn = localStorage.getItem("logged_in") === "yes";
+
+    if (!isLoggedIn) {
+      showTooltip(button, registerMessage(null, "Favorites"));
+      return;
+    }
 
     const [icon, text] = button.children;
     const loadingIcon = LoadingIcon();

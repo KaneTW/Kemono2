@@ -30,15 +30,38 @@ export function showTooltip(element, messageElement) {
 /**
  * TODO: init from `action_name`
  * @param {HTMLElement} element 
- * @param {string} action_name 
+ * @param {string} actionName 
  */
-export function registerMessage(element, action_name="") {
+export function registerMessage(element, actionName="") {
   /**
    * @type {HTMLParagraphElement}
    */
   const messageElement = element
     ? element
-    : createComponent("tooltip__message tooltip__message--register");
+    : initFromScratch(actionName);
 
   return messageElement;
+}
+
+/**
+ * @param {HTMLElement} element
+ */
+function initFromElement(element) {}
+
+/**
+ * @param {string} actionName
+ */
+function initFromScratch(actionName) {
+  /**
+   * @type {HTMLParagraphElement}
+   */
+  const message = createComponent("tooltip__message tooltip__message--register");
+  /**
+   * @type {HTMLSpanElement}
+   */
+  const action = message.querySelector(".tooltip__action");
+
+  action.textContent = actionName;
+  
+  return message;
 }

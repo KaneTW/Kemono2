@@ -2,6 +2,7 @@
 {% from 'components/timestamp.html' import timestamp %}
 {% from 'components/tooltip.html' import tooltip %}
 {% from 'components/links.html' import fancy_link %}
+{% from 'components/tooltip.html' import register_message%}
 
 <!DOCTYPE html>
 <html prefix="og: https://ogp.me/ns#">
@@ -97,7 +98,7 @@
         hidden
       >
         {{ fancy_link("") }}
-        
+        {{ register_message("") }}
         {{ timestamp("") }}
         {{ loading_icon() }}
         {% block components %}

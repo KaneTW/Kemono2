@@ -4,7 +4,7 @@ export async function initFavorites() {
   let artistFavs = localStorage.getItem('favs');
   let postFavs = localStorage.getItem('post_favs');
 
-  if (!artistFavs) {
+  if (!artistFavs || artistFavs === "undefined") {
     /**
      * @type {string}
      */
@@ -15,7 +15,7 @@ export async function initFavorites() {
     }
   }
 
-  if (!postFavs) {
+  if (!postFavs || postFavs === "undefined") {
     /**
      * @type {string}
      */

@@ -26,6 +26,7 @@
   {% if post.published %}
     <meta name="published" content="{{ post.published }}">
   {% endif %}
+  <link rel="canonical" href="{{ g.canonical_url }}">
 {% endblock meta %}
 
 {% block opengraph %}

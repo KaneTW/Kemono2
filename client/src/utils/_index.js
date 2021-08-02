@@ -1,3 +1,7 @@
+export { KemonoError } from "./kemono-error";
+
+const defaultDelay = parseInt(document.documentElement.style.getPropertyValue("--duration-global"));
+
 /**
  * @param {string} name 
  * @param {string} url 
@@ -34,6 +38,17 @@ function debounce (func, wait, immediate) {
       if (!immediate) func.apply(context, args);
     }
   };
+}
+
+/**
+ * @param {number} time 
+ * @returns 
+ */
+export function setTimeoutAsync(time=defaultDelay) {
+  const timeOut = new Promise((resolve) => {
+    setTimeout(resolve, time);
+  });
+  return timeOut;
 }
 
 /**

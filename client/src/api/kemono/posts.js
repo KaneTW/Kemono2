@@ -1,4 +1,6 @@
-import { kemonoFetch, errorList } from "./kemono-fetch";
+import { kemonoFetch } from "./kemono-fetch";
+import { KemonoError } from "@wp/utils";
+
 
 export const posts = {
   attemptFlag
@@ -14,7 +16,8 @@ async function attemptFlag(service, user, post_id) {
     const response = await kemonoFetch(`/api/${service}/user/${user}/post/${post_id}/flag`, { method: "POST" });
 
     if (!response.ok) {
-      alert(`Error 005 - ${errorList.get("005")}`)
+      
+      alert(new KemonoError(5));
       return false;
     }
 

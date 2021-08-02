@@ -1,4 +1,5 @@
-import { errorList, kemonoFetch } from "./kemono-fetch";
+import { KemonoError } from "@wp/utils";
+import { kemonoFetch } from "./kemono-fetch";
 
 export const api = {
   bans,
@@ -12,7 +13,8 @@ async function bans() {
     const response = await kemonoFetch('/api/bans', { method: "GET" });
 
     if (!response.ok) {
-      alert(`Error 006 - ${errorList.get("006")}`);
+      
+      alert(new KemonoError(6));
       return null;
     }
 
@@ -41,7 +43,7 @@ async function bannedArtist(id, service) {
     const response = await kemonoFetch(`/api/lookup/cache/${id}?${params}`);
 
     if (!response.ok) {
-      alert(`Error 007 - ${errorList.get("007")}`);
+      alert(new KemonoError(7));
       return null;
     }
 
@@ -62,7 +64,8 @@ async function creators() {
     const response = await kemonoFetch('/api/creators', { method: "GET" });
 
     if (!response.ok) {
-      alert(`Error 008 - ${errorList.get("008")}`);
+      
+      alert(new KemonoError(8));
       return null;
     }
 
