@@ -2,6 +2,8 @@ from flask import Blueprint, request, make_response, render_template, session, r
 
 import re
 
+from ..types.kemono import User
+
 from ..utils.utils import sort_dict_list_by, offset, take, limit_int, parse_int
 from ..internals.cache.flask_cache import cache
 from ..internals.database.database import get_cursor
@@ -9,8 +11,8 @@ from ..lib.artist import get_all_non_discord_artists, get_artist, get_artist_pos
 from ..lib.post import get_artist_posts, get_all_posts_by_artist, is_post_flagged, get_render_data_for_posts
 from ..lib.favorites import is_artist_favorited
 from ..lib.account import load_account
-from ..lib.dms import get_artist_dms
-# from .artists_types import ArtistPageProps
+from ..lib.dms import count_user_dms, get_artist_dms
+from .artists_types import ArtistDMsProps, ArtistPageProps
 
 artists = Blueprint('artists', __name__)
 
@@ -75,7 +77,7 @@ def updated():
     return response
 
 @artists.route('/<service>/user/<artist_id>')
-def get(service, artist_id):
+def get(service: str, artist_id: str):
     cursor = get_cursor()
     
     base = request.args.to_dict()
@@ -101,23 +103,23 @@ def get(service, artist_id):
     artist = get_artist(service, artist_id)
     if artist is None:
         return redirect(url_for('artists.list'))
-
     display_data = make_artist_display_data(artist)
+    dm_count = count_user_dms(service, artist_id)
 
     (result_previews, result_attachments, result_flagged, result_after_kitsune, result_is_image) = get_render_data_for_posts(posts)
-    
-    props = {
-        'current_page': 'posts',
-        'id': artist_id,
-        'service': service,
-        'session': session,
-        'name': artist['name'],
-        'count': total_count,
-        'limit': limit,
-        'favorited': favorited,
-        'artist': artist,
-        'display_data': display_data
-    }
+
+    props = ArtistPageProps(
+        id= artist_id,
+        service= service,
+        session= session,
+        name= artist.name,
+        count= total_count,
+        limit= limit,
+        favorited= favorited,
+        artist= artist,
+        display_data= display_data,
+        dm_count= dm_count
+    )
 
     response = make_response(render_template(
         'user.html',
@@ -134,7 +136,7 @@ def get(service, artist_id):
     return response
 
 @artists.route('/<service>/user/<artist_id>/dms')
-def get_dms(service, artist_id):
+def get_dms(service: str, artist_id: str):
     cursor = get_cursor()
 
     # pagination might be added at some point if we need it, but considering how few dms most artists end up having, we probably won't
@@ -152,20 +154,17 @@ def get_dms(service, artist_id):
         return redirect(url_for('artists.list'))
 
     dms = get_artist_dms(service, artist_id)
-
-    props = {
-        'current_page': 'dms',
-        'id': artist_id,
-        'service': service,
-        'session': session,
-        'artist': artist,
-        'name': artist['name'],
-        'display_data': make_artist_display_data(artist),
-        'dms': dms
-    }
+    props = ArtistDMsProps(
+        id= artist_id,
+        service= service,
+        session= session,
+        artist= artist,
+        display_data= make_artist_display_data(artist),
+        dms= dms,
+    )
 
     response = make_response(render_template(
-        'user.html',
+        'dms.html',
         props = props,
     ), 200)
     response.headers['Cache-Control'] = 's-maxage=60'
@@ -205,9 +204,9 @@ def get_artist_post_page(artist_id, service, offset, limit):
     total_count = get_artist_post_count(service, artist_id)
     return (posts, total_count)
 
-def make_artist_display_data(artist):
-    artist_id = str(artist['id'])
-    service_name = artist['service']
+def make_artist_display_data(artist: User):
+    artist_id = str(artist.id)
+    service_name = artist.service
     data_by_service_name = {
         'patreon': {
             'service': 'Patreon',

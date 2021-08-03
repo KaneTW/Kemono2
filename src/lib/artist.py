@@ -1,6 +1,7 @@
 from ..internals.cache.redis import get_conn
 from ..internals.database.database import get_cursor
 from ..utils.utils import get_value
+from ..types.kemono import User
 import ujson
 import dateutil
 import copy
@@ -106,7 +107,7 @@ def get_artists_by_service(service, reload = False):
         artists = deserialize_artists(artists)
     return artists
 
-def get_artist(service, artist_id, reload = False):
+def get_artist(service: str, artist_id: str, reload: bool = False):
     redis = get_conn()
     key = 'artist:' + service + ':' + str(artist_id)
     artist = redis.get(key)
@@ -118,6 +119,13 @@ def get_artist(service, artist_id, reload = False):
         redis.set(key, serialize_artist(artist), ex = 600)
     else:
         artist = deserialize_artist(artist)
+    artist = User(
+        id= artist['id'],
+        name= artist['name'],
+        service= artist['service'],
+        indexed= artist['indexed'],
+        updated= artist['updated']
+    )
     return artist
 
 def get_artist_post_count(service, artist_id, reload = False):

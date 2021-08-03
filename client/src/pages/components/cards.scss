@@ -86,20 +86,25 @@
   }
 
   &__header {
-    transition-property: background-color;
-    &--fav {
-      background-color: var(--favourite-colour2-primary);
+    padding: 0;
 
-      & .post-card__user {
-        display: block;
-      }
+    & > * {
+      padding: $size-small;
     }
   }
   
   &__heading {}
 
   &__user {
-    display: none;
+    visibility: hidden;
+    opacity: 0;
+    transition-property: background-color, visibility, opacity;
+
+    &--fav {
+      visibility: visible;
+      opacity: 1;
+      background-color: var(--favourite-colour2-primary);
+    }
   }
 
   &__name {}
@@ -173,7 +178,6 @@
 
   &__content {
     line-height: 1.5;
-    word-break: break-all;
   }
 
   &__files {}

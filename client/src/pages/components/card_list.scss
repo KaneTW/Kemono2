@@ -29,7 +29,7 @@
     align-items: stretch;
 
     & > * {
-      flex: 0 0 var(--card-size);
+      flex: 0 1 var(--card-size);
       margin: $size-small;
     }
   }

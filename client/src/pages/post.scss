@@ -214,7 +214,7 @@
 .comment {
   border-radius: 10px;
   border: $size-thin solid var(--colour1-secondary);
-  max-width: $width-mobile;
+  max-width: $width-phone;
 
   &:target {
     outline-color: var(--anchour-local-colour1-primary);

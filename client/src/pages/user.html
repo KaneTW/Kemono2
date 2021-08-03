@@ -1,32 +1,26 @@
 {% extends 'components/shell.html' %}
 
+{% from 'components/headers.html' import user_header %}
 {% from "components/loading_icon.html" import loading_icon %}
 {% from 'components/card_list.html' import card_list %}
-{% from 'components/cards.html' import post_card, dm_card %}
-{% from 'components/links.html' import fancy_link %}
-{% from 'components/fancy_image.html' import background_image %}
-{% from 'components/image_link.html' import image_link %}
+{% from 'components/cards.html' import post_card %}
 
 {% set paysite = g.paysites[props.service] %}
-{% set artist_icon = g.freesites.kemono.user.icon(props.service, props.id) %}
-{% set artist_banner = g.freesites.kemono.user.banner(props.service, props.id) %}
-{% set paysite_icons = {
-  'patreon': '/static/patreon.svg',
-  'fanbox': '/static/fanbox.svg',
-  'gumroad': '/static/gumroad.svg',
-  'subscribestar': '/static/subscribestar.png',
-  'dlsite': '/static/dlsite.png',
-  'fantia': '/static/fantia.png',
-} %}
+{% set page_title = 'Posts of ' ~ props.name ~ ' from ' ~ paysite.title ~ ' | Kemono' %}
+
+{% block title %}
+  <title>{{ page_title }}</title>
+{% endblock title %}  
 
 {% block meta %}
   <meta name="id" content="{{ props.id }}">
   <meta name="service" content="{{ props.service }}">
+  <meta name="artist_name" content="{{ props.artist.name }}">
   <link rel="canonical" href="{{ g.canonical_url }}">
 {% endblock meta %}
 
 {% block opengraph %}
-  <meta property="og:title" content="{{ props.name ~ ' | ' ~ paysite.title ~ ' on Kemono' }}">
+  <meta property="og:title" content="{{ page_title }}">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Kemono">
   <meta property="og:image" content="{{ g.origin }}/icons/{{ props.service }}/{{ props.id }}">
@@ -35,86 +29,8 @@
 
 {% block content %}
 <section class="site-section site-section--user">
-  <header 
-    class="user-header" 
-    itemscope
-    itemtype="https://schema.org/Person"
-  >
-    {{ background_image(
-      artist_banner,
-      is_lazy=false,
-      class_name='user-header__background'
-    ) }}
-
-    {{ image_link(
-      url=request.path,
-      src=artist_icon,
-      is_lazy=false,
-      is_noop=false,
-      class_name='user-header__avatar'
-    ) }}
-
-    <div class="user-header__info">
-      <h1 
-        id="user-header__info-top"
-        class="user-header__name" 
-      >
-        <a 
-          class="user-header__profile"
-          target="_blank" 
-          rel="noreferrer"
-          href="{{ props.display_data.href }}"
-          itemprop="url" 
-        >
-          <span class="user-header__profile-image">
-            <img 
-            src="{{ paysite_icons[props.service] }}" 
-          >
-          </span>
-          <span itemprop="name">{{ props.name }}</span>
-        </a>
-      </h1>
-      
-      <div class="user-header__actions">
-        {% if props.current_page == 'dms' %}
-          {{ fancy_link(
-            url= g.freesites.kemono.user.profile(props.service, props.id),
-            text= 'Posts',
-            is_noop= false,
-            class_name= 'user-header__posts'
-          ) }}
-        {% elif props.current_page == 'posts' %}
-          {{ fancy_link(
-            url= request.path ~ "/dms",
-            text= "DMs",
-            is_noop= false,
-            class_name= 'user-header__dms'
-          ) }}
-        {% endif %}
-        <a
-          class="user-header__upload"
-          href="/posts/upload?service={{ props.service }}&user={{ props.id }}"
-        > 
-          {# hiding the icon until the introduction of SVG icons #}
-          {# <span>
-            <img 
-              src="/static/upload.svg" 
-            >
-          </span> #}
-          <span>Upload file</span>
-        </a>
-      </div>
-    </div>
-  </header>
-
-  {# for now doing completely separate block #}
-  {% if props.dms %}
-    {% call card_list() %}
-      {% for dm in props.dms %}
-        {{ dm_card(dm) }}    
-      {% endfor %}
-    {% endcall %}
-  {% elif results %}
+  {{ user_header(request, props) }}
+  {% if results %}
     <div class="paginator" id="paginator-top">
     {% include 'components/paginator.html' %}
       <form
@@ -148,13 +64,13 @@
     <div class="no-results">
       <h2 class="site-section__subheading">Nobody here but us chickens!</h1>
       <p class="subtitle">
-        There are either no more {{'DMs' if props.current_page == 'dms' else 'posts'}} beyond this page, or this user hasn't been imported.
+        There are either no more posts beyond this page, or this user hasn't been imported.
       </p>
     </div>
   {% endif %}
 
 </section>
-{% endblock %}
+{% endblock content %}
 
 {% block components %}
   <button class="user-header__favourite" type="button">

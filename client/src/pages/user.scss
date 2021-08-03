@@ -2,7 +2,7 @@
 
 .site-section--user {
   .no-results {
-    max-width: $width-phone;
+    --card-size: $width-phone;
     padding: $size-small 0;
     margin: 0 auto;
   }

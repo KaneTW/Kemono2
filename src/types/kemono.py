@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 class DM:
     def __init__(self, 
@@ -11,7 +12,7 @@ class DM:
         embed: dict,
         file: dict,
         contributor_id: str,
-        import_id: str
+        import_id: Optional[str]
     ) -> None:
         self.id = id
         self.user = user
@@ -38,15 +39,20 @@ class DM:
 #     embed: dict
 #     shared_file: bool
     
-
-# class __User:
-#     id: str
-#     name: str
-#     service: str
-#     indexed: datetime
-
-
-
+class User:
+    def __init__(self,
+        id: str,
+        name: str,
+        service: str,
+        indexed: datetime,
+        updated: datetime
+    ) -> None:
+        self.id = id
+        self.name = name
+        self.service = service
+        self.indexed = indexed
+        self.updated = updated
+    
 # class __Favorite_Post:
 #     id: str
 #     account_id: str
@@ -79,19 +85,19 @@ class DM:
 #     log: list[str]
 #     created: datetime
 
-# class __PageProps:
-#     def __init__(self, current_page: str) -> None:
-#         self.current_page = current_page
+class PageProps:
+    def __init__(self, current_page: str) -> None:
+        self.current_page = current_page
 
 class Kemono_Types:
     def __init__(self) -> None:
         self.DM = DM
         # self.Post = __Post
-        # self.User = __User
+        self.User = User
         # self.Request = __Request
         # self.Favourite_Post = __Favorite_Post
         # self.Favourite_User = __Favorite_User
         # self.Log = __Log
-        # self.PageProps = __PageProps
+        self.PageProps = PageProps
 
 kemono_types = Kemono_Types()
