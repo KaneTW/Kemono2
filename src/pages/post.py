@@ -90,10 +90,13 @@ def get(service, artist_id, post_id):
             })
         else:
             file_extension = PurePath(attachment['path']).suffix
+            # filename without extension
+            stem = PurePath(attachment['path']).stem
             attachments.append({
                 'path': attachment['path'],
                 'name': attachment['name'],
-                'extension': file_extension
+                'extension': file_extension,
+                'stem': stem
             })
 
     props['artist'] = artist

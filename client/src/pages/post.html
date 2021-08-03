@@ -205,7 +205,7 @@
     <h2>Downloads</h2>
     <ul class="post__attachments">
       {% for attachment in attachments %}
-        {% set filename = '['~ artist_name ~ '(' ~ props.service ~ ')]-' ~ attachment.name ~ '-[' ~ post.user ~ '-' ~ post.id ~ ']' ~ attachment.extension %}
+        {% set filename = '['~ artist_name ~ '(' ~ props.service ~ ')]-' ~ attachment.stem ~ '-[' ~ post.user ~ '-' ~ post.id ~ ']' ~ attachment.extension %}
         <li class="post__attachment">
           <a
             class="post__attachment-link"

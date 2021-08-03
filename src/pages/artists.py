@@ -112,7 +112,7 @@ def get(service: str, artist_id: str):
         id= artist_id,
         service= service,
         session= session,
-        name= artist.name,
+        name= artist['name'],
         count= total_count,
         limit= limit,
         favorited= favorited,
@@ -204,9 +204,9 @@ def get_artist_post_page(artist_id, service, offset, limit):
     total_count = get_artist_post_count(service, artist_id)
     return (posts, total_count)
 
-def make_artist_display_data(artist: User):
-    artist_id = str(artist.id)
-    service_name = artist.service
+def make_artist_display_data(artist: dict):
+    artist_id = str(artist['id'])
+    service_name = artist['service']
     data_by_service_name = {
         'patreon': {
             'service': 'Patreon',

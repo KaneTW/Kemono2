@@ -14,7 +14,7 @@ class ArtistPageProps(PageProps):
         count: int,
         limit: int,
         favorited: bool,
-        artist: User,
+        artist: dict,
         display_data: Callable[[dict], Dict[str, str]],
         dm_count: int
     ) -> None:
@@ -35,7 +35,7 @@ class ArtistDMsProps(PageProps):
         id: str,
         service: str,
         session: dict,
-        artist: User,
+        artist: dict,
         display_data: Callable[[dict], Dict[str, str]],
         dms: List[DM]
     ) -> None:

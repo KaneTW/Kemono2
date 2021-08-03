@@ -107,7 +107,7 @@ def get_artists_by_service(service, reload = False):
         artists = deserialize_artists(artists)
     return artists
 
-def get_artist(service: str, artist_id: str, reload: bool = False):
+def get_artist(service: str, artist_id: str, reload: bool = False) -> dict:
     redis = get_conn()
     key = 'artist:' + service + ':' + str(artist_id)
     artist = redis.get(key)
@@ -119,13 +119,6 @@ def get_artist(service: str, artist_id: str, reload: bool = False):
         redis.set(key, serialize_artist(artist), ex = 600)
     else:
         artist = deserialize_artist(artist)
-    artist = User(
-        id= artist['id'],
-        name= artist['name'],
-        service= artist['service'],
-        indexed= artist['indexed'],
-        updated= artist['updated']
-    )
     return artist
 
 def get_artist_post_count(service, artist_id, reload = False):
