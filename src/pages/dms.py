@@ -29,6 +29,7 @@ def get_dms():
     response = make_response(render_template(
         'all_dms.html',
         props = props,
+        base = base,
         dms = dms,
         artists = artists
     ), 200)
