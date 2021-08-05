@@ -1,6 +1,7 @@
 {% from 'components/timestamp.html' import timestamp %}
 {% from 'components/buttons.html' import button %}
 {% from 'components/links.html' import fancy_link %}
+{% from 'components/fancy_image.html' import fancy_image, background_image %}
 
 {% macro post_card(post) %}
   {% set src = post.file.path if post.file.path and post.file.path|lower|regex_match("\.(gif|jpe?g|jpe|png|webp)$") %}
@@ -69,17 +70,43 @@
 {% macro dm_card(
   dm,
   is_private=false,
+  is_global=false,
+  artist={},
   class_name=none
 ) %}
   {% set service = g.paysites[dm.service] %}
   {% set artist_link = service.user.profile(dm.user) %}
-  
+  {% set user_link = g.freesites.kemono.user.profile(dm.service, dm.user) %}
+
   <article 
     class="dm-card {{ class_name if class_name }}"
     {% if is_private %}
       data-id="{{ dm.id }}"
     {% endif %}
   >
+    {% if is_global %}
+      {% if artist %}
+        <header class="dm-card__header">
+          {% call fancy_link(url=user_link, class_name="dm-card__icon") %}
+            {{ fancy_image('/icons/' ~ artist.service ~ '/' ~ artist.id) }}
+          {% endcall %}
+
+          {% call fancy_link(url=user_link) %}
+            <span class="dm-card__user">{{ artist.name }}</span>
+          {% endcall %}
+        </header>
+      {% else %}
+        <header class="dm-card__header">
+          {% call fancy_link(
+            url=user_link,
+            class_name='dms__user-link'
+          ) %}
+            <span class="dm-card__user">{{ dm.user }}</span> <span class="dm-card__service">({{ service.title }})</span>
+          {% endcall %}
+        </header>
+      {% endif %}
+    {% endif %}
+
     {% if is_private %}
       <header class="dm-card__header">
         {% call fancy_link(

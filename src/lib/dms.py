@@ -7,6 +7,7 @@ import ujson
 import dateutil
 import copy
 import datetime
+import base64
 
 def get_unapproved_dms(import_id: str, reload: bool = False) -> List[DM]:
     redis = get_conn()
@@ -37,6 +38,64 @@ def get_artist_dms(service: str, artist_id: int, reload: bool = False) -> List[D
         dms = deserialize_dms(dms)
     dms = init_DMs_from_dict(dms)
     return dms
+
+def get_all_dms(offset: int, limit: int, reload: bool = False) -> List[DM]:
+    redis = get_conn()
+    key = 'all_dms:' + str(offset)
+    dms = redis.get(key)
+    if dms is None or reload:
+        cursor = get_cursor()
+        query = 'SELECT * FROM dms OFFSET %s LIMIT %s'
+        cursor.execute(query, (offset, limit))
+        dms = cursor.fetchall()
+        redis.set(key, serialize_dms(dms), ex = 600)
+    else:
+        dms = deserialize_dms(dms)
+    dms = init_DMs_from_dict(dms)
+    return dms
+
+def get_all_dms_count(reload: bool = False) -> int:
+    redis = get_conn()
+    key = 'all_dms_count'
+    count = redis.get(key)
+    if count is None or reload:
+        cursor = get_cursor()
+        query = 'SELECT COUNT(*) FROM dms'
+        cursor.execute(query)
+        count = int(cursor.fetchone()['count'])
+        redis.set(key, str(count), ex = 600)
+    else:
+        count = int(count)
+    return count
+
+def get_all_dms_by_query(q: str, offset: int, limit: int, reload: bool = False) -> List[DM]:
+    redis = get_conn()
+    key = 'all_dms_by_query:' + base64.b64encode(q.encode('utf-8')).decode('utf-8') + ':' + str(offset)
+    dms = redis.get(key)
+    if dms is None or reload:
+        cursor = get_cursor()
+        query = 'SELECT * FROM dms WHERE to_tsvector(\'english\', content) @@ websearch_to_tsquery(%s) OFFSET %s LIMIT %s'
+        cursor.execute(query, (q, offset, limit))
+        dms = cursor.fetchall()
+        redis.set(key, serialize_dms(dms), ex = 600)
+    else:
+        dms = deserialize_dms(dms)
+    dms = init_DMs_from_dict(dms)
+    return dms
+
+def get_all_dms_by_query_count(q: str, reload: bool = False) -> int:
+    redis = get_conn()
+    key = 'all_dms_by_query_count:' + base64.b64encode(q.encode('utf-8')).decode('utf-8')
+    count = redis.get(key)
+    if count is None or reload:
+        cursor = get_cursor()
+        query = 'SELECT COUNT(*) FROM dms WHERE to_tsvector(\'english\', content) @@ websearch_to_tsquery(%s)'
+        cursor.execute(query, (q,))
+        count = int(cursor.fetchone()['count'])
+        redis.set(key, str(count), ex = 600)
+    else:
+        count = int(count)
+    return count
 
 def count_user_dms(service: str, user_id: str, reload: bool = False) -> int:
     redis = get_conn()

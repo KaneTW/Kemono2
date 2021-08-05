@@ -35,7 +35,7 @@ def posts():
     base = request.args.to_dict()
     base.pop('o', None)
 
-    limit = limit_int(request.args.get('limit') or 25, 50)
+    limit = limit_int(int(request.args.get('limit')) or 25, 50)
     offset = int(request.args.get('o') or 0)
 
     props['limit'] = limit

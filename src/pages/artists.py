@@ -137,8 +137,6 @@ def get(service: str, artist_id: str):
 
 @artists.route('/<service>/user/<artist_id>/dms')
 def get_dms(service: str, artist_id: str):
-    cursor = get_cursor()
-
     # pagination might be added at some point if we need it, but considering how few dms most artists end up having, we probably won't
     # base = request.args.to_dict()
     # base.pop('o', None)
