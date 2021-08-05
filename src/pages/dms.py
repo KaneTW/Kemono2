@@ -22,7 +22,8 @@ def get_dms():
     else:
         (dms, total_count) = do_dm_search(query, offset, limit)
 
-    artists = list(get_artist(dm.user, dm.service) for dm in dms)
+    artists = list(get_artist(dm.service, dm.user) for dm in dms)
+
     props['count'] = total_count
     props['limit'] = limit
 
