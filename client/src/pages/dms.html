@@ -32,7 +32,7 @@
 <section class="site-section site-section--dms">
   {{ user_header(request, props) }}
 
-  {% call card_list("feature") %}
+  {% call card_list("phone") %}
     {% for dm in props.dms %}
       {{ dm_card(dm) }}
     {% else %}
