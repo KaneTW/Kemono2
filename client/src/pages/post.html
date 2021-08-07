@@ -80,18 +80,15 @@
       </div>
       <div class="post__info">
         <h1 class="post__title">
-          {# title hidden with subscribestar posts to prevent redundancy #}
-          {% if post.service != 'subscribestar' %}
-            {% if post_link_in_title %}
-              <a 
-                href="/{{ post.service }}/user/{{ post.user }}/post/{{ post.id }}" 
-                target="_blank"
-              >
-                <span>{{ post.title }}</span> <span>({{ paysite.title }})</span>
-              </a>
-            {% else %}
+          {% if post_link_in_title %}
+            <a 
+              href="/{{ post.service }}/user/{{ post.user }}/post/{{ post.id }}" 
+              target="_blank"
+            >
               <span>{{ post.title }}</span> <span>({{ paysite.title }})</span>
-            {% endif %}
+            </a>
+          {% else %}
+            <span>{{ post.title }}</span> <span>({{ paysite.title }})</span>
           {% endif %}
         </h1>
         {% if post.published %}
@@ -222,6 +219,9 @@
   {% if post.content %}
     <h2>Content</h2>
     <div class="post__content">
+      {% if props.service == "subscribestar" and after_kitsune %}
+        <div>
+      {% endif %}
       {{ post.content|safe }}
     </div>
   {% endif %}
