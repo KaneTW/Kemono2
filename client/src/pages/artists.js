@@ -1,13 +1,15 @@
 import { kemonoAPI } from "@wp/api";
-import { ImageLink } from "@wp/components";
-import { paysites, freesites } from "@wp/utils";
+import { CardList } from "@wp/components";
+import { isLoggedIn } from "@wp/js/account";
+import { findFavouriteArtist } from "@wp/js/favorites";
+import { UserCard } from "./components/cards";
 
 /**
- * @type {KemonoAPI.Artist[]}
+ * @type {KemonoAPI.User[]}
  */
 let creators;
 /**
- * @type {KemonoAPI.Artist[]}
+ * @type {KemonoAPI.User[]}
  */
 let filteredCreators;
 let skip = 0;
@@ -45,8 +47,25 @@ export async function artistsPage(section) {
    * @type {HTMLInputElement}
    */
   const queryInput = searchForm.elements["q"];
+  /**
+   * @type {HTMLDivElement}
+   */
+  const cardListElement = section.querySelector(".card-list");
+  const { cardList, cardContainer } = CardList(cardListElement);
+  const pagination = {
+    top: document.getElementById("paginator-top"),
+    bottom: document.getElementById("paginator-bottom")
+  }
 
-  section.addEventListener("click", (event) => {
+  Array.from(cardContainer.children).forEach(async (userCard) => {
+    const { id, service } = userCard.dataset;
+    const isFav = isLoggedIn && await findFavouriteArtist(id, service);
+    
+    if (isFav) {
+      userCard.classList.add("user-card--fav");
+    }
+  })
+  section.addEventListener("click", async (event) => {
     /**
      * @type {HTMLAnchorElement}
      */
@@ -64,49 +83,47 @@ export async function artistsPage(section) {
         sortSelect.value, 
         queryInput.value
       );
-      loadCards();
+      await loadCards();
     }
   });
 
   searchForm.addEventListener("submit", (event) => event.preventDefault());
-  queryInput.addEventListener("change", (event) => {
-    filterCards(
-      orderSelect.value, 
-      serviceSelect.value, 
-      sortSelect.value, 
-      queryInput.value
-    );
-    loadCards();
-  });
-  serviceSelect.addEventListener("change", (event) => {
-    filterCards(
-      orderSelect.value, 
-      serviceSelect.value, 
-      sortSelect.value, 
-      queryInput.value
-    );
-    loadCards();
-  });
-  sortSelect.addEventListener("change", (event) => {
-    filterCards(
-      orderSelect.value, 
-      serviceSelect.value, 
-      sortSelect.value, 
-      queryInput.value
-    );
-    loadCards();
-  });
-  orderSelect.addEventListener("change", (event) => {
-    filterCards(
-      orderSelect.value, 
-      serviceSelect.value, 
-      sortSelect.value, 
-      queryInput.value
-    );
-    loadCards();
-  });
+  queryInput.addEventListener("change", handleSearch(orderSelect, serviceSelect, sortSelect, queryInput, displayStatus, cardContainer, pagination));
+  serviceSelect.addEventListener("change", handleSearch(orderSelect, serviceSelect, sortSelect, queryInput, displayStatus, cardContainer, pagination));
+  sortSelect.addEventListener("change", handleSearch(orderSelect, serviceSelect, sortSelect, queryInput, displayStatus, cardContainer, pagination));
+  orderSelect.addEventListener("change", handleSearch(orderSelect, serviceSelect, sortSelect, queryInput, displayStatus, cardContainer, pagination));
 
   await retrieveArtists(loadingStatus);
+}
+
+/**
+ * @param {HTMLSelectElement} orderSelect 
+ * @param {HTMLSelectElement} serviceSelect 
+ * @param {HTMLSelectElement} sortSelect 
+ * @param {HTMLInputElement} queryInput 
+ * @param {HTMLDivElement} displayStatus
+ * @param {HTMLDivElement} cardContainer
+ * @param {{ top: HTMLElement, bottom: HTMLElement }} pagination
+ * @return {(event: Event) => void}
+ */
+function handleSearch(
+  orderSelect,
+  serviceSelect,
+  sortSelect,
+  queryInput,
+  displayStatus,
+  cardContainer,
+  pagination
+) {
+  return async (event) => {
+    filterCards(
+      orderSelect.value, 
+      serviceSelect.value, 
+      sortSelect.value, 
+      queryInput.value
+    );
+    await loadCards(displayStatus, cardContainer, pagination);
+  }
 }
 
 /**
@@ -214,63 +231,50 @@ function createPaginator() {
   return paginator;
 }
 
-function loadCards() {
-  document.getElementById('display-status').innerHTML = 'Displaying search results';
-  document.getElementById('vertical-views').innerHTML = `
-    <div class="paginator" id="paginator-top">
-      ${createPaginator()}
-    </div>
-    <table class="search-results" width="100%">
-      <thead>
-        <tr>
-          <th width="50px">Icon</th>
-          <th>Name</th>
-          <th>Service</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${filteredCreators.length ? '' : `
-          <tr>
-            <td></td>
-            <td class="subtitle">No artists found for your query.</td>
-            <td></td>
-          </tr>
-        `}
-        ${filteredCreators.slice(skip, skip + 25).map(artist => `
-          <tr class="artist-row">
-            <td>
-              ${ImageLink(
-                null,
-                freesites.kemono.user.profile(artist.service, artist.id),
-                freesites.kemono.user.icon(artist.service, artist.id),
-                "",
-                "",
-                true,
-                true,
-                "user-icon"
-              ).outerHTML}
-            </td>
-            <td>
-              <a href="${ freesites.kemono.user.profile(artist.service, artist.id)}">
-                ${ artist.name }
-              </a>
-            </td>
-            <td>
-              ${ paysites[artist.service].title}
-            </td>
-          </tr>
-        `).join('')}
-      </tbody>
-    </table>
-    <div class="paginator" id="paginator-bottom">
-      ${createPaginator()}
-    </div>
-  `;
+/**
+ * @param {HTMLDivElement} displayStatus 
+ * @param {HTMLDivElement} cardContainer
+ * @param {{ top: HTMLElement, bottom: HTMLElement }} pagination
+ */
+async function loadCards(displayStatus, cardContainer, pagination) {
+  displayStatus.textContent = 'Displaying search results';
+  pagination.top.innerHTML = createPaginator();
+  pagination.bottom.innerHTML = createPaginator();
+  /**
+   * @type {[ HTMLDivElement, HTMLElement ]}
+   */
+  const [header, ...cards] = cardContainer.children;
+  cards.forEach((card) => {
+    card.remove();
+  });
+
+  if (filteredCreators.length === 0) {
+    const paragraph = document.createElement("p");
+
+    paragraph.classList.add("subtitle", "card-list__item--no-results");
+    paragraph.textContent = "No artists found for your query.";
+    cardContainer.appendChild(paragraph);
+    return;
+  } else {
+    const fragment = document.createDocumentFragment();
+    
+    for await (const user of filteredCreators.slice(skip, skip + 25)) {
+      const userCard = UserCard(null, user, true);
+      const isFaved = isLoggedIn && await findFavouriteArtist(user.id, user.service);
+
+      if (isFaved) {
+        userCard.classList.add("user-card--fav");
+      }
+
+      fragment.appendChild(userCard);
+    };
+
+    cardContainer.appendChild(fragment);
+  }
 }
 
 /**
- * @param {HTMLHeadingElement} displayStatus 
- * @param {HTMLDivElement} loadingStatus 
+ * @param {HTMLDivElement} loadingStatus
  */
 async function retrieveArtists(loadingStatus) {
   try {

@@ -64,11 +64,11 @@ async function saveFavouritePosts() {
 /**
  * @param {string} id 
  * @param {string} service
- * @returns {Promise<KemonoAPI.Favorites.Artist> | undefined}
+ * @returns {Promise<KemonoAPI.Favorites.User> | undefined}
  */
 export async function findFavouriteArtist(id, service) {
   /**
-   * @type {KemonoAPI.Favorites.Artist[]}
+   * @type {KemonoAPI.Favorites.User[]}
    */
   let favList;
 

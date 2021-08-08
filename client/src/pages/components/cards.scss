@@ -142,7 +142,57 @@
   }
 }
 
-// .user-card {}
+.user-card {
+  display: grid;
+  grid-template-columns: 3em 7em 7em 15em;
+  justify-items: center;
+  align-items: center;
+  gap: 3em;
+  background-color: var(--colour1-tertiary);
+  border-radius: 10px;
+  border: $size-thin solid transparent;
+  margin: 0 auto;
+  overflow: hidden;
+  transition-duration: var(--duration-global);
+  transition-property: border-color, box-shadow;
+
+  &--fav {
+    border-color: var(--favourite-colour2-primary);
+  }
+
+  &:hover,
+  &:focus-within {
+    box-shadow: 0px 0px 3px 5px var(--positive-colour1-secondary);
+  }
+
+  &--header {
+    font-weight: bold;
+    text-transform: capitalize;
+    justify-items: center;
+    border-radius: 0;
+    padding: $size-small 0;
+
+    &:hover,
+    &:focus-within {
+      // border-color: var(--positive-colour1-secondary);
+      box-shadow: none;
+    }
+
+    & .user-card__icon {
+      border-radius: 0;
+    }
+  }
+
+  &__icon {
+    align-self: stretch;
+    overflow: hidden;
+    border-radius: 10px;
+  }
+
+  &__name {
+    justify-self: flex-start;
+  }
+}
 
 .dm-card {
   position: relative;

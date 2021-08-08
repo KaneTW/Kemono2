@@ -9,6 +9,7 @@ import { importerStatusPage } from "./importer_status";
 import { importerDMSPage } from "./importer_dms";
 import { postsPage } from "./posts";
 import { artistsPage } from "./artists";
+import { updatedPage } from "./updated";
 
 /**
  * The map of page names and their callbacks.
@@ -23,6 +24,7 @@ const pages = new Map([
   ["importer-dms", importerDMSPage],
   ["posts", postsPage],
   ["artists", artistsPage],
+  ["updated", updatedPage],
 ]);
 
 /**

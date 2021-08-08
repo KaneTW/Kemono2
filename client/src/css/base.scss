@@ -80,6 +80,21 @@ h6 {
   margin: 0;
 }
 
+p, 
+li, 
+dd, 
+dt {
+  line-height: 1.5;
+}
+
+p, ul, ol {
+  margin: $size-small 0;
+}
+
+ul, ol {
+  padding-left: $size-normal;
+}
+
 a {
   --local-colour1-primary: var(--anchour-colour1-primary);
   --local-colour1-secondary: var(--anchour-colour1-secondary);

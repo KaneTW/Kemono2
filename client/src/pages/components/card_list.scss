@@ -1,6 +1,15 @@
 @use "../../css/variables" as *;
 
 .card-list {
+  --local-flex-flow: row wrap;
+  --local-justify: center;
+  --local-align: stretch;
+  padding: $size-small 0;
+
+  &--table {
+    --local-flex-flow: column nowrap;
+    --card-size: 100%;
+  }
 
   &--legacy {
     --card-size: 200px;
@@ -24,13 +33,19 @@
 
   &__items {
     display: flex;
-    flex-flow: row wrap;
-    justify-content: center;
-    align-items: stretch;
+    flex-flow: var(--local-flex-flow);
+    justify-content: var(--local-justify);
+    align-items: var(--local-align);
+    gap: 1em;
 
     & > * {
       flex: 0 1 var(--card-size);
-      margin: $size-small;
+    } 
+  }
+
+  &__item {
+    &--no-results {
+      text-align: center;
     }
   }
 }

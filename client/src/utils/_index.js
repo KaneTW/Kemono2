@@ -77,27 +77,68 @@ export function fixImageLinks(imageElements) {
   });
 };
 
+export const paysiteList = [
+  "patreon",
+  "fanbox",
+  "gumroad",
+  "subscribestar",
+  "dlsite",
+  "discord",
+  "fantia"
+]
+
+/**
+ * @type {{[paysite:string]: {title: string, user: { profile: (userID: string) => string }, post: {}}}}
+ */
 export const paysites = {
   patreon: {
-    title: "Patreon"
+    title: "Patreon",
+    user: {
+      profile: (userID) => `https://www.patreon.com/user?u=${userID}`
+    },
+    post: {}
   },
   fanbox: {
-    title: "Pixiv Fanbox"
+    title: "Pixiv Fanbox",
+    user: {
+      profile: (userID) => `https://www.pixiv.net/fanbox/creator/${userID}`
+    },
+    post: {}
   },
   subscribestar: {
-    title: "SubscribeStar"
+    title: "SubscribeStar",
+    user: {
+      profile: (userID) => `https://subscribestar.adult/${userID}`
+    },
+    post: {}
   },
   gumroad: {
-    title: "Gumroad"
+    title: "Gumroad",
+    user: {
+      profile: (userID) => `https://gumroad.com/${userID}`
+    },
+    post: {}
   },
   discord: {
-    title: "Discord"
+    title: "Discord",
+    user: {
+      profile: (userID) => ``
+    },
+    post: {}
   },
   dlsite: {
-    title: "DLsite"
+    title: "DLsite",
+    user: {
+      profile: (userID) => `https://www.dlsite.com/eng/circle/profile/=/maker_id/${userID}`
+    },
+    post: {}
   },
   fantia: {
-    title: "Fantia"
+    title: "Fantia",
+    user: {
+      profile: (userID) => `user_id: f"https://fantia.jp/fanclubs/${userID}`
+    },
+    post: {}
   },
 };
 
@@ -113,11 +154,18 @@ export const freesites = {
       /**
        * @param {string} service 
        * @param {string} artistID 
-       * @returns 
        */
       icon: (service, artistID) => `/icons/${service}/${artistID}`,
     },
-    post: {}
+    post: {
+      /**
+       * @param {string} service 
+       * @param {string} userID 
+       * @param {string} postID 
+       * @returns 
+       */
+      link: (service, userID, postID) => `/${service}/user/${userID}/post/${postID}`
+    }
     
   }
 }

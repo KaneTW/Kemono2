@@ -1,8 +1,7 @@
 {% extends 'components/shell.html' %}
 
-{% from 'components/image_link.html' import image_link %}
-{% from 'components/timestamp.html' import timestamp %}
-{# {% from 'components/links.html' import fancy_link %} #}
+{% from 'components/card_list.html' import card_list %}
+{% from 'components/cards.html' import user_card, user_card_header %}
 
 {% block content %}
   <div class="site-section site-section--updated page" id="page">
@@ -11,52 +10,20 @@
         {% include 'components/paginator.html' %}
       </div>
     {% endif %}
-    <table class="search-results" width="100%">
-      <thead>
-        <tr>
-          <th width="50px"></th>
-          <th>Name</th>
-          <th>Service</th>
-          <th>Updated</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for artist in results %}
-        {% set artist_profile = g.freesites.kemono.user.profile(artist.service, artist.id) %}
-        {% set artist_icon = g.freesites.kemono.user.icon(artist.service, artist.id) %}
-          <tr class="artist-row">
-            <td>
-              {{ image_link(
-                url=artist_profile,
-                src=artist_icon,
-                class_name='user-icon'
-              ) }}
-            </td>
-            <td>
-              <a href="{{ artist_profile }}">{{ artist.name }}</a>
-            </td>
-            <td>
-              {{ g.paysites[artist.service].title }}
-            </td>
-            <td>
-              {{ timestamp(artist.updated) }}
-            </td>
-          </tr>
-        {% else %}
-          <p class="po-posts subtitle">
-            No artists found for your query.
-          </p>
-        {% endfor %}
-      </tbody>
-    </table>
+    {% call card_list('table') %}
+      {{ user_card_header(is_date=true) }}
+      {% for user in results %}
+        {{ user_card(user, is_date=true) }}
+      {% else %}
+        <p class="po-posts subtitle">
+          No artists found for your query.
+        </p>
+      {% endfor %}
+    {% endcall %}
     {% if results|length %}
       <div class="paginator" id="paginator-bottom">
         {% include 'components/paginator.html' %}
       </div>
     {% endif %}
   </div>
-  {% if results|length %}
-    <script src="https://unpkg.com/unfetch@4.1.0/polyfill/index.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js"></script>
-  {% endif %}
 {% endblock %}

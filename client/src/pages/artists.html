@@ -1,9 +1,13 @@
 {% extends 'components/shell.html' %}
 
 {% from 'components/image_link.html' import image_link %}
+{% from 'components/card_list.html' import card_list %}
+{% from 'components/cards.html' import user_card, user_card_header, user_card_skeleton %}
 
 {% block content %}
-  <section class="site-section site-section--artists page" id="page">
+  <section 
+    class="site-section site-section--artists page" id="page"
+  >
     <div class="no-posts" id="loading">
       <span class="subtitle">
         Loading creator index... (please wait before searching)
@@ -30,13 +34,12 @@
         <label for="service">Service</label>
         <select id="service" name="service">
           <option value="">All</option>
-          <option value="patreon">Patreon</option>
-          <option value="fanbox">Pixiv Fanbox</option>
-          <option value="gumroad">Gumroad</option>
-          <option value="subscribestar">SubscribeStar</option>
-          <option value="discord">Discord</option>
-          <option value="dlsite">DLsite</option>
-          <option value="fantia">Fantia</option>
+          {% for paysite in g.paysite_list %}
+            <option value="{{ paysite }}">
+              {{ g.paysites[paysite].title }}
+            </option>
+          {% else %}
+          {% endfor %}
         </select>
       </div>
       <div>
@@ -59,10 +62,30 @@
         </h3>
       </div>
     {% endif %}
-    {% include 'components/artist_list.html' %}
+    {% if results|length %}
+      <div class="paginator" id="paginator-top">
+        {% include 'components/paginator.html' %}
+      </div>
+    {% endif %}
+    {% call card_list('table') %}
+      {{ user_card_header(is_count=true) }}
+      {% for user in results %}
+        {{ user_card(user, is_count=true) }}
+      {% else %}
+        <p class="subtitle">
+          No artists found for your query.
+        </p>
+      {% endfor %}
+    {% endcall %}
+    {% if results|length %}
+      <div class="paginator" id="paginator-bottom">
+        {% include 'components/paginator.html' %}
+      </div>
+    {% endif %}
   <section>
 {% endblock %}
 
 {% block components %}
   {{ image_link("") }}
+  {{ user_card_skeleton() }}
 {% endblock components %}

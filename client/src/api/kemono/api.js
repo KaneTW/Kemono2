@@ -70,7 +70,7 @@ async function creators() {
     }
 
     /**
-     * @type {KemonoAPI.Artist[]}
+     * @type {KemonoAPI.User[]}
      */
     const artists = await response.json();
     

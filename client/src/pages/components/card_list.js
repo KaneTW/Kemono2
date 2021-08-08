@@ -6,15 +6,12 @@ import { createComponent } from "./_index";
  * @param {string} layout 
  */
 export function CardList(element=null, layout="feature") {
-  const {cardList, cardItems} = element
+  const cardList = element
     ? initFromElement(element)
     : initFromScratch();
   let currentLayout = layout;
 
-  return {
-    cardList, 
-    cardItems
-  };
+  return cardList;
 }
 
 /**
@@ -22,12 +19,17 @@ export function CardList(element=null, layout="feature") {
  */
 function initFromElement(element) {
   /**
+   * @type {HTMLDivElement}
+   */
+  const cardContainer = element.querySelector(".card-list__items");
+  /**
    * @type {NodeListOf<HTMLElement>}
    */
   const itemListElements = element.querySelectorAll(".card-list__items > *");
 
   return {
     cardList: element,
+    cardContainer,
     cardItems: Array.from(itemListElements)
   };
 }
@@ -38,12 +40,17 @@ function initFromScratch() {
    */
   const cardList = createComponent("card-list");
   /**
+   * @type {HTMLDivElement}
+   */
+  const cardContainer = cardList.querySelector(".card-list__items");
+  /**
    * @type {HTMLElement[]}
    */
   const cardItems = [];
 
   return {
     cardList,
+    cardContainer,
     cardItems
   };
 }

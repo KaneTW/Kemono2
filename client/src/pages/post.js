@@ -1,6 +1,7 @@
 import { kemonoAPI } from "@wp/api";
 import { addFavouritePost, removeFavouritePost, findFavouritePost } from "@wp/js/favorites";
 import { createComponent, LoadingIcon, registerMessage, showTooltip } from "@wp/components";
+import { isLoggedIn } from "@wp/js/account";
 
 const meta = {
   service: null,
@@ -37,7 +38,7 @@ async function initButtons(buttonPanel) {
    * @type {HTMLButtonElement}
    */
   const favButton = createComponent("post__fav");
-  const isFavorited = await findFavouritePost(meta.service, meta.user, meta.postID);
+  const isFavorited = isLoggedIn && await findFavouritePost(meta.service, meta.user, meta.postID);
 
   if (isFavorited) {
     const [icon, text] = favButton.children;

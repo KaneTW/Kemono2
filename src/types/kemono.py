@@ -45,13 +45,15 @@ class User:
         name: str,
         service: str,
         indexed: datetime,
-        updated: datetime
+        updated: datetime,
+        count: Optional[int]
     ) -> None:
         self.id = id
         self.name = name
         self.service = service
         self.indexed = indexed
         self.updated = updated
+        self.count = count if count else None
     
 # class __Favorite_Post:
 #     id: str

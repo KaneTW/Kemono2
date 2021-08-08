@@ -1,7 +1,7 @@
 {% extends 'components/shell.html' %}
 
 {% from 'components/card_list.html' import card_list %}
-{% from 'components/cards.html' import post_card %}
+{% from 'components/cards.html' import post_card, user_card, user_card_header %}
 
 {% block scripts_extra %}
   <script src="{{ url_for('static', filename='js/favorites.js') }}" defer ></script>
@@ -15,25 +15,25 @@
   </header>
   
   {% if source == 'session' %}
-  <div>
-    <table class="search-results" width="100%">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Service</th>
-        </tr>
-      </thead>
-      <tbody id="favorites-list">
-        <noscript>
+    <div>
+      <table class="search-results" width="100%">
+        <thead>
           <tr>
-            <td class="subtitle">This feature requires Javascript.</td>
-            <td></td>
+            <th>Name</th>
+            <th>Service</th>
           </tr>
-        </noscript>
-      </tbody>
-    </table>
-    <script src="https://unpkg.com/unfetch@4.1.0/polyfill/index.js"></script>
-  </div>
+        </thead>
+        <tbody id="favorites-list">
+          <noscript>
+            <tr>
+              <td class="subtitle">This feature requires Javascript.</td>
+              <td></td>
+            </tr>
+          </noscript>
+        </tbody>
+      </table>
+      <script src="https://unpkg.com/unfetch@4.1.0/polyfill/index.js"></script>
+    </div>
   {% else %}
     <div class="dropdowns">
       <label>Type</label>
@@ -63,7 +63,25 @@
       </select>
     </div>
     {% if props.fave_type == "artist" %}
-      {% include 'components/artist_list.html' %}
+      <div class="paginator" id="paginator-top">
+        {% include 'components/paginator.html' %}
+      </div>
+
+      {% call card_list('table') %}
+        {{ user_card_header(is_date=true) }}
+        {% for user in results %}
+          {{ user_card(user, is_date=true) }}
+        {% else %}
+          <h2 class="subtitle">Nobody here but us chickens!</h2>
+          <p class="subtitle">
+            There are either no more posts beyond this page, or this user hasn't been imported.
+          </p>
+        {% endfor %}
+      {% endcall %}
+      
+      <div class="paginator" id="paginator-bottom">
+        {% include 'components/paginator.html' %}
+      </div>
     {% else %}
       <div class="paginator" id="paginator-top">
         {% include 'components/paginator.html' %}

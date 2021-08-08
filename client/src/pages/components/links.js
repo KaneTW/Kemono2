@@ -45,9 +45,12 @@ function initFromScratch(url, text, isNoop, className) {
    */
   const fancyLink = createComponent("fancy-link");
 
-  fancyLink.classList.add(className);
   fancyLink.href = url;
   fancyLink.textContent = text;
+
+  if (className) {
+    fancyLink.classList.add(className);
+  }
 
   if (isNoop) {
     fancyLink.target = "_blank";

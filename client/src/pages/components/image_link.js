@@ -1,6 +1,7 @@
 import { createComponent } from "./_index";
 
 /**
+ * TODO: Restructure arguments.
  * @param {HTMLAnchorElement} element 
  * @param {string} url 
  * @param {string} src 
@@ -55,9 +56,9 @@ function initFromScratch(url, src, alt, srcset, isLazy, isNoop, className) {
   const image = imageLink.querySelector(".fancy-image__image");
 
   imageLink.href = url;
-  imageLink.alt = alt;
   image.src = src;
-  image.srcset = srcset; 
+  image.srcset = srcset;
+  image.alt = alt;
 
   if (isNoop) {
     imageLink.target = "_blank";

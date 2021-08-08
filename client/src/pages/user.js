@@ -49,7 +49,7 @@ async function initCardList(cardListElement) {
 
   cardItems.forEach(async (card) => {
     const { postID, userID, service } = PostCard(card);
-    const favPost = await findFavouritePost(service, userID, postID);
+    const favPost = isLoggedIn && await findFavouritePost(service, userID, postID);
 
     if (favPost) {
       card.classList.add("post-card--fav");

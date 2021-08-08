@@ -22,7 +22,7 @@ namespace KemonoAPI {
     shared_file: boolean
   }
 
-  interface Artist {
+  interface User {
     id: string
     name: string
     service: string
@@ -40,7 +40,7 @@ namespace KemonoAPI {
   }
 
   namespace Favorites {
-    interface Artist extends KemonoAPI.Artist {
+    interface User extends KemonoAPI.User {
       faved_seq: number
     }
 
@@ -56,7 +56,7 @@ namespace KemonoAPI {
   interface API {
     bans: () => Promise<API.BanItem[]>
     bannedArtist: (id:string, service:string) => Promise<API.BannedArtist>
-    creators: () => Promise<Artist[]>
+    creators: () => Promise<User[]>
     logs: (importID: string) => Promise<API.LogItem[]>
   }
 
@@ -70,8 +70,6 @@ namespace KemonoAPI {
       name: string
     }
 
-    interface LogItem {
-      
-    }
+    interface LogItem {}
   }
 }
