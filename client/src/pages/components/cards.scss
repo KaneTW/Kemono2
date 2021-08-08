@@ -144,7 +144,8 @@
 
 .user-card {
   display: grid;
-  grid-template-columns: 3em 7em 7em 15em;
+  grid-template-columns: 3em 10em 7em 15em;
+  grid-template-rows: 3em;
   justify-items: center;
   align-items: center;
   gap: 3em;
