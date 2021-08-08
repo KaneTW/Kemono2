@@ -171,7 +171,6 @@
     text-transform: capitalize;
     justify-items: center;
     border-radius: 0;
-    padding: $size-small 0;
 
     &:hover,
     &:focus-within {
@@ -180,6 +179,7 @@
     }
 
     & .user-card__icon {
+      align-self: center;
       border-radius: 0;
     }
   }
