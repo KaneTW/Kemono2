@@ -21,9 +21,38 @@ export async function postPage(section) {
   meta.service = document.head.querySelector("[name='service']").content;
   meta.user = document.head.querySelector("[name='user']").content;
   meta.postID = document.head.querySelector("[name='id']").content;
+  const content = section.querySelector(".post__body");
+
   section.addEventListener('click', Expander);
 
+  cleanupBody(content);
   await initButtons(buttonPanel);
+}
+
+/**
+ * @param {HTMLElement} contentElement 
+ */
+function cleanupBody(contentElement) {
+  [...document.links].forEach((link) => {
+
+    if (link.href.startsWith("https://downloads.fanbox.cc")) {
+      link.remove();
+    }
+
+  });
+
+  /**
+   * @type {NodeListOf<HTMLParagraphElement}
+   */
+  const paragraphs = contentElement.querySelectorAll("p:empty");
+  [...paragraphs].forEach((paragraph) => {
+    if (paragraph.nextElementSibling && paragraph.nextElementSibling.tagName === "BR") {
+      paragraph.nextElementSibling.remove();
+      paragraph.remove();
+    } else {
+      paragraph.remove();
+    }
+  });
 }
 
 /**

@@ -83,7 +83,7 @@ export async function artistsPage(section) {
         sortSelect.value, 
         queryInput.value
       );
-      await loadCards();
+      await loadCards(displayStatus, cardContainer, pagination);
     }
   });
 
