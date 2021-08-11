@@ -1,3 +1,6 @@
+# Kitsune module
+archiver/
+
 # Webpack dev server temp files
 client/dev
 
