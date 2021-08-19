@@ -145,10 +145,11 @@
 .user-card {
   display: grid;
   grid-template-columns: 3em 10em 7em 15em;
-  grid-template-rows: 3em;
+  grid-template-rows: minmax(3em, 1fr);
   justify-items: center;
   align-items: center;
-  gap: 3em;
+  gap: 2em;
+  line-height: 1.5;
   background-color: var(--colour1-tertiary);
   border-radius: 10px;
   border: $size-thin solid transparent;
@@ -185,7 +186,8 @@
   }
 
   &__icon {
-    align-self: stretch;
+    align-self: center;
+    height: 3em;
     overflow: hidden;
     border-radius: 10px;
   }
