@@ -36,7 +36,7 @@ const loadMessages = async (channelId, skip = 0) => {
       embeds += `
         <a href="${embed.url}" target="_blank">
           <div class="embed-view" style="max-width:300px">
-            <p>${embed.description}</p>
+            <p>${embed.description.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;')}</p>
           </div>
         </a>
       `;
@@ -51,10 +51,10 @@ const loadMessages = async (channelId, skip = 0) => {
         <div class="avatar" style="background-image:url('${avatarurl}')"></div>
         <div style="display:inline-block">
           <div class="message-header">
-            <b><p>${msg.author.username}</p></b>
+            <b><p>${msg.author.username.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;')}</p></b>
             <p style="color:#757575">${msg.published}</p>
           </div>
-          <p>${msg.content}</p>
+          <p>${msg.content.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;')}</p>
           ${dls}
           ${embeds}
         </div>
