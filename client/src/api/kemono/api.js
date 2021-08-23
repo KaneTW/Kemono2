@@ -12,8 +12,8 @@ async function bans() {
   try {
     const response = await kemonoFetch('/api/bans', { method: "GET" });
 
-    if (!response.ok) {
-      
+    if (!response || !response.ok) {
+
       alert(new KemonoError(6));
       return null;
     }
@@ -22,7 +22,7 @@ async function bans() {
      * @type {KemonoAPI.API.BanItem[]}
      */
     const banItems = await response.json();
-    
+
     return banItems;
 
   } catch (error) {
@@ -31,8 +31,8 @@ async function bans() {
 }
 
 /**
- * @param {string} id 
- * @param {string} service 
+ * @param {string} id
+ * @param {string} service
  */
 async function bannedArtist(id, service) {
   const params = new URLSearchParams([
@@ -42,7 +42,7 @@ async function bannedArtist(id, service) {
   try {
     const response = await kemonoFetch(`/api/lookup/cache/${id}?${params}`);
 
-    if (!response.ok) {
+    if (!response || !response.ok) {
       alert(new KemonoError(7));
       return null;
     }
@@ -63,8 +63,8 @@ async function creators() {
   try {
     const response = await kemonoFetch('/api/creators', { method: "GET" });
 
-    if (!response.ok) {
-      
+    if (!response || !response.ok) {
+
       alert(new KemonoError(8));
       return null;
     }
@@ -73,7 +73,7 @@ async function creators() {
      * @type {KemonoAPI.User[]}
      */
     const artists = await response.json();
-    
+
     return artists;
 
   } catch (error) {
@@ -85,7 +85,7 @@ async function logs(importID) {
   try {
     const response = await kemonoFetch(`/api/logs/${importID}`, { method: "GET" });
 
-    if (!response.ok) {
+    if (!response || !response.ok) {
       alert(`Error 009 - ${errorList.get("009")}`);
       return null;
     }
@@ -94,7 +94,7 @@ async function logs(importID) {
      * @type {KemonoAPI.API.LogItem[]}
      */
     const logs = await response.json();
-    
+
     return logs;
 
   } catch (error) {
