@@ -21,7 +21,7 @@ async function retrieveFavoriteArtists() {
   try {
     const response = await kemonoFetch(`/api/favorites?${params}`);
 
-    if (!response.ok) {
+    if (!response || !response.ok) {
       throw new Error(`Error ${response.status}: ${response.statusText}`);
     }
     /**
@@ -47,7 +47,7 @@ async function favoriteArtist(service, userID) {
       { method: "POST" }
     );
 
-    if (!response.ok) {
+    if (!response || !response.ok) {
       alert(new KemonoError(3));
       return false;
     }
@@ -70,7 +70,7 @@ async function unfavoriteArtist(service, userID) {
       { method: "DELETE" }
     );
 
-    if (!response.ok) {
+    if (!response || !response.ok) {
       alert(new KemonoError(4));
       return false;
     }
@@ -90,7 +90,7 @@ async function retrieveFavoritePosts() {
   try {
     const response = await kemonoFetch(`/api/favorites?${params}`);
 
-    if (!response.ok) {
+    if (!response || !response.ok) {
       throw new Error(`Error ${response.status}: ${response.statusText}`);
     }
 
@@ -117,7 +117,7 @@ async function favoritePost(service, user, post_id) {
       { method: 'POST' }
     );
 
-    if (!response.ok) {
+    if (!response || !response.ok) {
       alert(new KemonoError(1));
       return false;
     }
@@ -141,7 +141,7 @@ async function unfavoritePost(service, user, post_id) {
       { method: "DELETE" }
     );
 
-    if (!response.ok) {
+    if (!response || !response.ok) {
       alert(new KemonoError(2));
       return false;
     }
