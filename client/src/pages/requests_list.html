@@ -118,7 +118,7 @@
                   }.get(ticket.get('service')) }}</span>
                   <br>
                   {% if ticket.get('description') %}
-                    <small>{{ ticket.get('description')|safe }}</small><br>
+                    <small>{{ ticket.get('description') }}</small><br>
                   {% endif %}
                   <small class="subtitle">{{ ticket.get('created') }}</small>
                 </a>
