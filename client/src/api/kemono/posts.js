@@ -15,7 +15,7 @@ async function attemptFlag(service, user, post_id) {
   try {
     const response = await kemonoFetch(`/api/${service}/user/${user}/post/${post_id}/flag`, { method: "POST" });
 
-    if (!response || !response.ok) {
+    if (!response.ok) {
       
       alert(new KemonoError(5));
       return false;
