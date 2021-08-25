@@ -21,7 +21,7 @@ async function retrieveFavoriteArtists() {
   try {
     const response = await kemonoFetch(`/api/favorites?${params}`);
 
-    if (!response.ok) {
+    if (!response || !response.ok) {
       throw new Error(`Error ${response.status}: ${response.statusText}`);
     }
     /**
@@ -29,56 +29,56 @@ async function retrieveFavoriteArtists() {
      */
     const favs = await response.text();
     return favs;
-    
+
   } catch (error) {
-    alert(error);
+    console.error(error);
   }
 
 }
 
 /**
- * @param {string} service 
- * @param {string} userID 
+ * @param {string} service
+ * @param {string} userID
  */
 async function favoriteArtist(service, userID) {
   try {
     const response = await kemonoFetch(
-      `/favorites/artist/${service}/${userID}`, 
+      `/favorites/artist/${service}/${userID}`,
       { method: "POST" }
     );
 
-    if (!response.ok) {
+    if (!response || !response.ok) {
       alert(new KemonoError(3));
       return false;
     }
-    
+
     return true;
 
   } catch (error) {
-    alert(error);
+    console.error(error);
   }
 }
 
 /**
- * @param {string} service 
- * @param {string} userID 
+ * @param {string} service
+ * @param {string} userID
  */
 async function unfavoriteArtist(service, userID) {
   try {
     const response = await kemonoFetch(
-      `/favorites/artist/${service}/${userID}`, 
+      `/favorites/artist/${service}/${userID}`,
       { method: "DELETE" }
     );
 
-    if (!response.ok) {
+    if (!response || !response.ok) {
       alert(new KemonoError(4));
       return false;
     }
-    
+
     return true;
 
   } catch (error) {
-    alert(error);
+    console.error(error);
   }
 }
 
@@ -90,7 +90,7 @@ async function retrieveFavoritePosts() {
   try {
     const response = await kemonoFetch(`/api/favorites?${params}`);
 
-    if (!response.ok) {
+    if (!response || !response.ok) {
       throw new Error(`Error ${response.status}: ${response.statusText}`);
     }
 
@@ -99,16 +99,16 @@ async function retrieveFavoritePosts() {
      */
     const favs = await response.text();
     return favs;
-    
+
   } catch (error) {
-    alert(error);
+    console.error(error);
   }
 }
 
 /**
- * @param {string} service 
- * @param {string} user 
- * @param {string} post_id 
+ * @param {string} service
+ * @param {string} user
+ * @param {string} post_id
  */
 async function favoritePost(service, user, post_id) {
   try {
@@ -117,7 +117,7 @@ async function favoritePost(service, user, post_id) {
       { method: 'POST' }
     );
 
-    if (!response.ok) {
+    if (!response || !response.ok) {
       alert(new KemonoError(1));
       return false;
     }
@@ -125,23 +125,23 @@ async function favoritePost(service, user, post_id) {
     return true;
 
   } catch (error) {
-    alert(error);
+    console.error(error);
   }
 }
 
 /**
- * @param {string} service 
- * @param {string} user 
- * @param {string} post_id 
+ * @param {string} service
+ * @param {string} user
+ * @param {string} post_id
  */
 async function unfavoritePost(service, user, post_id) {
   try {
     const response = await kemonoFetch(
-      `/favorites/post/${service}/${user}/${post_id}`, 
+      `/favorites/post/${service}/${user}/${post_id}`,
       { method: "DELETE" }
     );
 
-    if (!response.ok) {
+    if (!response || !response.ok) {
       alert(new KemonoError(2));
       return false;
     }
@@ -149,6 +149,6 @@ async function unfavoritePost(service, user, post_id) {
     return true;
 
   } catch (error) {
-    alert(error);
+    console.error(error);
   }
 }

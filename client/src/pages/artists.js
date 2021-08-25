@@ -16,7 +16,7 @@ let skip = 0;
 let limit = 25;
 
 /**
- * @param {HTMLElement} section 
+ * @param {HTMLElement} section
  */
 export async function artistsPage(section) {
   /**
@@ -60,7 +60,7 @@ export async function artistsPage(section) {
   Array.from(cardContainer.children).forEach(async (userCard) => {
     const { id, service } = userCard.dataset;
     const isFav = isLoggedIn && await findFavouriteArtist(id, service);
-    
+
     if (isFav) {
       userCard.classList.add("user-card--fav");
     }
@@ -78,9 +78,9 @@ export async function artistsPage(section) {
     ) {
       skip = Number(button.dataset.value);
       filterCards(
-        orderSelect.value, 
-        serviceSelect.value, 
-        sortSelect.value, 
+        orderSelect.value,
+        serviceSelect.value,
+        sortSelect.value,
         queryInput.value
       );
       await loadCards(displayStatus, cardContainer, pagination);
@@ -97,10 +97,10 @@ export async function artistsPage(section) {
 }
 
 /**
- * @param {HTMLSelectElement} orderSelect 
- * @param {HTMLSelectElement} serviceSelect 
- * @param {HTMLSelectElement} sortSelect 
- * @param {HTMLInputElement} queryInput 
+ * @param {HTMLSelectElement} orderSelect
+ * @param {HTMLSelectElement} serviceSelect
+ * @param {HTMLSelectElement} sortSelect
+ * @param {HTMLInputElement} queryInput
  * @param {HTMLDivElement} displayStatus
  * @param {HTMLDivElement} cardContainer
  * @param {{ top: HTMLElement, bottom: HTMLElement }} pagination
@@ -117,9 +117,9 @@ function handleSearch(
 ) {
   return async (event) => {
     filterCards(
-      orderSelect.value, 
-      serviceSelect.value, 
-      sortSelect.value, 
+      orderSelect.value,
+      serviceSelect.value,
+      sortSelect.value,
       queryInput.value
     );
     await loadCards(displayStatus, cardContainer, pagination);
@@ -127,7 +127,7 @@ function handleSearch(
 }
 
 /**
- * @param {string} order 
+ * @param {string} order
  * @param {string} service
  * @param {string} sortBy
  * @param {string} query
@@ -144,22 +144,22 @@ function filterCards(order, service, sortBy, query) {
   ).sort((a, b) => {
 
     if (order === 'desc') {
-      return sortBy === 'indexed' 
-        ? Date.parse(a.indexed) - Date.parse(b.indexed) 
+      return sortBy === 'indexed'
+        ? Date.parse(a.indexed) - Date.parse(b.indexed)
         : a[sortBy].localeCompare(b[sortBy]);
 
     } else {
-      return sortBy === 'indexed' 
-        ? Date.parse(b.indexed) - Date.parse(a.indexed) 
+      return sortBy === 'indexed'
+        ? Date.parse(b.indexed) - Date.parse(a.indexed)
         : b[sortBy].localeCompare(a[sortBy]);
     }
   }).filter(creator => {
     return creator.name.match(
       new RegExp(
         query.replace(
-          /[-\/\\^$*+?.()|[\]{}]/g, 
+          /[-\/\\^$*+?.()|[\]{}]/g,
           '\\$&'
-        ), 
+        ),
         'i'
       )
     )
@@ -176,15 +176,15 @@ function createPaginator() {
   const paginator = `
     <small>Showing ${ skip + 1 } - ${ skip + limit } of ${ filteredCreators.length }</small>
     <menu>
-      ${skip >= limit 
+      ${skip >= limit
         ? `<li>
             <a href="#" class="paginator-button" data-value="${skip - limit}" title="Previous page">
               &lt;
             </a>
-          </li>` 
+          </li>`
         : '<li class="subtitle">&lt;</li>'
       }
-      ${skip >= 100 
+      ${skip >= 100
         ? `
         <li>
           <a href="#" class="paginator-button" data-value="0">
@@ -232,7 +232,7 @@ function createPaginator() {
 }
 
 /**
- * @param {HTMLDivElement} displayStatus 
+ * @param {HTMLDivElement} displayStatus
  * @param {HTMLDivElement} cardContainer
  * @param {{ top: HTMLElement, bottom: HTMLElement }} pagination
  */
@@ -257,7 +257,7 @@ async function loadCards(displayStatus, cardContainer, pagination) {
     return;
   } else {
     const fragment = document.createDocumentFragment();
-    
+
     for await (const user of filteredCreators.slice(skip, skip + 25)) {
       const userCard = UserCard(null, user, true);
       const isFaved = isLoggedIn && await findFavouriteArtist(user.id, user.service);
@@ -281,7 +281,6 @@ async function retrieveArtists(loadingStatus) {
     const artists = await kemonoAPI.api.creators();
 
     if (!artists) {
-      alert(error);
       return null;
     }
 
@@ -290,13 +289,13 @@ async function retrieveArtists(loadingStatus) {
     filteredCreators = artists;
 
   } catch (error) {
-    alert(error);
+    console.error(error);
   }
 }
 
 /**
- * @param {number} start 
- * @param {number} end 
+ * @param {number} start
+ * @param {number} end
  */
 function createRange(start, end) {
   const length = end - start;

@@ -26,7 +26,7 @@ async function bans() {
     return banItems;
 
   } catch (error) {
-    alert(error);
+    console.error(error);
   }
 }
 
@@ -55,7 +55,7 @@ async function bannedArtist(id, service) {
     return artist;
 
   } catch (error) {
-    alert(error);
+    console.error(error);
   }
 }
 
@@ -77,7 +77,7 @@ async function creators() {
     return artists;
 
   } catch (error) {
-    alert(error);
+    console.error(error);
   }
 }
 
@@ -98,6 +98,6 @@ async function logs(importID) {
     return logs;
 
   } catch (error) {
-    alert(error);
+    console.error(error);
   }
 }

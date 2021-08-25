@@ -7,16 +7,16 @@ export const posts = {
 };
 
 /**
- * @param {string} service 
- * @param {string} user 
- * @param {string} post_id 
+ * @param {string} service
+ * @param {string} user
+ * @param {string} post_id
  */
 async function attemptFlag(service, user, post_id) {
   try {
     const response = await kemonoFetch(`/api/${service}/user/${user}/post/${post_id}/flag`, { method: "POST" });
 
-    if (!response.ok) {
-      
+    if (!response || !response.ok) {
+
       alert(new KemonoError(5));
       return false;
     }
@@ -24,6 +24,6 @@ async function attemptFlag(service, user, post_id) {
     return true;
 
   } catch (error) {
-    alert(error);
+    console.error(error);
   }
 }
