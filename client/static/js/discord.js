@@ -1,6 +1,6 @@
 let currentChannel;
 //image file formats which can be rendered in browser
-let imageFormats = ['bmp','gif','ico','jpeg','jpe','jpg','jfif','apng','png','tga','tiff','tif','svg','webp']
+let imageFormats = ['bmp', 'gif', 'ico', 'jpeg', 'jpe', 'jpg', 'jfif', 'apng', 'png', 'tga', 'tiff', 'tif', 'svg', 'webp']
 /* eslint-disable no-unused-vars */
 const loadMessages = async (channelId, skip = 0) => {
   const messages = document.getElementById('messages');
@@ -37,7 +37,7 @@ const loadMessages = async (channelId, skip = 0) => {
       embeds += `
         <a href="${embed.url}" target="_blank">
           <div class="embed-view" style="max-width:300px">
-            <p>${embed.description.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;')}</p>
+            <p>${(embed.description || embed.title || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;')}</p>
           </div>
         </a>
       `;
