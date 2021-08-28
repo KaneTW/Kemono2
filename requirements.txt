@@ -11,15 +11,15 @@ click==7.1.2
 cloudscraper==1.2.48
 colorama==0.4.4
 feedgen==0.9.0
-Flask==1.1.2
+Flask==2.0.0
 Flask-Caching==1.9.0
 idna==2.10
 isort==5.6.4
-itsdangerous==1.1.0
-Jinja2==2.11.2
+itsdangerous==2.0.0
+Jinja2==3.0.0
 lazy-object-proxy==1.4.3
 lxml==4.6.2
-MarkupSafe==1.1.1
+MarkupSafe==2.0.0rc2
 mccabe==0.6.1
 natsort==7.1.1
 packaging==20.7
@@ -48,5 +48,5 @@ ujson==4.0.2
 Unidecode==0.4.21
 urllib3==1.26.2
 webencodings==0.5.1
-Werkzeug==1.0.1
+Werkzeug==2.0.0
 wrapt==1.12.1
