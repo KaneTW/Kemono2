@@ -35,6 +35,8 @@ services:
     env_file:
       - .env
     environment:
+      - FLASK_ENV=production
+      - KEMONO_SITE=http://localhost:8000
       - PGUSER=nano
       - PGPASSWORD=shinonome
       - PGDATABASE=kemonodb

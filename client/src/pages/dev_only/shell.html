@@ -1,0 +1,18 @@
+{% extends 'components/shell.html' %}
+
+  {% block bundler_output %}
+    {# quick hack until writing proper loader #}
+      <% for (const css in htmlWebpackPlugin.files.css) { %>
+      <% if (htmlWebpackPlugin.files.css[css].startsWith("/static/bundle/css/dev-only")) { %>
+        <link rel="stylesheet" href="<%= htmlWebpackPlugin.files.css[css] %>">
+      <% } %>
+    <% } %>
+    <% for (const chunk in htmlWebpackPlugin.files.chunks) { %>
+      <script src="<%= htmlWebpackPlugin.files.chunks[chunk] %>"></script>
+    <% } %>
+    <% for (const scriptPath in htmlWebpackPlugin.files.js) { %>
+      <% if (htmlWebpackPlugin.files.js[scriptPath].startsWith("/static/bundle/js/dev-only") | htmlWebpackPlugin.files.js[scriptPath].startsWith("/static/bundle/js/runtime")) { %>
+        <script src="<%= htmlWebpackPlugin.files.js[scriptPath] %>" defer></script>
+      <% } %>
+    <% } %>
+  {% endblock bundler_output %}

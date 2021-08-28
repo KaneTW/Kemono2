@@ -12,6 +12,7 @@ from flask import Flask, render_template, request, redirect, g, abort, session
 
 import src.internals.database.database as database
 import src.internals.cache.redis as redis
+from configs.derived_vars import is_development
 from src.internals.cache.flask_cache import cache
 from src.lib.ab_test import get_all_variants
 from src.lib.account import is_logged_in
@@ -46,6 +47,9 @@ app.register_blueprint(favorites)
 app.register_blueprint(dms)
 app.register_blueprint(help_app, url_prefix='/help')
 app.register_blueprint(importer_page)
+if (is_development):
+    from src.dev_only import dev_only
+    app.register_blueprint(dev_only)
 
 app.config.from_pyfile('flask.cfg')
 app.jinja_env.globals.update(is_logged_in=is_logged_in)

@@ -1,3 +1,6 @@
+# Dev only files
+test/
+
 # Kitsune module
 archiver/
 
