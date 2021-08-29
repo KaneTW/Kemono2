@@ -15,6 +15,15 @@ let filteredCreators;
 let skip = 0;
 let limit = 25;
 
+// generic debounce function, idk jsdoc, figure it out :)
+function debounce(func, timeout = 300){
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => { func.apply(this, args); }, timeout);
+  };
+}
+
 /**
  * @param {HTMLElement} section
  */
@@ -89,6 +98,9 @@ export async function artistsPage(section) {
 
   searchForm.addEventListener("submit", (event) => event.preventDefault());
   queryInput.addEventListener("change", handleSearch(orderSelect, serviceSelect, sortSelect, queryInput, displayStatus, cardContainer, pagination));
+  // 300 ms delay between each keystroke, trigger a new search on each new letter added or removed
+  // debounce lets you do this by waiting for the user to stop typing first
+  queryInput.addEventListener("keydown", debounce(handleSearch(orderSelect, serviceSelect, sortSelect, queryInput, displayStatus, cardContainer, pagination), 300));
   serviceSelect.addEventListener("change", handleSearch(orderSelect, serviceSelect, sortSelect, queryInput, displayStatus, cardContainer, pagination));
   sortSelect.addEventListener("change", handleSearch(orderSelect, serviceSelect, sortSelect, queryInput, displayStatus, cardContainer, pagination));
   orderSelect.addEventListener("change", handleSearch(orderSelect, serviceSelect, sortSelect, queryInput, displayStatus, cardContainer, pagination));
@@ -126,6 +138,12 @@ function handleSearch(
   }
 }
 
+// localeCompare isn't slow itself, but this is still faster and we're processing a LOT of data here!
+// better get any speed gains we can
+function fastCompare(a, b) {
+  return a < b ? -1 : (a > b ? 1 : 0);
+}
+
 /**
  * @param {string} order
  * @param {string} service
@@ -133,7 +151,7 @@ function handleSearch(
  * @param {string} query
  */
 function filterCards(order, service, sortBy, query) {
-  filteredCreators = creators;
+  filteredCreators = creators.slice(0);
 
   if (order === 'desc') {
     filteredCreators.reverse()
@@ -145,13 +163,13 @@ function filterCards(order, service, sortBy, query) {
 
     if (order === 'desc') {
       return sortBy === 'indexed'
-        ? Date.parse(a.indexed) - Date.parse(b.indexed)
-        : a[sortBy].localeCompare(b[sortBy]);
+        ? a.parsedIndexed - b.parsedIndexed
+        : fastCompare(a[sortBy], b[sortBy]);
 
     } else {
       return sortBy === 'indexed'
-        ? Date.parse(b.indexed) - Date.parse(a.indexed)
-        : b[sortBy].localeCompare(a[sortBy]);
+        ? b.parsedIndexed - a.parsedIndexed
+        : fastCompare(b[sortBy], a[sortBy]);
     }
   }).filter(creator => {
     return creator.name.match(
@@ -282,6 +300,12 @@ async function retrieveArtists(loadingStatus) {
 
     if (!artists) {
       return null;
+    }
+
+    for (const artist of artists) {
+      // preemptively do it here, it's taxing to parse a date string then convert it to a unix timestamp in milliseconds
+      // this way we only have to do it once after fetching and none for sorting
+      artist.parsedIndexed = Date.parse(artist.indexed);
     }
 
     loadingStatus.innerHTML = '';
