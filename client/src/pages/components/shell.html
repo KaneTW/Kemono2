@@ -65,16 +65,16 @@
 
     {% block bundler_output %}
       {# quick hack until writing proper loader #}
-       <% for (const css in htmlWebpackPlugin.files.css) { %>
+      <% for (const css in htmlWebpackPlugin.files.css) { %>
         <% if (htmlWebpackPlugin.files.css[css].startsWith("/static/bundle/css/global")) { %>
           <link rel="stylesheet" href="<%= htmlWebpackPlugin.files.css[css] %>">
         <% } %>
       <% } %>
       <% for (const chunk in htmlWebpackPlugin.files.chunks) { %>
-        <script src="<%= htmlWebpackPlugin.files.chunks[chunk] %>"></script>
+        <script src="<%= htmlWebpackPlugin.files.chunks[chunk].entry %>" defer></script>
       <% } %>
       <% for (const scriptPath in htmlWebpackPlugin.files.js) { %>
-        <% if (htmlWebpackPlugin.files.js[scriptPath].startsWith("/static/bundle/js/global") | htmlWebpackPlugin.files.js[scriptPath].startsWith("/static/bundle/js/runtime")) { %>
+        <% if (htmlWebpackPlugin.files.js[scriptPath].startsWith("/static/bundle/js/global") || htmlWebpackPlugin.files.js[scriptPath].startsWith("/static/bundle/js/runtime") || htmlWebpackPlugin.files.js[scriptPath].startsWith("/static/bundle/js/vendors")) { %>
           <script src="<%= htmlWebpackPlugin.files.js[scriptPath] %>" defer></script>
         <% } %>
       <% } %>
