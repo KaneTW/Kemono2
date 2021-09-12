@@ -1,0 +1,3 @@
+[submodule "Kitsune"]
+	path = archiver
+	url = https://github.com/OpenYiff/Kitsune

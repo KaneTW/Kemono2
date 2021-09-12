@@ -64,7 +64,9 @@ services:
     volumes:
       - frontend-assets:/app/dist
   kemono-archiver:
-    image: openyiff/kitsune
+    build: 
+      context: ./archiver
+      dockerfile: Dockerfile
     container_name: kemono-archiver
     restart: unless-stopped
     depends_on:

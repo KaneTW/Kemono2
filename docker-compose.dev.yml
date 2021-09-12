@@ -78,13 +78,16 @@ services:
     # ports:
     #  - 5432:5432
   kemono-archiver:
-    image: ghcr.io/openyiff/kitsune:dev
+    build: 
+      context: ./archiver
+      dockerfile: Dockerfile.dev
     container_name: kemono-archiver
     restart: unless-stopped
     depends_on:
       kemono-db:
         condition: service_healthy
     volumes:
+      - ./archiver:/app
       - ./kitsune.py:/app/config.py
       - data-dev:/storage
     sysctls:
