@@ -136,7 +136,7 @@ def post_register():
         if redir is not None:
             return redirect(redir)
 
-        return redirect(url_for('artists.list'))
+        return redirect(url_for('artists.list', logged_in='yes')))
 
     return make_response(render_template(
         'register.html',
