@@ -2,7 +2,7 @@ from flask import session, current_app, flash
 
 from ..internals.database.database import get_cursor
 from ..utils.utils import get_value
-from ..internals.cache.redis import get_conn
+from ..internals.cache.redis import get_conn, serialize_dict_list, deserialize_dict_list
 from ..lib.favorites import add_favorite_artist
 from ..lib.artist import get_artist
 from ..lib.security import is_login_rate_limited
@@ -39,6 +39,27 @@ def load_account(account_id = None, reload = False):
         account = deserialize_account(account)
 
     return account
+
+def get_saved_keys(account_id, reload = False):
+    redis = get_conn()
+    key = 'saved_keys:' + str(account_id)
+    saved_keys = redis.get(key)
+    if saved_keys is None or reload:
+        cursor = get_cursor()
+        query = "select * from saved_session_keys where contributor_id = %s"
+        cursor.execute(query, (int(account_id),))
+        saved_keys = cursor.fetchall()
+        redis.set(key, serialize_dict_list(saved_keys))
+    else:
+        saved_keys = deserialize_dict_list(saved_keys)
+
+    return saved_keys
+
+def revoke_saved_key(key_id):
+    cursor = get_cursor()
+    query = 'delete from saved_session_keys where id = %s'
+    cursor.execute(query, (int(key_id),))
+    return
 
 def get_login_info_for_username(username):
     cursor = get_cursor()

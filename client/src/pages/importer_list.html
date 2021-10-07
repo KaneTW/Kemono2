@@ -85,7 +85,25 @@
         Allow administrator to use my session for debugging
         <br>
         <small class="form__subtitle">
-          Contributed debugging keys are encrypted using a strong RSA key that only the administrator can decipher.
+          Contributed debugging keys are encrypted using a strong RSA 4096 key that only the administrator can decipher.
+        </small>
+      </label>
+    </div>
+
+    <div id="auto-import-consent" class="form__section form__section--checkbox">
+      <input 
+        class="form__input"
+        type="checkbox"
+        checked="checked" 
+        id="auto_import" 
+        name="auto_import" 
+        value="1"
+      >
+      <label class="form__label" for="save-dms">
+        Allow the importer to save my session key for auto-import
+        <br>
+        <small class="form__subtitle">
+          If enabled, new posts will automatically be imported every 24 hours without manual intervention. Direct message importing still requires manual import. See notes below for security information.
         </small>
       </label>
     </div>
@@ -106,7 +124,7 @@
         </small>
       </label>
     </div>
-
+    
     <div class="form__section">
       <button 
         class="form__button form__button--submit" 
@@ -119,15 +137,17 @@
   </form>
   <h2 class="site-section__subheading">Important information</h2>
   <p>
-    Your session key is used to scrape paid posts from your feed. After downloading missing posts, the key is immediately discarded and never stored.
+    Your session key is used to scrape paid posts from your feed. After downloading missing posts, the key is immediately discarded and never stored without permission.
   </p>
   <h3>Fantia</h3>
   <ul>
     <li>At least one paid content must be unlocked for the post to be imported. <i>Free posts cannot be archived at this time.</i></li>
     <li>In order to download post contents accurately, the importer will automatically enable adult-viewing mode for duration of the import if you have it turned off. <b>Do not change back to general-viewing during imports.</b></li>
   </ul>
+  <h3>Auto-import</h3>
   <p>
-    If you're having trouble with the importer, {{ email_link('kemonoparty@protonmail.com', 'contact admin') }}. 
+    The auto-import feature allows users to allow Kemono  store session keys long-term to automatically detect and retrieve new posts and creators without need for manual key submission. All keys are encrypted using a strong RSA 4096 key. Every 24 hours, a computer outside of Kemono's infrastucture sends the private key to the backend, allowing it to decrypt all working keys and start import tasks. Even if Kemono's private database were to somehow be compromised, your tokens would remain anonymous and secure.<br>
+    If you are logged into Kemono, in the future, any key you submit with autoimport enabled can be managed under the <b>[My Keys]</b> tab in the header. There, you will be able to view import logs or revoke access. <i>Please note that anonymously-submitted keys will not be able to be managed.</i>
   </p>
 </section>
 {% endblock content %}

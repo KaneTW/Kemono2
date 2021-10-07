@@ -4,7 +4,7 @@ import urllib
 import json
 
 from ..utils.utils import make_cache_key, get_value, set_query_parameter
-from ..lib.account import load_account, is_username_taken, attempt_login, create_account
+from ..lib.account import load_account, is_username_taken, attempt_login, create_account, get_saved_keys, revoke_saved_key
 from ..lib.security import is_password_compromised
 from ..internals.cache.flask_cache import cache
 
@@ -28,6 +28,26 @@ def get_login():
     response = make_response(render_template(
         'login.html',
         props = props
+    ), 200)
+    response.headers['Cache-Control'] = 's-maxage=60'
+    return response
+
+@account.route('/account/keys', methods=['GET'])
+def get_account_keys():
+    account = load_account()
+    if account is None:
+        return redirect(url_for('account.get_login'))
+    
+    props = {
+        'query_string': ''
+    }
+
+    saved_keys = get_saved_keys(account["id"])
+
+    response = make_response(render_template(
+        'keys.html',
+        props = props,
+        results = saved_keys,
     ), 200)
     response.headers['Cache-Control'] = 's-maxage=60'
     return response

@@ -8,6 +8,7 @@ export function initShell(header, isLoggedIn) {
   // TODO: rewrite into without string literals
   if (isLoggedIn) {
     accButtons.innerHTML += `
+      <li><a href="/account/keys">[My Keys]</a></li>
       <li><a href="/favorites">[Favorites]</a></li>
       <li><a id="logout" href="/account/logout">[Logout]</a></li>
     `

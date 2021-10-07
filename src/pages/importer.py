@@ -137,6 +137,7 @@ def importer_submit():
                 'service': request.form.get("service"),
                 'session_key': request.form.get("session_key"),
                 'channel_ids': request.form.get("channel_ids"),
+                'auto_import': request.form.get("auto_import"),
                 'save_session_key': request.form.get("save_session_key"),
                 'save_dms': request.form.get("save_dms"),
                 'contributor_id': session.get("account_id")
