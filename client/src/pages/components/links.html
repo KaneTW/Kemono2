@@ -1,3 +1,4 @@
+{# not splitting on several lines because it adds whitespaces in the output #}
 {% macro fancy_link(url, text=url, is_noop=true, class_name=none ) %}
   <a
     class="fancy-link {{ class_name if class_name }}"
@@ -6,20 +7,16 @@
       target="_blank"
       rel="noopener noreferrer"
     {% endif %}
-  >
-    {{ text if not caller else caller() }}
-  </a>
-{% endmacro %}
+  >{{ text if not caller else caller() }}</a>
+{%- endmacro -%}
 
 {% macro download_link(url, text=url, file_name=text, class_name=none) %}
   <a 
     class="fancy-link fancy-link--download {{ class_name if class_name }}" 
     href="{{ url }}"
     download="{{ file_name }}"
-  >
-    {{ text if not caller else caller() }}
-  </a>
-{% endmacro %}
+  >{{ text if not caller else caller() }}</a>
+{%- endmacro -%}
 
 {% macro kemono_link(url, text=url, is_noop=true,class_name=none) %}
   <a
@@ -28,19 +25,15 @@
     {% if is_noop %}
       target="_blank"
     {% endif %}
-  >
-    {{ text if not caller else caller() }}
-  </a>
-{% endmacro %}
+  >{{ text if not caller else caller() }}</a>
+{%- endmacro -%}
 
 {% macro local_link(id, text=id, class_name=none) %}
   <a
     class="fancy-link fancy-link--local {{ class_name if class_name }}" 
     href="#{{ id }}"
-  >
-    {{ text if not caller else caller() }}
-  </a>
-{% endmacro %}
+  >{{ text if not caller else caller() }}</a>
+{%- endmacro -%}
 
 {% macro email_link(email, text=email, class_name=none) %}
   <a 
@@ -48,7 +41,32 @@
     href="mailto:{{ email }}"
     target="_blank" 
     rel="noopener noreferrer" 
+  >{{ text if not caller else caller() }}</a>
+{%- endmacro -%}
+
+{% macro link_button(url, text=url, is_noop=true, class_name=none) %}
+  <a 
+    class="fancy-link fancy-link--button {{ class_name if class_name }}"
+    href="{{ url }}"
+    {% if is_noop %}
+      target="_blank"
+      rel="noopener noreferrer"
+    {% endif %}
+  ><span class="fancy-link__text">{{ text if not caller else caller() }}</span></a>
+{% endmacro %}
+
+{% macro link_button(url, text=url, is_noop=true, class_name=none) %}
+  <a 
+    class="fancy-link fancy-link--button {{ class_name if class_name }}"
+    href="{{ url }}"
+    {% if is_noop %}
+      target="_blank"
+      rel="noopener noreferrer"
+    {% endif %}
   >
-    {{ text if not caller else caller() }}
+    <span class="fancy-link__text">
+      {{ text if not caller else caller() }}
+    </span>
+    
   </a>
 {% endmacro %}

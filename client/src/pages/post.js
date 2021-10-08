@@ -1,6 +1,7 @@
 import { kemonoAPI } from "@wp/api";
 import { addFavouritePost, removeFavouritePost, findFavouritePost } from "@wp/js/favorites";
-import { createComponent, LoadingIcon, registerMessage, showTooltip } from "@wp/components";
+import { LoadingIcon, registerMessage, showTooltip } from "@wp/components";
+import { createComponent } from "@wp/js/component-factory";
 import { isLoggedIn } from "@wp/js/account";
 
 const meta = {

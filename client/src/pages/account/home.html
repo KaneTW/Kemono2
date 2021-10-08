@@ -1,0 +1,61 @@
+{% extends 'components/shell.html' %}
+
+{% from 'components/timestamp.html' import timestamp %}
+{% from 'components/links.html' import kemono_link %}
+
+{% set role_links = {
+  "consumer": "/account",
+  "moderator": "/account/moderator",
+  "administrator": "/account/administrator"
+} %}
+
+{% block title %}
+  <title>{{ props.title }}</title>
+{% endblock title %}
+
+{% block content %}
+<section class="site-section site-section--account">
+  <header class="site-section__header">
+    <h1 class="site-section__heading">
+      Account page
+    </h1>
+  </header>
+  <dl>
+    <div class="def-list__section">
+      <dt>Name:</dt>
+      <dd>{{ props.account.username }}</dd>
+    </div>
+    <div class="def-list__section">
+      <dt>Role:</dt>
+      <dd class="acc-info__role">
+        {{ kemono_link(
+          url= role_links[props.account.role],
+          text= props.account.role
+        ) }}
+      </dd>
+    </div>
+    <div class="def-list__section">
+      <dt>Joined:</dt>
+      <dd>{{ props.account.created_at }}</dd>
+    </div>
+    <div class="def-list__section">
+      <dt>Notifications:</dt>
+      <dd>
+        {{ kemono_link(
+          url= '/account/notifications',
+          text= props.notifications_count
+        ) }}
+      </dd>
+    </div>
+    <div class="def-list__section">
+      <dt>Keys:</dt>
+      <dd>
+        {{ kemono_link(
+          url= '/account/keys',
+          text= 'Link'
+        ) }}
+      </dd>
+    </div>
+  </dl>
+</section>
+{% endblock content %}

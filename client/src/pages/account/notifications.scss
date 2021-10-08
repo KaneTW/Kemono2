@@ -1,0 +1,16 @@
+@use "../../css/variables" as *;
+
+.site-section--account-notifications {
+  .notifications {
+    &__list {
+      list-style: none;
+      padding: 0;
+    }
+
+    &__item {}
+    
+    &__date {}
+
+    &__message {}
+  }
+}

@@ -6,7 +6,7 @@ import datetime
 import copy
 import ujson
 
-pool = None
+pool: redis.ConnectionPool = None
 
 def init():
     global pool

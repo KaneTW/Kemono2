@@ -1,4 +1,5 @@
 @use "components";
+@use "home";
 @use "bans";
 @use "post";
 @use "user";
@@ -7,3 +8,4 @@
 @use "posts";
 @use "favorites";
 @use "dms";
+@use "account";

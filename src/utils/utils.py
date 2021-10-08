@@ -189,7 +189,7 @@ def offset(num, l):
         return []
     return l[num:]
 
-def limit_int(i, limit):
+def limit_int(i: int, limit: int):
     if i > limit:
         return limit
     return i

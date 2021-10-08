@@ -1,7 +1,7 @@
 {% extends 'components/shell.html' %}
 
 {% from 'components/card_list.html' import card_list %}
-{% from 'components/cards.html' import user_card, user_card_header %}
+{% from 'components/cards/user.html' import user_card, user_card_header %}
 
 {% block content %}
   <div class="site-section site-section--updated page" id="page">
@@ -15,7 +15,7 @@
       {% for user in results %}
         {{ user_card(user, is_date=true) }}
       {% else %}
-        <p class="po-posts subtitle">
+        <p class="no-posts subtitle">
           No artists found for your query.
         </p>
       {% endfor %}

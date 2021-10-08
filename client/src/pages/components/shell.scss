@@ -1,54 +1,65 @@
-.header {
-  padding: 5px 20px;
-  margin: 0;
-  font-weight: 700;
-  font-size: 14px;
-  text-align: center;
+@use "../../css/variables" as *;
 
-  & li {
-    color: var(--colour0-primary);
-    display: inline;
+// TODO: split logic properly
+.global-header {
+  // border-bottom: $size-thin solid var(--colour0-secondary);
+
+  & > * {
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+
+  .header {
     list-style-type: none;
-    margin: 0 0.5em 0 0;
+    font-weight: 700;
+    font-size: 14px;
+    text-align: center;
+    padding: 0;
 
-    & a {
-      --local-colour1-primary: var(--colour0-primary);
-      --local-colour1-secondary: var(--colour0-primary);
-      --local-colour2-primary: var(--colour1-tertiary);
-      --local-colour2-secondary: var(--colour1-secondary);
+    & li {
+      color: var(--colour0-primary);
+      display: inline;
+      margin: 0 0.5em 0 0;
+
+      & a {
+        --local-colour1-primary: var(--colour0-primary);
+        --local-colour1-secondary: var(--colour0-primary);
+        --local-colour2-primary: var(--colour1-tertiary);
+        --local-colour2-secondary: var(--colour1-secondary);
+      }
+    }
+  }
+
+  .subheader {
+    padding: 5px 20px;
+    margin: 0;
+    font-size: 14px;
+    text-align: center;
+
+    &:empty {
+      display:none;
     }
 
-    
-  }
-}
+    & li {
+      color: var(--colour0-primary);
+      display: inline;
+      list-style-type: none;
+      margin: 0 0.5em 0 0;
 
-.subheader {
-  padding: 5px 20px;
-  margin: 0;
-  font-size: 14px;
-  text-align: center;
-
-  &:empty {
-    display:none;
-  }
-
-  & li {
-    color: var(--colour0-primary);
-    display: inline;
-    list-style-type: none;
-    margin: 0 0.5em 0 0;
-
-    & a {
-      --local-colour1-primary: var(--colour0-primary);
-      --local-colour1-secondary: var(--colour0-primary);
-      --local-colour2-primary: var(--colour1-tertiary);
-      --local-colour2-secondary: var(--colour1-secondary);
+      & a {
+        --local-colour1-primary: var(--colour0-primary);
+        --local-colour1-secondary: var(--colour0-primary);
+        --local-colour2-primary: var(--colour1-tertiary);
+        --local-colour2-secondary: var(--colour1-secondary);
+      }
     }
   }
 }
 
 .current-page {
-  background-image: linear-gradient(#444649, #282a2e);
+  background-image: linear-gradient(hsl(216, 4%, 28%), hsl(220, 7%, 17%));
   padding: 6px 10px 6px;
   font-weight: 700;
 }
+
+// .global-overlay {}

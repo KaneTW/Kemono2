@@ -1,8 +1,7 @@
 import { kemonoAPI } from "@wp/api";
-import { CardList } from "@wp/components";
+import { CardList, UserCard } from "@wp/components";
 import { isLoggedIn } from "@wp/js/account";
 import { findFavouriteArtist } from "@wp/js/favorites";
-import { UserCard } from "./components/cards";
 
 /**
  * @type {KemonoAPI.User[]}

@@ -1,0 +1,13 @@
+{% macro site_section(name) %}
+  <section class="site-section site-section--{{ name }}" >
+    {{ caller() }}
+  </section>
+{% endmacro %}
+
+{% macro site_section_header(heading) %}
+  <header class="site-section__header">
+    <h1 class="site-section__heading">
+      {{ heading }}
+    </h1>
+  </header>
+{% endmacro %}

@@ -1,0 +1,27 @@
+{# call-only #}
+{% macro section(name, title=none, class_name=none) %}
+  <section class="site-section site-section--{{ name }} {{ class_name if class_name }}">
+    {% if title %}
+      {% call header() %}
+        {{ heading(title) }}
+      {% endcall %}
+    {% endif %}
+    {{ caller() }}
+  </section>
+{% endmacro %}
+
+{% macro header(class_name=none) %}
+  <header class="site-section__header {{ class_name if class_name }}">
+    {{ caller() }}
+  </header>
+{% endmacro %}
+
+{% macro heading(title, class_name=none) %}
+  <h1 class="site-section__heading {{ class_name if class_name }}">
+    {% if not caller %}
+      {{ title }}
+    {% else %}
+      {{ caller() }}
+    {% endif %}
+  </h1>
+{% endmacro %}

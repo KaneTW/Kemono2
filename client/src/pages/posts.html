@@ -1,7 +1,7 @@
 {% extends 'components/shell.html' %}
 
 {% from 'components/card_list.html' import card_list %}
-{% from 'components/cards.html' import post_card %}
+{% from 'components/cards/post.html' import post_card %}
 
 {% block content %}
   <section class="site-section site-section--posts">
@@ -32,10 +32,12 @@
       {% for post in results %}
         {{ post_card(post) }}
       {% else %}
-        <h1 class="subtitle">Nobody here but us chickens!</h1>
-        <p class="subtitle">
-          There are either no more posts beyond this page, or this user hasn't been imported.
-        </p>
+        <div class="card-list__item--no-results">
+          <h2 class="subtitle">Nobody here but us chickens!</h1>
+          <p class="subtitle">
+            There are either no more posts beyond this page, or this user hasn't been imported.
+          </p>
+        </div>
       {% endfor %}
     {% endcall %}
     

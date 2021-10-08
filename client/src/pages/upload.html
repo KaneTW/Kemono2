@@ -1,9 +1,17 @@
 {% extends 'components/shell.html' %}
+
+{% from 'components/site_section.html' import site_section, site_section_header %}
+
+{% block scripts_extra %}
+  <script src="{{ url_for('static', filename='js/resumable.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='js/upload.js') }}" defer></script>
+{% endblock scripts_extra %}
+
 {% block content %}
-<div class="page" id="page">
-  <h1>Upload file</h1>
+{% call site_section('upload') %}
+  {{ site_section_header('Upload file') }}
   <p>
-    If content for a user is distributed by means inaccessible by the <a href="/importer">importers,</a> (like email or private message) you can upload the files manually here.
+    If content for a user is distributed by means inaccessible by the <a href="/importer">importers</a>, (like email or private message) you can upload the files manually here.
   </p>
   <noscript>
     <p class="subtitle">
@@ -11,46 +19,46 @@
     </p>
   </noscript>
   <form
-    class="search-form bbs-reply"
+    id="upload-form"
+    class="search-form form"
     action="/api/upload"
     enctype="multipart/form-data"
-    style="margin: 0;"
     method="post"
-  >
-    {% if request.args.get('service') %}
-      <div>
+  > 
+    <div>
+      {% if request.args.get('service') %}
         <input
           type="hidden"
           name="service"
           id="service"
           value="{{ request.args.get('service') }}"
         >
-      </div>
-    {% else %}
-      <div>
+      {% else %}
         <label for="service">Service</label>
         <select id="service" name="service">
-          <option value="patreon" selected>Patreon</option>
-          <option value="fanbox">Pixiv Fanbox</option>
-          <option value="gumroad">Gumroad</option>
-          <option value="subscribestar">SubscribeStar</option>
-          <option value="dlsite">DLsite</option>
-          <option value="fantia">Fantia</option>
+          {% for paysite in g.paysite_list %}
+            <option 
+              class="form__option" 
+              value="{{ paysite }}"
+              {% if loop.first %}
+                selected
+              {% endif %}
+            >
+              {{ g.paysites[paysite].title }}
+            </option>
+          {% endfor %}
         </select>
-      </div>
-    {% endif %}
-
-    {% if request.args.get('user') %}
-      <div>
+      {% endif %}
+    </div>
+    <div>
+      {% if request.args.get('user') %}
         <input
           type="hidden"
           name="user"
           id="user"
           value="{{ request.args.get('user') }}"
         >
-      </div>
-    {% else %}
-      <div>
+      {% else %}
         <label for="user">User ID</label>
         <input 
           type="text"
@@ -58,9 +66,8 @@
           id="user"
           required
         >
-      </div>
-    {% endif %}
-    
+      {% endif %}
+    </div>
     <div>
       <label for="title">Title</label>
       <input 
@@ -69,8 +76,10 @@
         id="title"
         maxlength="50"
         required
-        placeholder="February 2020 Rewards"
       >
+      <small>
+        February 2020 Rewards
+      </small>
     </div>
     <div>
       <label for="content">Description</label>
@@ -81,17 +90,17 @@
         cols="48"
         rows="4"
         wrap="soft"
-        placeholder="Specify what the file/archive is, where the original post can be found, include relevant keys/passwords, etc."
       ></textarea>
+      <small>
+        Specify what the file/archive is, where the original post can be found, include relevant keys/passwords, etc.
+      </small>
     </div>
   </form>
   <div id="upload">
     <div class="upload-button" id="upload-button">
       Select or drop file
     </div>
-    <small class="subtitle" style="margin-left: 5px;">2GB size limit</small>
+    <small class="subtitle">2GB size limit</small>
   </div>
-</div>
-<script src="{{ url_for('static', filename='js/resumable.js') }}"></script>
-<script src="{{ url_for('static', filename='js/upload.js') }}"></script>
+{% endcall %}
 {% endblock %}

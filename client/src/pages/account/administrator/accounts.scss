@@ -1,0 +1,76 @@
+@use "../../../css/variables" as *;
+
+.site-section--admin-accounts {
+  .account {
+    &__view {
+      position: relative;
+      padding: 0;
+      margin-bottom: 3em;
+
+      &--promote {
+        & .account__info {
+          border-radius: 10px 10px 0 10px;
+        }
+
+        & .account__label {
+          right: 0;
+        }
+      }
+
+      &--demote {
+        & .account__info {
+          border-radius: 10px 10px 10px 0;
+        }
+
+        & .account__label {
+          left: 0;
+        }
+      }
+    }
+  
+    &__role-check {
+      position: absolute;
+      visibility: hidden;
+      opacity: 0;
+      max-width: 1px;
+      
+      &:checked + .account__info {
+        --local-colour1: var(--colour1-tertiary);
+        --local-background-colour1: var(--submit-colour1-primary);
+        --local-border-colour1: var(--submit-colour1-primary);
+      }
+    }
+  
+    &__info {
+      --local-colour1: var(--colour0-primary);
+      --local-background-colour1: var(--colour1-tertiary);
+      --local-border-colour1: var(--colour1-tertiary);
+
+      max-width: var(--card-size);
+      height: 100%;
+      border-radius: 10px;
+      border: $size-thin solid var(--local-border-colour1);
+      overflow: hidden;
+      transition-duration: var(--duration-global);
+      transition-property: border-color;
+
+      & .account-card {
+        height: 100%;
+        border-radius: 0;
+      }
+    }
+  
+    &__label {
+      position: absolute;
+      top: 100%;
+      color: var(--local-colour1);
+      background-color: var(--local-background-colour1);
+      border-radius: 0 0 10px 10px;
+      border: $size-thin solid var(--local-border-colour1);
+      border-top: none;
+      padding: $size-small;
+      transition-duration: var(--duration-global);
+      transition-property: color, background-color, border-color;
+    }
+  }
+}

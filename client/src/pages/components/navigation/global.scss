@@ -1,0 +1,107 @@
+@use "../../../css/variables" as *;
+
+.global-nav {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: $size-normal;
+
+  &__list {
+    display: flex;
+    flex-flow: column nowrap;
+
+    transition-property: visibility, opacity;
+    transition-duration: var(--duration-global);
+  }
+
+  &__item {
+    position: relative;
+
+    & > .global-nav__list {
+      position: absolute;
+      top: 100%;
+      z-index: 1;
+      visibility: hidden;
+      opacity: 0;
+      display: flex;
+      flex-flow: column nowrap;
+      align-items: flex-start;
+      min-width: 150px;
+      background-color: var(--colour1-tertiary);
+      border-radius: 10px;
+      padding: $size-small;
+    }
+
+    &--open {
+      & > .global-nav__button {
+        background-color: var(--local-colour2-secondary);
+        border-radius: 5px 5px 0 0;
+        border-bottom-color: transparent;
+      }
+
+      & > .global-nav__list {
+        visibility: visible;
+        opacity: 1;
+        border-radius: 0 10px 10px 10px;
+        box-shadow: 0 0 5px var(--colour1-primary-transparent);
+      }
+    }
+
+    &--account {
+      margin-left: auto;
+
+      & > .global-nav__list {
+        right: 0;
+        border-radius: 10px 0 10px 10px;
+      }
+
+    }
+
+    // quick hack until I figure out anchour selector specificities
+    & .global-nav__link {
+      --local-colour1-primary: var(--colour0-primary);
+      --local-colour1-secondary: var(--colour0-primary);
+      --local-colour2-primary: var(--colour1-tertiary);
+      --local-colour2-secondary: var(--colour1-secondary);
+    }
+  }
+
+  &__button {
+    --local-colour1-primary: var(--colour0-primary);
+    --local-colour1-secondary: var(--colour0-tertirary);
+    --local-colour2-primary: var(--colour1-primary);
+    --local-colour2-secondary: var(--colour1-tertiary);
+
+    // temp until header rework
+    min-height: 34px;
+    color: var(--local-colour1-primary);
+    background-image: none;
+    background-color: var(--local-colour2-primary);
+    border: $size-nano solid var(--local-colour1-secondary);
+    box-shadow: inset 2px 2px 3px hsla(0, 0%, 40%, 0.5), inset -2px -2px 3px hsla(0, 0%, 0%, 0.5);
+
+    transition-property: color, background-color, shadow, outline;
+    transition-duration: var(--duration-global);
+
+    &:focus {
+      background-color: var(--local-colour2-secondary);
+      // outline-offset: 3px;
+      // outline-width: $size-thin;
+      // outline-style: dashed;
+      // outline-color: var(--colour0-secondary);
+    }
+
+    &:hover {
+      background-color: var(--local-colour2-secondary);
+    }
+
+    &:active {
+      box-shadow: inset -2px -2px 3px hsla(0, 0%, 40%, 0.5), inset 2px 2px 3px hsla(0, 0%, 0%, 0.5);
+    }
+
+    &--notifs {
+      --local-colour1-primary: var(--submit-colour1-primary)
+    }
+  }
+}

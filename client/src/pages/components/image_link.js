@@ -1,4 +1,4 @@
-import { createComponent } from "./_index";
+import { createComponent } from "@wp/js/component-factory";
 
 /**
  * TODO: Restructure arguments.

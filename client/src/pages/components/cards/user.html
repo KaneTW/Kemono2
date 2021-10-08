@@ -1,0 +1,72 @@
+{% from 'components/timestamp.html' import timestamp %}
+{% from 'components/image_link.html' import image_link %}
+{% from 'components/links.html' import fancy_link %}
+
+{% macro user_card_header(is_count=false, is_date=false) %}
+  <header class="user-card user-card--header">
+    <div class="user-card__icon">Icon</div>
+    <div class="user-card__name">Name</div>
+    <div class="user-card__service">Service</div>
+    {% if is_count %}
+      <div class="user-card__count">Times favorited</div>
+    {% endif %}
+    {% if is_date %}
+      <div class="user-card__updated">Updated</div>
+    {% else %}
+    {% endif %}
+  </header>
+{% endmacro %}
+
+{% macro user_card(
+  user, 
+  is_count=false,
+  is_date=false,
+  class_name=none
+) %}
+  {% set user_link = g.freesites.kemono.user.profile(user.service, user.id) %}
+  {% set user_icon = g.freesites.kemono.user.icon(user.service, user.id) %}
+  <article 
+    class="user-card {{ class_name if class_name }}"
+    data-id="{{ user.id }}"
+    data-service="{{ user.service }}"
+  >
+    <div class="user-card__icon">
+      {{ image_link(
+        url=user_link,
+        src=user_icon,
+        class_name='user-card__user-icon'
+      ) }}
+    </div>
+    <div class="user-card__name">
+      {{ fancy_link(user_link, user.name) }}
+    </div>
+    <div class="user-card__service">
+      {{ g.paysites[user.service].title }}
+    </div>
+    {% if is_date %}
+      <div class="user-card__updated">
+        {{ timestamp(user.updated) }}
+      </div>
+    {% endif %}
+    {% if is_count %}
+      <div class="user-card__count">
+        {{ user.count if user.count else 'None' }}
+      </div>
+    {% endif %}
+  </article>
+{% endmacro %}
+
+{% macro user_card_skeleton() %}
+  <article class="user-card">
+    <div class="user-card__icon">
+    </div>
+    <div class="user-card__name">
+    </div>
+    <div class="user-card__service">
+    </div>
+    <div class="user-card__updated">
+    </div>
+    <div class="user-card__count">
+    </div>
+  </article>
+{% endmacro %}

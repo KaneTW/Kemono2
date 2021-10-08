@@ -1,0 +1,20 @@
+{% extends 'account/administrator/shell.html' %}
+
+{% block content %}
+<section class="site-section site-section--admin-account-files">
+  <header class="site-section__header">
+    <h1 class="site-section__heading">
+      Files information for {{ props.account.username }} ({{ props.account.id }})
+    </h1>
+  </header>
+  <ul>
+    {% for file in props.files %}
+      <li>
+        File info
+      </li>
+    {% else %}
+      <li>No files for this account</li>
+    {% endfor %}
+  </ul>
+</section>
+{% endblock content %}

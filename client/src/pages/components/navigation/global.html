@@ -1,0 +1,35 @@
+{% from 'components/navigation/base.html' import navigation, nav_list, nav_item %}
+{% from 'components/links.html' import fancy_link, kemono_link %}
+{% from 'components/buttons.html' import button as base_button %}
+
+{% macro nav(id) %}
+  {% call navigation(id, class_name='global-nav') %}
+    {{ caller }}
+  {% endcall %}
+{% endmacro %}
+
+{% macro list() %}
+  {% call nav_list(class_name='global-nav__list') %}
+    {{ caller }}
+  {% endcall %}
+{% endmacro %}
+
+{% macro item() %}
+  {% call nav_item(class_name='global-nav__item') %}
+    {{ caller }}
+  {% endcall %}
+{% endmacro %}
+
+{% macro button() %}
+  {% call base_button() %}
+    {{ caller }}
+  {% endcall %}
+{% endmacro %}
+
+{% macro link(url, text) %}
+  {{ kemono_link(url, text, class_name='global-nav__link') }}
+{% endmacro %}
+
+{% macro link_external(url, text) %}
+  {{ fancy_link(url, text, class_name='global-nav__link') }}
+{% endmacro %}

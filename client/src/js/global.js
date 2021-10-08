@@ -1,22 +1,12 @@
 import "./global.scss";
-import { initSections } from "@wp/pages";
+import { isLoggedIn } from "@wp/js/account";
 import { initFavorites } from "@wp/js/favorites";
 import { fixImageLinks } from "@wp/utils";
-
-const isLoggedIn = localStorage.getItem('logged_in') === "yes";
+import { globalPageScripts } from "@wp/pages";
+import { initSections } from "./page-loader";
 
 if (isLoggedIn) {
   initFavorites()
 }
 fixImageLinks(document.images);
-initSections(isLoggedIn);
-
-// function isStorageAvailable() {
-//   try {
-//     localStorage.setItem("__storage_test__", "__storage_test__");
-//     localStorage.removeItem("__storage_test__");
-//     return true;
-//   } catch (error) {
-//     return false;
-//   }
-// }
+initSections(globalPageScripts);

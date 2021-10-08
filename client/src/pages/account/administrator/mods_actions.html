@@ -1,0 +1,18 @@
+{% extends 'account/administrator/shell.html' %}
+
+{% block content %}
+<section class="site-section site-section--admin-mods-actions">
+  <header class="site-section__header">
+    <h1 class="site-section__heading">
+      Moderator actions
+    </h1>
+  </header>
+  <ul>
+    {% for action in props.actions %}
+      <li>action</li>
+    {% else %}
+      <li>No actions found</li>
+    {% endfor %}
+  </ul>
+</section>
+{% endblock content %}

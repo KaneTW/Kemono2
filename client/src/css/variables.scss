@@ -27,15 +27,16 @@ $button-min-height: 44px;
   --colour0-secondary: hsl(0, 0%, 70%);
   --colour0-tertirary: hsl(0, 0%, 45%);
   --colour1-primary: hsl(210, 6%, 12%);
-  --colour1-primary-transparent: hsla(210, 6%, 12%, 75%);
+  --colour1-primary-transparent: hsla(210, 6%, 12%, 0.75);
   --colour1-secondary: hsl(220, 7%, 25%);
+  --colour1-secondary-transparent: hsla(220, 7%, 25%, 0.5);
   --colour1-tertiary: hsl(210, 15%, 5%);
 
   /* Buttons */
-  --submit-colour1-primary: blue;
-  --submit-colour1-secondary: blue;
-  --submit-colour2-primary: blue;
-  --submit-colour2-secondary: blue;
+  --submit-colour1-primary: hsl(200, 100%, 70%);
+  --submit-colour1-secondary: hsl(240, 100%, 50%);
+  --submit-colour2-primary: hsl(240, 100%, 50%);
+  --submit-colour2-secondary: hsl(240, 100%, 50%);
   --positive-colour1-secondary: hsl(120, 100%, 30%);
   --negative-colour1-primary: hsl(0, 100%, 70%);
   --favourite-colour1-primary: hsl(51, 100%, 50%);

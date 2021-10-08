@@ -1,5 +1,6 @@
 import { addFavouriteArtist, findFavouriteArtist, removeFavouriteArtist, findFavouritePost } from "@wp/js/favorites";
-import { CardList, createComponent, PostCard, showTooltip, registerMessage } from "@wp/components";
+import { CardList, PostCard, showTooltip, registerMessage } from "@wp/components";
+import { createComponent } from "@wp/js/component-factory";
 import { isLoggedIn } from "@wp/js/account";
 
 /**

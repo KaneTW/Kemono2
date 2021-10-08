@@ -1,1 +1,15 @@
 /* SASS mixins go there */
+@use "variables.scss" as *;
+
+@mixin article_card() {
+  display: flex;
+  flex-flow: column nowrap;
+  border-radius: 10px;
+  background-color: var(--colour1-tertiary);
+  padding: 0;
+  
+  & > * {
+    flex: 0 0 auto;
+    padding: $size-small;
+  }
+}

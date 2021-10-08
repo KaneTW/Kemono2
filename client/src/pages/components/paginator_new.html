@@ -1,0 +1,116 @@
+{% from 'components/links.html' import link_button %}
+
+{# `id` is the id of related `form_controller()` #}
+{% macro paginator(id, request, pagination, class_name= none) %}
+  {% set current_page = pagination.current_page %}
+  {% set total_pages = pagination.total_pages %}
+  {% set base_url = pagination.base_url %}
+
+  <div class="paginator {{ class_name if class_name }}">
+    <small class="paginator__count">
+        Showing {{ pagination.offset + 1 }} - {{ pagination.current_count }} of {{ pagination.count }}
+    </small>
+    <ul class="paginator__pages">
+      <li class="paginator__page">
+        {% if current_page != 1 %}
+          {{ link_button(
+            pagination.create_paged_url(request, 1),
+            1,
+            is_noop=false,
+            class_name= 'paginator__link'
+          ) }}
+        {% else %}
+          <span class="paginator__link" >
+            ...
+          </span>
+        {% endif %}
+        
+      </li>
+      <li class="paginator__page">
+        {% if current_page > 2 %}
+          {{ link_button(
+            pagination.create_paged_url(request, current_page - 1),
+            current_page - 1,
+            is_noop=false,
+            class_name= 'paginator__link'
+          ) }}
+        {% else %}
+          <span class="paginator__link" >
+            ...
+          </span>
+        {% endif %}
+      </li>
+
+      <li 
+        class="paginator__page paginator__page--current"
+        style="--local-width: {{ total_pages | string | length + 4 }}em;"
+      >
+        <input
+          class="form__input paginator__input"
+          form= "{{ id }}"
+          type="number" 
+          name="page" 
+          value="{{ current_page }}"
+          min="1"
+          max="{{ total_pages }}"
+          step="1"
+        >
+        <button 
+          class="form__button form__button--submit paginator__submit"
+          type="submit"
+          form="{{ id }}" 
+        >
+          Go!
+        </button>
+      </li>
+
+      <li class="paginator__page">
+        {% if current_page < total_pages - 1 %}
+          {{ link_button(
+            pagination.create_paged_url(request, current_page + 1),
+            current_page + 1,
+            is_noop=false,
+            class_name= 'paginator__link'
+          ) }}
+        {% else %}
+          <span class="paginator__link">
+            ...
+          </span>
+        {% endif %}
+      </li>
+
+      <li class="paginator__page">
+        {% if current_page != total_pages %}
+          {{ link_button(
+            pagination.create_paged_url(request, total_pages),
+            total_pages,
+            is_noop=false,
+            class_name= 'paginator__link'
+          ) }}
+        {% else %}
+          <span class="paginator__link">
+            ...
+          </span>
+        {% endif %}
+      </li>
+    </ul>
+  </div>
+{% endmacro %}
+
+{# `**kwargs` is `<form>` attributes #}
+{% macro paginator_controller(id, request, pagination) %}
+  <form
+    id="{{ id }}"
+    class="paginator__controller"
+    method="GET"
+    action="{{ url_for(request.endpoint) }}"
+    target="_self"
+    {% for attribute in kwargs %}
+      {{ attribute }}="{{ kwargs[attribute] }}"
+    {% endfor %}
+  >
+    {% for param in pagination.base %}
+      <input type="hidden" name="{{ param }}" value="{{ pagination.base[param] }}">
+    {% endfor %}
+  </form>
+{% endmacro %}

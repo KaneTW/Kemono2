@@ -1,0 +1,27 @@
+{% extends 'components/shell.html' %}
+
+{% from 'components/timestamp.html' import timestamp %}
+{% from 'account/components/notification.html' import notification_item %}
+
+{% block title %}
+  <title>Account notificatons</title>
+{% endblock title %}
+
+{% block content %}
+<section class="site-section site-section--account-notifications">
+  <header class="site-section__header">
+    <h1 class="site-section__heading">
+      Notifications
+    </h1>
+  </header>
+  <ul class="notifications__list">
+    {% for notification in props.notifications %}
+      {{ notification_item(notification) }}
+    {% else %}
+      <li class="notifications__item">
+        There are no notifications.
+      </li>
+    {% endfor %}
+  </ul>
+</section>
+{% endblock content %}

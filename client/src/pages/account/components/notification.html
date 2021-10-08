@@ -1,0 +1,20 @@
+{% from 'components/timestamp.html' import timestamp %}  
+
+{% macro ACCOUNT_ROLE_CHANGE(extra_info) %}
+  Your role was changed from {{ extra_info.old_role }} to {{ extra_info.new_role }}.
+{% endmacro %}
+
+{% set notification_types = {
+  1: ACCOUNT_ROLE_CHANGE
+} %}
+
+{% macro notification_item(notification) %}
+  <li class="notifications__item {{ 'notifications__item--seen' if notification.is_seen }}">
+    <span class="notifications__date">
+      {{ timestamp(notification.created_at) }}
+    </span>
+    <span class="notifications__message">
+      {{ notification_types[notification.type](notification.extra_info) }}
+    </span>
+  </li>
+{% endmacro %}

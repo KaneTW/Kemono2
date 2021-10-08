@@ -1,6 +1,6 @@
 from datetime import datetime
-from typing import Optional
-
+from typing import Optional 
+    
 class DM:
     def __init__(self, 
         id: str,
@@ -88,6 +88,9 @@ class User:
 #     created: datetime
 
 class PageProps:
+    """
+    TODO: nuke this class.
+    """
     def __init__(self, current_page: str) -> None:
         self.current_page = current_page
 

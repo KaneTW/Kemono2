@@ -1,0 +1,9 @@
+@use "../../../css/sass-mixins" as mixins;
+
+.account-card {
+  @include mixins.article-card();
+
+  &__body {
+    flex: 1 1 auto;
+  }
+}

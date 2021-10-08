@@ -34,6 +34,9 @@
 
   &__section {
     
+    &--buttons {
+      text-align: center;
+    }
     &--checkbox {
       position: relative;
       display: flex;
@@ -118,6 +121,7 @@
     cursor: pointer;
 
     &--submit {
+      max-width: $width-phone;
       text-align: center;
       color: var(--colour0-primary);
       background-image: linear-gradient(

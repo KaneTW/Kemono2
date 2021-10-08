@@ -360,29 +360,30 @@ menu li {
   margin-left: 5px;
   background-color: #282a2e;
   margin: 0px auto 8px auto;
-}
 
-.search-form > div {
-  display: table-row;
-  line-height: 1.5em;
-  margin-bottom: 2em;
-}
+  & > div {
+    display: table-row;
+    line-height: 1.5em;
+    margin-bottom: 2em;
+  }
 
-.search-form small {
-  display: block;
-  line-height: normal;
-}
+  & small {
+    display: block;
+    line-height: normal;
+  }
 
-.search-form label, .search-form input {
-  display: table-cell;
-  padding-right: 1em;
-  white-space: nowrap;
-  text-align: left;
-}
+  & label, 
+  & input {
+    display: table-cell;
+    padding-right: 1em;
+    white-space: nowrap;
+    text-align: left;
+  }
 
-.search-form label {
-  text-align: right;
-  font-weight: 700;
+  & label {
+    text-align: right;
+    font-weight: 700;
+  }
 }
 
 /* search results */

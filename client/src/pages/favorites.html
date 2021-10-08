@@ -1,14 +1,14 @@
 {% extends 'components/shell.html' %}
 
 {% from 'components/card_list.html' import card_list %}
-{% from 'components/cards.html' import post_card, user_card, user_card_header %}
+{% from 'components/cards/user.html' import user_card, user_card_header %}
+{% from 'components/cards/post.html' import post_card %}
 
 {% block scripts_extra %}
   <script src="{{ url_for('static', filename='js/favorites.js') }}" defer ></script>
 {% endblock scripts_extra %}
 
 {% block content %}
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/favorites.css') }}">
 <section class="page site-section site-section--favorites" id="page">
   <header class="site-section__header">
     <h1 class="site-section__heading">Favorite {{ 'Artists' if props.fave_type == 'artist' else 'Posts' }}</h1>

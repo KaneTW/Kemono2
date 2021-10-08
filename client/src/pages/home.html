@@ -1,12 +1,30 @@
 {% extends 'components/shell.html' %}
+
+{% import 'components/site.html' as site %}
+{% from "components/links.html" import kemono_link %}
+
 {% block content %}
-  <div class="page" id="page">
+  {% call site.section("home", title="Welcome to Kemono!") %}
     <div class="jumbo">
       <p>
-        Welcome to <strong>Kemono,</strong> a scraper for Patreon, Pixiv Fanbox, SubscribeStar, Gumroad, Discord, DLsite, and Fantia. Contributors here upload content from paywalls, and share it here for easy searching and organization.<br>
-        To get started viewing paywalled content, either search for creators on the <strong>[Artists]</strong> tab, or search for content on the <strong>[Recent Posts]</strong> tab.<br>
-        If you want to contribute content, click the <strong>[Import]</strong> tab.
+        <strong>Kemono</strong> is a public archiver for:
+      </p>
+      <ul>
+        {% for paysite in g.paysite_list %}
+          <li>
+            {{ g.paysites[paysite].title }}
+          </li>
+        {% endfor %}
+      </ul>
+      <p>
+        Contributors here upload content from paywalls, and share it here for easy searching and organization.
+      </p>
+      <p>
+        To get started viewing paywalled content, either search for creators on the {{ kemono_link("/artists", "artists page")}}, or search for content on the {{ kemono_link("/posts", "posts page") }}.  
+      </p>
+      <p>
+        If you want to contribute content, head over to the {{ kemono_link("/importer", "import page") }}.
       </p>
     </div>
-  </div>
+  {% endcall %}
 {% endblock %}

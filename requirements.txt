@@ -11,7 +11,7 @@ click==7.1.2
 cloudscraper==1.2.48
 colorama==0.4.4
 feedgen==0.9.0
-Flask==2.0.0
+Flask==2.0.1
 Flask-Caching==1.9.0
 idna==2.10
 isort==5.6.4

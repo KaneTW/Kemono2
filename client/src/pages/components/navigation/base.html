@@ -1,0 +1,25 @@
+{% from 'components/links.html' import fancy_link %}
+
+{# Call-only macros #}
+{% macro navigation(id=none, class_name=none) %}
+  <nav
+    {% if id %}
+      id="{{ id }}"
+    {% endif %}
+    class="navigation {{ class_name if class_name }}"
+  >
+    {{ caller() }}
+  </nav>
+{% endmacro %}
+
+{% macro nav_list(class_name=none) %}
+  <ul class="navigation__list {{ class_name if class_name }}">
+    {{ caller() }}
+  </ul>
+{% endmacro %}
+
+{% macro nav_item(class_name=none) %}
+  <li class="navigation__item {{ class_name if class_name }}">
+    {{ caller() }}
+  </li>
+{% endmacro %}

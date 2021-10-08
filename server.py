@@ -3,6 +3,7 @@ import datetime
 from datetime import timedelta
 from os import getenv
 from os.path import join, dirname
+from threading import Lock
 from urllib.parse import urljoin
 
 import logging
@@ -14,8 +15,10 @@ import src.internals.database.database as database
 import src.internals.cache.redis as redis
 from configs.derived_vars import is_development
 from src.internals.cache.flask_cache import cache
+from src.types.account import Account
 from src.lib.ab_test import get_all_variants
-from src.lib.account import is_logged_in
+from src.lib.account import is_logged_in, load_account
+from src.lib.notification import count_new_notifications
 from src.utils.utils import url_is_for_non_logged_file_extension, render_page_data, paysites, paysite_list, freesites
 
 from src.pages.home import home
@@ -51,7 +54,12 @@ if (is_development):
     from src.dev_only import dev_only
     app.register_blueprint(dev_only)
 
+
 app.config.from_pyfile('flask.cfg')
+app.jinja_options = dict(
+    trim_blocks=True,
+    lstrip_blocks=True
+)
 app.jinja_env.globals.update(is_logged_in=is_logged_in)
 app.jinja_env.globals.update(render_page_data=render_page_data)
 app.jinja_env.filters['regex_match'] = lambda val, rgx: re.search(rgx, val)
@@ -78,6 +86,10 @@ def do_init_stuff():
     session.permanent = True
     app.permanent_session_lifetime = timedelta(days=30)
     session.modified = False
+    account = load_account()
+    if account:
+        g.account = Account.init_from_dict(account)
+        g.new_notifications_count = count_new_notifications(g.account.id)
 
 @app.after_request
 def do_finish_stuff(response):
@@ -105,6 +117,8 @@ def upload_exceeded(error):
 
 @app.teardown_appcontext
 def close(e):
+    # removing account just in case
+    g.pop('account', None)
     cursor = g.pop('cursor', None)
     if cursor is not None:
         cursor.close()

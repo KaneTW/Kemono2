@@ -1,0 +1,141 @@
+{% extends 'account/administrator/shell.html' %}
+
+{% from 'components/card_list.html' import card_list %}
+{% from 'components/cards/account.html' import account_card %}
+{% from 'components/paginator_new.html' import paginator, paginator_controller %}
+
+{% block content %}
+<section class="site-section site-section--admin-accounts">
+  <header class="site-section__header">
+    <h1 class="site-section__heading">
+      Accounts
+    </h1>
+  </header>
+  <form 
+    id="accounts-filter"
+    class="form"
+    method="GET"
+  >
+    <div class="form__section">
+      <label for="search-name" class="form__label">Name:</label>
+      <input 
+        id="search-name" 
+        class="form__input"
+        type="text" 
+        name="name" 
+        {% if request.args.get('name') %}
+          value="{{ request.args.get('name') }}"
+        {% endif %}
+      >
+    </div>
+    <div class="form__section">
+      <label 
+        for="accounts-filter__roles" class="form__label"
+      >
+        Roles:
+      </label>
+      <select 
+        id="accounts-filter__roles" 
+        class="form__select"
+        name="role" 
+      >
+        <option 
+          class="form__option"
+          value="all" 
+          {% if request.args.get('role') == 'all' %}
+            selected
+          {% endif %}
+        >
+          All
+        </option>
+        {% for role in props.role_list %}
+          <option
+            class="form__option"
+            value="{{ role }}"
+            {% if request.args.get('role') == role %}
+              selected
+            {% endif %}
+          >
+            {{ role | capitalize }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="form__section">
+      <button 
+        class="form__button form__button--submit" 
+        type="submit" 
+      >
+        Search
+      </button>
+    </div>
+  </form>
+  
+  <form
+    id="account-list"
+    method="POST"
+  >  
+    {{ paginator('account-pages', request, props.pagination) }}
+    {% call card_list('legacy') %}
+      {% for account in props.accounts %}
+        {% if account.role == 'moderator' %}
+          <div class="form__section account__view account__view--demote">
+            <input 
+              type="checkbox" 
+              name="consumer" 
+              id="account-{{ account.id }}" 
+              class="form__input account__role-check"
+              value="{{ account.id }}"
+            >
+            <div class="account__info">
+              {{ account_card(account) }}
+              <label 
+                for="account-{{ account.id }}" 
+                class="form__label account__label"
+              >Demote</label>
+            </div>
+            
+          </div>
+        {% elif account.role == 'consumer'%}
+          <div class="form__section account__view account__view--promote">
+            <input 
+              type="checkbox" 
+              name="moderator" 
+              id="account-{{ account.id }}" 
+              class="form__input account__role-check"
+              value="{{ account.id }}"
+            >
+            <div class="account__info">
+              {{ account_card(account) }}
+              <label 
+                for="account-{{ account.id }}" 
+                class="form__label account__label"
+              >Promote</label>
+            </div>
+            
+          </div>
+        {% else %}
+        {% endif %}
+      {% else %}
+        <p>No accounts found.</p>
+      {% endfor %}
+    {% endcall %}
+    {# {{ paginator('account-pages', request, props.pagination) }} #}
+    {% if props.accounts | length %}
+      <div class="form__section form__section--buttons">
+        <button 
+          class="form__button form__button--submit"
+          type="submit"
+        >
+          Submit
+        </button>
+      </div>
+    {% endif %}
+  </form>
+  {{ paginator_controller(
+    'account-pages',
+    request,
+    props.pagination
+  ) }}
+</section>
+{% endblock content %}

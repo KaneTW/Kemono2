@@ -1,5 +1,5 @@
 import { kemonoAPI } from "@wp/api";
-import { createComponent } from "@wp/components";
+import { createComponent } from "@wp/js/component-factory";
 import { waitAsync } from "@wp/utils";
 
 /**

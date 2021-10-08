@@ -1,3 +1,4 @@
+@use "site";
 @use "fancy_image";
 @use "links";
 @use "timestamp";
@@ -8,3 +9,5 @@
 @use "image_link";
 @use "shell";
 @use "tooltip";
+@use "paginator_new";
+@use "navigation";
