@@ -113,7 +113,7 @@ function handleFlagging(service, user, postID) {
     const button = event.target;
     const [icon, text] = button.children;
     const loadingIcon = LoadingIcon();
-    const isConfirmed = confirm('Are you sure you want to flag this post for reimport?');
+    const isConfirmed = confirm('Are you sure you want to flag this post for reimport? Only do this if data in the post is broken/corrupted/incomplete.\nThis is not a deletion button.');
 
     button.classList.add("post__flag--loading");
     button.disabled = true;
