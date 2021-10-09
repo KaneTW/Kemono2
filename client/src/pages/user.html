@@ -3,7 +3,7 @@
 {% from 'components/headers.html' import user_header %}
 {% from "components/loading_icon.html" import loading_icon %}
 {% from 'components/card_list.html' import card_list %}
-{% from 'components/cards.html' import post_card %}
+{% from 'components/cards/post.html' import post_card %}
 
 {% set paysite = g.paysites[props.service] %}
 {% set page_title = 'Posts of ' ~ props.name ~ ' from ' ~ paysite.title ~ ' | Kemono' %}

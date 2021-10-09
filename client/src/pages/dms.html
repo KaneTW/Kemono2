@@ -2,7 +2,7 @@
 
 {% from 'components/headers.html' import user_header %}
 {% from 'components/card_list.html' import card_list %}
-{% from 'components/cards.html' import dm_card %}
+{% from 'components/cards/dm.html' import dm_card %}
 
 {% set paysite = g.paysites[props.service] %}
 {% set page_title = 'DMs of ' ~ props.artist.name ~ ' from ' ~ paysite.title ~ ' | Kemono' %}
