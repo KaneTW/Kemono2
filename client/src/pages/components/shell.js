@@ -12,7 +12,7 @@ export function initShell(header) {
 
   if (isLoggedIn) {
     const items = [
-      GlobalNavigationItem({ link: "/account", text: "[Account Page]" }),
+      GlobalNavigationItem({ link: "/account", text: "[Account]" }),
       GlobalNavigationItem({ link: "/favorites", text: "[Favorites]" }),
       (() => {
         const item = GlobalNavigationItem({ link: "/account/logout", text: "[Logout]"});

@@ -7,7 +7,12 @@
 
   .def-list {
     &__section {
-      
+      dt {
+        float: left;
+      }
+      dd {
+        float: left;
+      }
     }
   }
 }

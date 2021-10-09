@@ -17,45 +17,41 @@
 <section class="site-section site-section--account">
   <header class="site-section__header">
     <h1 class="site-section__heading">
-      Account page
+      Account
     </h1>
   </header>
-  <dl>
-    <div class="def-list__section">
-      <dt>Name:</dt>
-      <dd>{{ props.account.username }}</dd>
-    </div>
-    <div class="def-list__section">
-      <dt>Role:</dt>
-      <dd class="acc-info__role">
+  <div>
+    <p class="def-list__section">
+      Name: <b>{{ props.account.username }}</b>
+    </p>
+    <p class="def-list__section">
+      Role:
+      <span class="acc-info__role">
         {{ kemono_link(
           url= role_links[props.account.role],
           text= props.account.role
         ) }}
-      </dd>
-    </div>
-    <div class="def-list__section">
-      <dt>Joined:</dt>
-      <dd>{{ props.account.created_at }}</dd>
-    </div>
-    <div class="def-list__section">
-      <dt>Notifications:</dt>
-      <dd>
+      </span>
+    </p>
+    <p class="def-list__section">
+      Joined:
+      <span>{{ props.account.created_at }}</span>
+    </p>
+    <p class="def-list__section">
+      Notifications:
+      <span>
         {{ kemono_link(
           url= '/account/notifications',
           text= props.notifications_count
         ) }}
-      </dd>
-    </div>
-    <div class="def-list__section">
-      <dt>Keys:</dt>
-      <dd>
-        {{ kemono_link(
-          url= '/account/keys',
-          text= 'Link'
-        ) }}
-      </dd>
-    </div>
-  </dl>
+      </span>
+    </p>
+    <p class="def-list__section">
+      {{ kemono_link(
+        url= '/account/keys',
+        text= 'Keys'
+      ) }}
+    </p>
+  </div>
 </section>
 {% endblock content %}
