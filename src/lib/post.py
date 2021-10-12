@@ -202,6 +202,7 @@ def get_render_data_for_posts(posts):
                 result_is_image.append(True)
                 previews.append({
                     'type': 'thumbnail',
+                    'name': post['file']['name'],
                     'path': post['file']['path'].replace('https://kemono.party','')
                 })
             else:
@@ -224,6 +225,7 @@ def get_render_data_for_posts(posts):
             if re.search("\.(gif|jpe?g|jpe|png|webp)$", attachment['path'], re.IGNORECASE):
                 previews.append({
                     'type': 'thumbnail',
+                    'name': attachment['name'],
                     'path': attachment['path'].replace('https://kemono.party','')
                 })
             else:
