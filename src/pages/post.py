@@ -68,11 +68,12 @@ def get(service, artist_id, post_id):
         if re.search("\.(gif|jpe?g|jpe|png|webp)$", post['file']['path'], re.IGNORECASE):
             previews.append({
                 'type': 'thumbnail',
+                'name': post['file']['name'],
                 'path': post['file']['path'].replace('https://kemono.party','')
             })
         else:
             attachments.append({
-                'path': post['file']['path'],
+                'path': post['file']['path'].replace('https://kemono.party',''),
                 'name': post['file'].get('name')
             })
     if len(post['embed']):
@@ -86,6 +87,7 @@ def get(service, artist_id, post_id):
         if re.search("\.(gif|jpe?g|jpe|png|webp)$", attachment['path'], re.IGNORECASE):
             previews.append({
                 'type': 'thumbnail',
+                'name': attachment['name'],
                 'path': attachment['path'].replace('https://kemono.party','')
             })
         else:
