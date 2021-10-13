@@ -1,6 +1,6 @@
 from flask import Blueprint, request, make_response, render_template, redirect, url_for
 from pathlib import PurePath
-
+from bleach.sanitizer import Cleaner
 import datetime
 import re
 
@@ -100,6 +100,17 @@ def get(service, artist_id, post_id):
                 'extension': file_extension,
                 'stem': stem
             })
+    scrub = Cleaner(
+        tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code', 'em', 'i', 'li', 'ol', 'strong', 'ul', 'img'],
+        attributes = {
+            'a': ['href', 'title'],
+            'abbr': ['title'],
+            'acronym': ['title'],
+            'img': ['src']
+        },
+        strip=True
+    )
+    post['content'] = scrub.clean(post['content'])
 
     props['artist'] = artist
     props['flagged'] = is_post_flagged(service, artist_id, post_id)
