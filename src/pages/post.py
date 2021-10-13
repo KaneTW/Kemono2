@@ -101,7 +101,8 @@ def get(service, artist_id, post_id):
                 'stem': stem
             })
     scrub = Cleaner(
-        tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code', 'em', 'i', 'li', 'ol', 'strong', 'ul', 'img'],
+        tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code', 'em', 'i', 'li', 'ol', 'strong', 'ul',
+        'img', 'br', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'div', 'span', 'ul', 'ol', 'li'],
         attributes = {
             'a': ['href', 'title'],
             'abbr': ['title'],
