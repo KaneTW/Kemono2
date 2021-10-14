@@ -1,0 +1,20 @@
+.service-key {
+
+  &__stats {
+  }
+
+  &__stat {
+
+    & > * {
+      display: inline;
+    }
+  }
+
+  &__status {
+    color: var(--positive-colour1-primary);
+
+    &--dead {
+      color: var(--negative-colour1-primary);
+    }
+  }
+}

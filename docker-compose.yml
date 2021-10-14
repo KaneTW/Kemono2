@@ -56,15 +56,15 @@ services:
       retries: 3
       start_period: 30s
   kemono-frontend:
-    build: 
+    build:
       context: ./client
     container_name: kemono-frontend
-    environment: 
+    environment:
       - NODE_ENV=production
     volumes:
       - frontend-assets:/app/dist
   kemono-archiver:
-    build: 
+    build:
       context: ./archiver
       dockerfile: Dockerfile
     container_name: kemono-archiver
@@ -72,6 +72,8 @@ services:
     depends_on:
       kemono-db:
         condition: service_healthy
+    environment:
+      - FLASK_ENV=production
     volumes:
       - ./kitsune.py:/app/config.py
       - data:/storage

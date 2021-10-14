@@ -4,15 +4,17 @@ import json
 from flask import Blueprint, request, make_response, render_template, session, redirect, flash, url_for, current_app, g
 
 from src.utils.utils import make_cache_key, get_value, set_query_parameter
-from src.lib.account import get_saved_keys, load_account, is_username_taken, attempt_login, create_account
+
+from src.lib.account import get_saved_keys, revoke_saved_keys, get_saved_key_import_ids, load_account, is_username_taken, attempt_login, create_account
 from src.lib.notification import count_account_notifications, get_account_notifications, set_notifications_as_seen
 from src.lib.security import is_password_compromised
 # from src.internals.cache.flask_cache import cache
 from .administrator import administrator
 from .moderator import moderator
 
-from src.types.account import Account
-from .types import AccountPageProps, NotificationsProps
+from src.types.account import Account, Service_Key
+from src.types.props import SuccessProps
+from .types import AccountPageProps, NotificationsProps,ServiceKeysProps
 
 account = Blueprint('account', __name__)
 
@@ -57,22 +59,47 @@ def get_notifications():
 
 @account.get('/account/keys')
 def get_account_keys():
-    account = load_account()
-    if account is None:
+    account: Account = g.get('account')
+    if not account:
         return redirect(url_for('account.get_login'))
 
-    props = {
-        'query_string': ''
-    }
+    saved_keys = get_saved_keys(account.id)
+    props = ServiceKeysProps(
+        service_keys= saved_keys
+    )
 
-    saved_keys = get_saved_keys(account["id"])
+    saved_session_key_import_ids = []
+    for key in saved_keys:
+        saved_session_key_import_ids.append(get_saved_key_import_ids(key.id))
 
     response = make_response(render_template(
         'account/keys.html',
         props = props,
-        results = saved_keys,
+        import_ids = saved_session_key_import_ids
     ), 200)
     response.headers['Cache-Control'] = 's-maxage=60'
+    return response
+
+@account.post('/account/keys')
+def revoke_service_keys():
+    account: Account = g.get('account')
+    if not account:
+        return redirect(url_for('account.get_login'))
+
+    keys_dict = request.form.to_dict(flat= False)
+    keys_for_revocation = [int(key) for key in keys_dict['revoke']] if keys_dict.get('revoke') else []
+
+    revoke_saved_keys(keys_for_revocation, account.id)
+
+    props = SuccessProps(
+        currentPage= 'account',
+        redirect= '/account/keys'
+    )
+
+    response = make_response(render_template(
+        'success.html',
+        props = props
+    ), 200)
     return response
 
 @account.get('/account/login')

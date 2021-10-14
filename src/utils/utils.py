@@ -3,6 +3,8 @@ from datetime import datetime
 from flask import request, g
 import json
 
+from configs.derived_vars import is_development
+
 freesites = {
     "kemono": {
         "title": "Kemono",
@@ -26,6 +28,7 @@ paysite_list = [
     "discord",
     "fantia"
 ]
+
 # because fanbox requires `post_id` and `artist_id` for post link
 # any generic call to `paysite.post.link()` should have 2 arguments
 paysites = {
@@ -202,3 +205,9 @@ def parse_int(string, default = 0):
 
 def render_page_data():
     return json.dumps(g.page_data)
+
+# doing it in the end to avoid circular import error
+if is_development:
+    from src.dev_only.internals import service_name, kemono_dev
+    paysite_list.append(service_name)
+    paysites[service_name] = kemono_dev

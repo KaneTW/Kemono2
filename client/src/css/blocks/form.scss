@@ -13,6 +13,10 @@
     max-width: $width-tablet;
   }
 
+  &--controller {
+    display: none;
+  }
+
   &__section,
   &__fieldset {
     padding-bottom: $size-normal;
@@ -33,7 +37,7 @@
   }
 
   &__section {
-    
+
     &--buttons {
       text-align: center;
     }
@@ -99,24 +103,24 @@
     line-height: normal;
     color: hsl(0, 0%, 45%);
   }
-  
+
   &__input {
     background: hsl(224, 7%, 32%);
     color: hsl(0, 0%, 100%);
     border: 0;
   }
-  
+
   &__option {
     color: hsl(0, 0%, 100%);
     background-color: hsl(224, 7%, 32%);
   }
-  
+
   /* quick hack to overwrite attribute rules */
   &__input.form__input--text,
   &__input.form__input--password {
     text-align: left;
   }
-  
+
   &__button {
     cursor: pointer;
 
@@ -125,7 +129,7 @@
       text-align: center;
       color: var(--colour0-primary);
       background-image: linear-gradient(
-        hsl(220, 7%, 17%), 
+        hsl(220, 7%, 17%),
         hsl(0, 0%, 7%)
       );
       border: 0;

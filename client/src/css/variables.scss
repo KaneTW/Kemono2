@@ -16,7 +16,7 @@ $size-normal: 1em;
 $size-big: 2em;
 $size-large: 3em;
 
-// buttons 
+// buttons
 $button-min-width: 44px;
 $button-min-height: 44px;
 
@@ -37,12 +37,13 @@ $button-min-height: 44px;
   --submit-colour1-secondary: hsl(240, 100%, 50%);
   --submit-colour2-primary: hsl(240, 100%, 50%);
   --submit-colour2-secondary: hsl(240, 100%, 50%);
+  --positive-colour1-primary: hsl(120, 100%, 45%);
   --positive-colour1-secondary: hsl(120, 100%, 30%);
-  --negative-colour1-primary: hsl(0, 100%, 70%);
+  --negative-colour1-primary: hsl(0, 100%, 60%);
   --favourite-colour1-primary: hsl(51, 100%, 50%);
   --favourite-colour2-primary: hsl(60, 100%, 30%);
   /* END Buttons */
-  
+
   /* Links */
   // external
   --anchour-colour1-primary: hsl(200, 100%, 80%);

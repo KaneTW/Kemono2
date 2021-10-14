@@ -29,7 +29,8 @@
       <span class="acc-info__role">
         {{ kemono_link(
           url= role_links[props.account.role],
-          text= props.account.role
+          text= props.account.role,
+          is_noop= false
         ) }}
       </span>
     </p>
@@ -42,14 +43,16 @@
       <span>
         {{ kemono_link(
           url= '/account/notifications',
-          text= props.notifications_count
+          text= props.notifications_count,
+          is_noop= false
         ) }}
       </span>
     </p>
     <p class="def-list__section">
       {{ kemono_link(
         url= '/account/keys',
-        text= 'Keys'
+        text= 'Keys',
+        is_noop= false
       ) }}
     </p>
   </div>

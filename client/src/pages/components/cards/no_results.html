@@ -1,0 +1,18 @@
+{% from 'components/cards/base.html' import card, card_header, card_body %}
+
+{% macro no_results(
+  title = 'Nobody here but us chickens!',
+  message = 'There are no items found.'
+) %}
+  {% call card(class_name='card--no-results') %}
+    {% call card_header() %}
+      <h2>
+        {{ title }}
+      </h2>
+    {% endcall %}
+
+    {% call card_body() %}
+      {{ message }}
+    {% endcall %}
+  {% endcall %}
+{% endmacro %}

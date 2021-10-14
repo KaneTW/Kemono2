@@ -1,0 +1,8 @@
+{% macro form() %}
+  <form
+    class="form {{ kwargs.pop('class') if kwargs.class }}"
+    {% for attribute in kwargs %}
+      {{ attribute }}="{{kwargs[attribute]}}"
+    {% endfor %}
+  >{{ caller() if caller }}</form>
+{% endmacro %}

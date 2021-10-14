@@ -1,0 +1,9 @@
+@use "../../../css/variables" as *;
+
+.card--no-results {
+  flex: 0 1 $width-phone;
+
+  &:hover {
+    box-shadow: none;
+  }
+}

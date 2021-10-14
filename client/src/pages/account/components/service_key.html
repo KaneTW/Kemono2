@@ -1,0 +1,50 @@
+{% from 'components/cards/base.html' import card, card_header, card_body, card_footer %}
+{% from 'components/timestamp.html' import timestamp %}
+
+{% macro service_key_card(service_key, import_ids, class_name= none) %}
+  {% set paysite = g.paysites[service_key.service] %}
+
+  {% call card(class_name= class_name) %}
+    {% call card_header() %}
+      <h2>
+        {{ paysite.title }}
+      </h2>
+    {% endcall %}
+
+    {% call card_body() %}
+      <dl class="service-key__stats">
+        <div class="service-key__stat">
+          <dt>Status:</dt>
+          {% if not service_key.dead %}
+            <dd class="service-key__status">
+              Alive
+            </dd>
+          {% else %}
+            <dd class="service-key__status service-key__status--dead">
+              Dead
+            </dd>
+          {% endif %}
+        </div>
+        <div class="service-key__stat">
+          {% if import_ids %}
+            <dt>Logs</dt>
+            <ul>
+              {% for log in import_ids %}
+                <li><a href="/importer/status/{{ log['import_id'] }}">{{ log['import_id'] }}</a></li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+        </div>
+      </dl>
+    {% endcall %}
+
+    {% call card_footer() %}
+      <dl class="service-key__stats">
+        <div class="service-key__stat">
+          <dd>Added:</dd>
+          <dt>{{ timestamp(service_key.added) }}</dt>
+        </div>
+      </dl>
+    {% endcall %}
+  {% endcall %}
+{% endmacro %}

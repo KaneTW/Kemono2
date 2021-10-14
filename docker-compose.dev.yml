@@ -14,7 +14,7 @@ services:
       - ./nginx.conf:/etc/nginx/nginx.conf
       - data-dev:/storage
   kemono-app-dev:
-    build: 
+    build:
       context: .
       dockerfile: Dockerfile.dev
     container_name: kemono
@@ -48,11 +48,11 @@ services:
       retries: 3
       start_period: 30s
   kemono-frontend-dev:
-    build: 
+    build:
       context: ./client
       dockerfile: Dockerfile.dev
     container_name: kemono-frontend-dev
-    environment: 
+    environment:
       - NODE_ENV=development
       - KEMONO_SITE=http://localhost:5000
     volumes:
@@ -78,7 +78,7 @@ services:
     # ports:
     #  - 5432:5432
   kemono-archiver:
-    build: 
+    build:
       context: ./archiver
       dockerfile: Dockerfile.dev
     container_name: kemono-archiver
@@ -86,6 +86,8 @@ services:
     depends_on:
       kemono-db:
         condition: service_healthy
+    environment:
+      - FLASK_ENV=development
     volumes:
       - ./archiver:/app
       - ./kitsune.py:/app/config.py
