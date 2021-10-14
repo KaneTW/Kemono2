@@ -205,7 +205,7 @@
         <li class="post__attachment">
           <a
             class="post__attachment-link"
-            href="/data{{ attachment.path }}?f={{ attachment.name }}" 
+            href="/data{{ attachment.path }}?f={{ attachment.name|urlencode }}" 
           >
             Download {{ attachment.name }}
           </a>
@@ -230,7 +230,7 @@
       {% for preview in previews %}
         {% if preview.type == 'thumbnail' %}
           <div class="post__thumbnail">
-            <a class="fileThumb" href="/data{{ preview.path }}?f={{ preview.name }}">
+            <a class="fileThumb" href="/data{{ preview.path }}?f={{ preview.name|urlencode }}">
               {# TODO: move backup image logic to the script #}
               <img
                 data-src="/thumbnail/data{{ preview.path }}"
