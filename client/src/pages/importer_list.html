@@ -146,8 +146,8 @@
   </ul>
   <h3>Auto-import</h3>
   <p>
-    The auto-import feature allows users to allow Kemono  store session keys long-term to automatically detect and retrieve new posts and creators without need for manual key submission. All keys are encrypted using a strong RSA 4096 key. Every 24 hours, a computer outside of Kemono's infrastucture sends the private key to the backend, allowing it to decrypt all working keys and start import tasks. Even if Kemono's private database were to somehow be compromised, your tokens would remain anonymous and secure.<br>
-    If you are logged into Kemono, in the future, any key you submit with autoimport enabled can be managed under the <b>[My Keys]</b> tab in the header. There, you will be able to view import logs or revoke access. <i>Please note that anonymously-submitted keys will not be able to be managed.</i>
+    The auto-import feature allows users to give Kemono permission to automatically detect and retrieve new posts and creators by storing session keys long-term, without need for manual key submission. All keys are encrypted using a strong RSA 4096 key. Every 24 hours, a computer outside of Kemono's infrastucture sends the private key to the backend, allowing it to decrypt all working keys and start import tasks. Even if Kemono's private database were to somehow be compromised, your tokens would remain anonymous and secure.<br>
+    If you are logged into Kemono, any key you submit with autoimport enabled can be managed under the <b>Keys</b> section of your <b>[Account]</b> tab in the header. There, you will be able to view import logs or revoke access. <i>Please note that anonymously-submitted keys cannot be managed.</i>
   </p>
 </section>
 {% endblock content %}
