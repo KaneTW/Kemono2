@@ -83,7 +83,7 @@ def get_saved_keys(account_id: int, reload: bool = False):
         )
         query = """
             SELECT id, service, discord_channel_ids, added, dead
-            FROM saved_session_keys
+            FROM saved_session_keys_with_hashes
             WHERE contributor_id = %(account_id)s
             ORDER BY
                 added DESC
