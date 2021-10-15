@@ -105,7 +105,7 @@ def revoke_saved_keys(key_ids: List[int], account_id: int):
     query1 = """
         DELETE
         FROM saved_session_key_import_ids skid
-        USING saved_session_keys sk
+        USING saved_session_keys_with_hashes sk
         WHERE
             skid.key_id = sk.id
             AND sk.id = ANY (%(key_ids)s)
@@ -114,7 +114,7 @@ def revoke_saved_keys(key_ids: List[int], account_id: int):
     cursor.execute(query1, query_args)
     query2 = """
         DELETE
-        FROM saved_session_keys
+        FROM saved_session_keys_with_hashes
         WHERE
             id = ANY (%(key_ids)s)
             AND contributor_id = %(account_id)s
