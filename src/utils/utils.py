@@ -2,7 +2,8 @@ from urllib.parse import urlencode, parse_qs, urlsplit, urlunsplit
 from datetime import datetime
 from flask import request, g
 import json
-
+import random
+import hashlib
 from configs.derived_vars import is_development
 
 freesites = {
@@ -205,6 +206,10 @@ def parse_int(string, default = 0):
 
 def render_page_data():
     return json.dumps(g.page_data)
+
+def get_import_id(data):
+    salt = str(random.randrange(0, 1000))
+    return take(16, hashlib.sha256((data + salt).encode('utf-8')).hexdigest())
 
 # doing it in the end to avoid circular import error
 if is_development:

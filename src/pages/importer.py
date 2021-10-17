@@ -1,7 +1,10 @@
 from flask import Blueprint, request, make_response, render_template, current_app, g, session
 
+import json
 import requests
 from os import getenv
+from ..internals.cache.redis import get_conn, serialize_dict_list, deserialize_dict_list
+from ..utils.utils import get_import_id
 from ..lib.dms import get_unapproved_dms, approve_dm, cleanup_unapproved_dms
 from .importer_types import DMPageProps, StatusPageProps
 
@@ -130,22 +133,24 @@ def importer_submit():
     if not session.get('account_id') and request.form.get("save_dms"):
         return 'You must be logged in to import direct messages.', 401
     
+    if not request.form.get("session_key"):
+        return "Session key missing.", 401
+    
     try:
-        r = requests.post(
-            f'http://{host}:{port}/api/import',
-            data = {
-                'service': request.form.get("service"),
-                'session_key': request.form.get("session_key"),
-                'channel_ids': request.form.get("channel_ids"),
-                'auto_import': request.form.get("auto_import"),
-                'save_session_key': request.form.get("save_session_key"),
-                'save_dms': request.form.get("save_dms"),
-                'contributor_id': session.get("account_id")
-            }
-        )
+        redis = get_conn()
+        import_id = get_import_id(request.form.get("session_key"))
+        data = {
+            'import_id': import_id,
+            'key': request.form.get("session_key"),
+            'service': request.form.get("service"),
+            'channel_ids': request.form.get("channel_ids"),
+            'auto_import': request.form.get("auto_import"),
+            'save_session_key': request.form.get("save_session_key"),
+            'save_dms': request.form.get("save_dms"),
+            'contributor_id': session.get("account_id")
+        }
+        redis.set('imports:' + import_id, json.dumps(data))
 
-        r.raise_for_status()
-        import_id = r.text
         props = {
             'currentPage': 'import',
             'redirect': f'/importer/status/{import_id}{ "?dms=1" if request.form.get("save_dms") else "" }'
@@ -155,5 +160,5 @@ def importer_submit():
             props = props
         ), 200)
     except Exception as e:
-        current_app.logger.exception('Error connecting to archver')
-        return f'Error while connecting to archiver. Is it running?', 500
+        current_app.logger.exception('Error connecting to archiver')
+        return f'Error while pushing import request. Is Redis running?', 500
