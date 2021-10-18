@@ -112,17 +112,14 @@ def approve_importer_dms(import_id):
 
 @importer_page.route('/api/logs/<import_id>')
 def get_importer_logs(import_id):
-    host = getenv('ARCHIVERHOST')
-    port = getenv('ARCHIVERPORT') if getenv('ARCHIVERPORT') else '8000'
-
-    try:
-        r = requests.get(
-            f'http://{host}:{port}/api/logs/{import_id}'
-        )
-        r.raise_for_status()
-        return r.text, r.status_code
-    except Exception:
-        return f'Error while connecting to archiver.', 500
+    redis = get_conn()
+    key = f'importer_logs:{import_id}'
+    llen = redis.llen(key)
+    messages = []
+    if llen > 0:
+        messages = redis.lrange(key, 0, llen)
+    
+    return json.dumps(list(map(lambda msg: msg.decode('utf-8'), messages))), 200
 
 ### API ###
 @importer_page.route('/api/import', methods=['POST'])
