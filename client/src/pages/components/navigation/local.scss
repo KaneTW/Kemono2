@@ -1,0 +1,15 @@
+@use "../../../css/variables" as *;
+
+.navigation {
+  &--local {
+    display: inline-block;
+  }
+
+  &__list--local {
+    list-style-type: disc;
+    background-color: var(--colour1-tertiary);
+    border-radius: 10px;
+    padding-left: calc(#{$size-normal} + #{$size-small})
+  }
+  &__item--local {}
+}

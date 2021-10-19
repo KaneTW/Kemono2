@@ -1,0 +1,18 @@
+{% from 'components/meta/attributes.html' import attributes %}
+{% from 'components/links.html' import local_link %}
+
+{% macro local_nav() %}
+  <nav {{ attributes("navigation navigation--local", **kwargs) }}>{{ caller() }}</nav>
+{% endmacro %}
+
+{% macro local_list() %}
+  <ul {{ attributes("navigation__list navigation__list--local", **kwargs) }}>{{ caller() }}</ul>
+{% endmacro %}
+
+{% macro local_list_ordered() %}
+  <ol {{ attributes("navigation__list navigation__list--ordered navigation__list--local", **kwargs) }}>{{ caller() }}</ol>
+{% endmacro %}
+
+{% macro local_item(id, text) %}
+  <li {{ attributes("navigation__item navigation__item--local", **kwargs) }}>{{ local_link(id, text) }}</li>
+{% endmacro %}

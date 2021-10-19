@@ -3,13 +3,17 @@
 .navigation {
   &__list {
     display: flex;
-    flex-flow: row wrap;
-    justify-content: flex-start;
-    align-items: center;
-    gap: $size-normal;
+    flex-flow: column nowrap;
+    align-items: flex-start;
+    gap: $size-small;
     list-style: none;
-    padding: 0;
+    padding: $size-small;
     margin: 0;
+
+    &--ordered {
+      list-style-type: decimal-leading-zero;
+      padding-left: $size-normal;
+    }
   }
 
   &__item {

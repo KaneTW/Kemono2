@@ -1,4 +1,4 @@
-import { bansPage } from "./bans";
+import { bansPage } from "./help/_index.js";
 import { userPage } from "./user";
 import { registerPage } from "./account/_index.js";
 import { postPage } from "./post";

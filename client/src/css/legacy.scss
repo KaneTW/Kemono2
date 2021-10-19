@@ -9,28 +9,8 @@
   text-align: center;
 }
 
-.sidebar h1 {
-  font-size: 1.16667em;
-}
-
-.a {
-  color: #87CEFA;
-  font-family: Verdana, sans-serif;
-}
-
 .subtitle {
   color: #737373;
-}
-
-.content-grid {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.content-grid * {
-  max-width: 200px;
-  max-height: 200px;
 }
 
 .no-posts {
@@ -288,12 +268,6 @@
   line-height: 1.8em;
 }
 
-.results li a {
-  text-decoration: none;
-  line-height: 1.4em;
-  color: #87CEFA;
-}
-
 .page img {
   max-width: 100%;
 }
@@ -327,10 +301,6 @@ menu li {
   .thumb {
     width: 160px;
     height: 160px;
-  }
-  .content-grid * {
-    max-width: 160px;
-    max-height: 160px;
   }
   .sidebar {
     width: auto;

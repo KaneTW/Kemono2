@@ -1,0 +1,18 @@
+{% from 'components/meta/attributes.html' import attributes %}
+
+{# Call-only macros #}
+{% macro faq_list() %}
+  <dl {{ attributes("desc-list desc-list--faq", **kwargs) }}>{{ caller() }}</dl>
+{% endmacro %}
+
+{% macro faq_section() %}
+  <div {{ attributes("desc-list__section desc-list__section--faq", **kwargs) }}>{{ caller() }}</div>
+{% endmacro %}
+
+{% macro faq_question() %}
+  <dt {{ attributes("desc-list__term desc-list__term--question", **kwargs) }}>{{ caller() }}</dt>
+{% endmacro %}
+
+{% macro faq_answer() %}
+  <dd {{ attributes("desc-list__details desc-list__details--answer", **kwargs) }}>{{ caller() }}</dd>
+{% endmacro %}

@@ -1,0 +1,7 @@
+{# Put html attributes into kwargs argument #}
+{% macro attributes(class_name) %}
+  class="{{ class_name ~ ' ' ~ kwargs.pop('class') if kwargs.class else class_name }}"
+  {% for attribute in kwargs %}
+    {{ attribute }}="{{ kwargs[attribute] }}"
+  {% endfor %}
+{% endmacro %}

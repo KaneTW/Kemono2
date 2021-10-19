@@ -1,0 +1,48 @@
+{% extends 'components/shell.html' %}
+
+{% import 'components/site.html' as site %}
+{% from 'components/navigation/local.html' import local_nav, local_list, local_item %}
+{% from 'components/lists/faq.html' import faq_list, faq_section, faq_question, faq_answer %}
+
+{% set page_title = 'Frequently Asked Questions | Kemono' %}
+
+{% block title %}
+  <title>
+    {{ page_title }}
+  </title>
+{% endblock title %}
+
+{% block content %}
+{% call site.section('help-faq', 'Frequently Asked Questions') %}
+  {% call local_nav(id="faq-nav") %}
+    <h2>Table of contents</h2>
+    {% call local_list() %}
+      {{ local_item("id1", "question1") }}
+      {{ local_item("id2", "question2") }}
+    {% endcall %}
+  {% endcall %}
+
+  <h2>FAQ</h2>
+  {% call faq_list() %}
+    {% call faq_section(id="id1") %}
+      {% call faq_question() %}
+        question1
+      {% endcall %}
+
+      {% call faq_answer() %}
+        answer1
+      {% endcall %}
+    {% endcall %}
+
+    {% call faq_section(id="id2") %}
+      {% call faq_question() %}
+        question2
+      {% endcall %}
+
+      {% call faq_answer() %}
+        answer2
+      {% endcall %}
+    {% endcall %}
+  {% endcall %}
+{% endcall %}
+{% endblock content %}

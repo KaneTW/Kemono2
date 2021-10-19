@@ -113,6 +113,16 @@
           <li><a href="/requests/new">[Post New Request]</a></li>
         </ul>
       {% endif %}
+      {% if props.currentPage == 'help' %}
+        <ul class="subheader">
+          <li><a href="/help/faq">[FAQ]</a></li>
+          {# <li><a href="/help/about">[About]</a></li>
+          <li><a href="/help/posts">[Posts]</a></li>
+          <li><a href="/help/rules">[Rules]</a></li>
+          <li><a href="/help/license">[Open Source]</a></li>
+          <li><a href="/help/bans">[Bans]</a></li> #}
+        </ul>
+      {% endif %}
       {% include 'components/flash_messages.html' %}
     </header>
 

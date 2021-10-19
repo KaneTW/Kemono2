@@ -1,0 +1,23 @@
+@use "../../../css/variables" as *;
+
+.desc-list {
+  background-color: var(--colour1-tertiary);
+  border-radius: 10px;
+
+  &__section {
+    display: inline-block;
+    border-radius: 10px;
+    padding: $size-small;
+
+    &:target {
+      outline-color: var(--anchour-local-colour1-primary);
+      outline-width: $size-thin;
+      outline-style: dashed;
+    }
+  }
+  &__term {
+    font-weight: bold;
+  }
+  &__details {
+  }
+}
