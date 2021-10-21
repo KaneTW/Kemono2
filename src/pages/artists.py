@@ -187,6 +187,7 @@ def get_artist_search_results(q, service, sort_by, order, o, limit):
 
 def do_artist_post_search(id, service, search, o, limit):
     posts = get_all_posts_by_artist(id, service)
+    search = search.lower()
 
     matches = []
     for post in posts:
