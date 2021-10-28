@@ -119,7 +119,7 @@ def posts():
             else:
                 attachments.append({
                     'path': attachment['path'],
-                    'name': attachment['name']
+                    'name': attachment.get('name')
                 })
 
         cursor4 = get_cursor()

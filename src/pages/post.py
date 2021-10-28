@@ -68,7 +68,7 @@ def get(service, artist_id, post_id):
         if re.search("\.(gif|jpe?g|jpe|png|webp)$", post['file']['path'], re.IGNORECASE):
             previews.append({
                 'type': 'thumbnail',
-                'name': post['file']['name'],
+                'name': post['file'].get('name'),
                 'path': post['file']['path'].replace('https://kemono.party','')
             })
         else:
@@ -96,7 +96,7 @@ def get(service, artist_id, post_id):
             stem = PurePath(attachment['path']).stem
             attachments.append({
                 'path': attachment['path'],
-                'name': attachment['name'],
+                'name': attachment.get('name'),
                 'extension': file_extension,
                 'stem': stem
             })

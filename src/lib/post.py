@@ -202,7 +202,7 @@ def get_render_data_for_posts(posts):
                 result_is_image.append(True)
                 previews.append({
                     'type': 'thumbnail',
-                    'name': post['file']['name'],
+                    'name': post['file'].get('name'),
                     'path': post['file']['path'].replace('https://kemono.party','')
                 })
             else:
@@ -225,13 +225,13 @@ def get_render_data_for_posts(posts):
             if re.search("\.(gif|jpe?g|jpe|png|webp)$", attachment['path'], re.IGNORECASE):
                 previews.append({
                     'type': 'thumbnail',
-                    'name': attachment['name'],
+                    'name': attachment.get('name'),
                     'path': attachment['path'].replace('https://kemono.party','')
                 })
             else:
                 attachments.append({
                     'path': attachment['path'],
-                    'name': attachment['name']
+                    'name': attachment.get('name')
                 })
 
         result_flagged.append(is_post_flagged(post['id'], post['user'], post['service']))
