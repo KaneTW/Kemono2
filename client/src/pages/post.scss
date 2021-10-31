@@ -24,6 +24,7 @@
 
   &__user {
     position: relative;
+    flex: 0 0 220px;
     text-align: center;
     background-color: hsla(0, 0%, 0%, 0.7);
     border-right: solid hsla(0, 0%, 50%, 0.7) $size-thin;
