@@ -10,8 +10,13 @@ pool: redis.ConnectionPool = None
 
 def init():
     global pool
-    pool = redis.ConnectionPool(host=getenv('REDIS_HOST'), port=getenv('REDIS_PORT'), password=getenv('REDIS_PASSWORD'))
+    pool = redis.ConnectionPool(host=getenv('REDIS_HOST'), port=getenv('REDIS_PORT'), password=getenv('REDIS_PASSWORD'), db=0)
     return pool
+
+def init_mq():
+    global mq_pool
+    mq_pool = redis.ConnectionPool(host=getenv('REDIS_HOST'), port=getenv('REDIS_PORT'), password=getenv('REDIS_PASSWORD'), db=1)
+    return mq_pool
 
 def get_pool():
     global pool
@@ -19,6 +24,9 @@ def get_pool():
 
 def get_conn():
     return redis.Redis(connection_pool=pool)
+
+def get_mq_conn():
+    return redis.Redis(connection_pool=mq_pool)
 
 def serialize_dict(data):
     to_serialize = {
