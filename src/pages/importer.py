@@ -3,7 +3,7 @@ from flask import Blueprint, request, make_response, render_template, current_ap
 import json
 import requests
 from os import getenv
-from ..internals.cache.redis import get_conn, get_mq_conn, serialize_dict_list, deserialize_dict_list
+from ..internals.cache.redis import get_conn, serialize_dict_list, deserialize_dict_list
 from ..utils.utils import get_import_id
 from ..lib.dms import get_unapproved_dms, approve_dm, cleanup_unapproved_dms
 from .importer_types import DMPageProps, StatusPageProps
@@ -137,7 +137,7 @@ def importer_submit():
         return "The length of the session key you sent is too large. You should let the administrator know about this.", 400
     
     try:
-        redis = get_mq_conn()
+        redis = get_conn()
         import_id = get_import_id(request.form.get("session_key"))
         data = {
             'key': request.form.get("session_key"),

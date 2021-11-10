@@ -1,8 +1,9 @@
 import requests
 import hashlib
+from datetime import timedelta
 from redis_rate_limit import RateLimit, TooManyRequests
 
-from ..internals.cache.redis import get_pool
+from ..internals.cache.redis import get_conn
 
 from flask import current_app
 
@@ -21,10 +22,14 @@ def is_password_compromised(password):
 
     return False
 
+def is_rate_limited(r, key: str, limit: int, period: timedelta):
+    if r.setnx(key, limit):
+        r.expire(key, int(period.total_seconds()))
+    bucket_val = r.get(key)
+    if bucket_val and int(bucket_val) > 0:
+        r.decrby(key, 1)
+        return False
+    return True
+
 def is_login_rate_limited(account_id):
-    pool = get_pool()
-    try:
-        with RateLimit(resource='login', client=str(account_id), max_requests=10, expire=300, redis_pool=pool):
-            return False
-    except TooManyRequests:
-        return True
+    return is_rate_limited(get_conn(), f'ratelimit:login:{account_id}', 10, timedelta(300))

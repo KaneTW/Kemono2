@@ -73,7 +73,6 @@ logging.getLogger('urllib3').setLevel(logging.WARNING)
 cache.init_app(app)
 database.init()
 redis.init()
-redis.init_mq()
 
 @app.before_request
 def do_init_stuff():

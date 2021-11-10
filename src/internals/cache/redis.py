@@ -1,32 +1,33 @@
-import redis
 from flask import current_app
 from os import getenv
 import dateutil
 import datetime
 import copy
 import ujson
+import rb
+import redis_map
 
-pool: redis.ConnectionPool = None
+cluster: rb.Cluster = None
+
+class KemonoRouter(rb.BaseRouter):
+    def get_host_for_key(key):
+        top_level_prefix_of_key = key.split(':')[0]
+        if (redis_map.keyspaces.get(top_level_prefix_of_key)):
+            return redis_map.keyspaces[top_level_prefix_of_key]
+        else:
+            raise rb.UnroutableCommand()
 
 def init():
-    global pool
-    pool = redis.ConnectionPool(host=getenv('REDIS_HOST'), port=getenv('REDIS_PORT'), password=getenv('REDIS_PASSWORD'), db=0)
-    return pool
+    global cluster
+    cluster = rb.Cluster(hosts=redis_map.nodes, host_defaults=redis_map.node_options)
+    return cluster
 
-def init_mq():
-    global mq_pool
-    mq_pool = redis.ConnectionPool(host=getenv('REDIS_HOST'), port=getenv('REDIS_PORT'), password=getenv('REDIS_PASSWORD'), db=1)
-    return mq_pool
-
-def get_pool():
-    global pool
-    return pool
+# def get_pool():
+#     global pool
+#     return pool
 
 def get_conn():
-    return redis.Redis(connection_pool=pool)
-
-def get_mq_conn():
-    return redis.Redis(connection_pool=mq_pool)
+    return cluster.get_routing_client()
 
 def serialize_dict(data):
     to_serialize = {
