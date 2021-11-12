@@ -19,7 +19,7 @@ class KemonoRouter(rb.BaseRouter):
 
 def init():
     global cluster
-    cluster = rb.Cluster(hosts=redis_map.nodes, host_defaults=redis_map.node_options)
+    cluster = rb.Cluster(hosts=redis_map.nodes, host_defaults=redis_map.node_options, router_cls=KemonoRouter)
     return cluster
 
 # def get_pool():
