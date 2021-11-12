@@ -11,7 +11,7 @@ cluster: rb.Cluster = None
 
 class KemonoRouter(rb.BaseRouter):
     def get_host_for_key(self, key):
-        top_level_prefix_of_key = key.decode('utf-8').split(':')[0]
+        top_level_prefix_of_key = key.split(':')[0]
         if (redis_map.keyspaces.get(top_level_prefix_of_key) is not None):
             return redis_map.keyspaces[top_level_prefix_of_key]
         else:
