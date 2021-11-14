@@ -1,14 +1,15 @@
+import json
+from src.internals.cache.redis import get_conn, serialize_dict_list, deserialize_dict_list
+from src.utils.utils import get_import_id
 from flask import Blueprint, request, make_response, render_template, current_app, g, session
 
-import json
-import requests
-from os import getenv
-from ..internals.cache.redis import get_conn, serialize_dict_list, deserialize_dict_list
-from ..utils.utils import get_import_id
-from ..lib.dms import get_unapproved_dms, approve_dm, cleanup_unapproved_dms
+from src.lib.dms import get_unapproved_dms, approve_dm, cleanup_unapproved_dms
+
+from src.types.props import SuccessProps
 from .importer_types import DMPageProps, StatusPageProps
 
 importer_page = Blueprint('importer_page', __name__)
+
 
 @importer_page.route('/importer')
 def importer():
@@ -18,10 +19,11 @@ def importer():
 
     response = make_response(render_template(
         'importer_list.html',
-        props = props
+        props=props
     ), 200)
     response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
     return response
+
 
 @importer_page.route('/importer/tutorial')
 def importer_tutorial():
@@ -31,10 +33,11 @@ def importer_tutorial():
 
     response = make_response(render_template(
         'importer_tutorial.html',
-        props = props
+        props=props
     ), 200)
     response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
     return response
+
 
 @importer_page.route('/importer/ok')
 def importer_ok():
@@ -44,27 +47,29 @@ def importer_ok():
 
     response = make_response(render_template(
         'importer_ok.html',
-        props = props
+        props=props
     ), 200)
     response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
     return response
+
 
 @importer_page.route('/importer/status/<import_id>')
 def importer_status(import_id):
     dms = request.args.get('dms')
 
     props = StatusPageProps(
-        current_page='import',
+        currentPage='import',
         import_id=import_id,
         dms=dms
     )
     response = make_response(render_template(
         'importer_status.html',
-        props = props
+        props=props
     ), 200)
 
     response.headers['Cache-Control'] = 'max-age=0, private, must-revalidate'
     return response
+
 
 @importer_page.route('/importer/dms/<import_id>', methods=['GET'])
 def importer_dms(import_id: str):
@@ -76,19 +81,20 @@ def importer_dms(import_id: str):
             filtered_dms.append(dm)
 
     props = DMPageProps(
-        current_page= 'import',
-        import_id= import_id,
-        account_id= account_id,
-        dms= filtered_dms
+        currentPage='import',
+        import_id=import_id,
+        account_id=account_id,
+        dms=filtered_dms
     )
 
     response = make_response(render_template(
         'importer_dms.html',
-        props = props,
+        props=props,
     ), 200)
 
     response.headers['Cache-Control'] = 'max-age=0, private, must-revalidate'
     return response
+
 
 @importer_page.route('/importer/dms/<import_id>', methods=['POST'])
 def approve_importer_dms(import_id):
@@ -104,11 +110,12 @@ def approve_importer_dms(import_id):
 
     response = make_response(render_template(
         'success.html',
-        props = props
+        props=props
     ), 200)
 
     response.headers['Cache-Control'] = 'max-age=0, private, must-revalidate'
     return response
+
 
 @importer_page.route('/api/logs/<import_id>')
 def get_importer_logs(import_id):
@@ -118,46 +125,45 @@ def get_importer_logs(import_id):
     messages = []
     if llen > 0:
         messages = redis.lrange(key, 0, llen)
-    
+
     return json.dumps(list(map(lambda msg: msg.decode('utf-8'), messages))), 200
 
-### API ###
-@importer_page.route('/api/import', methods=['POST'])
-def importer_submit():
-    host = getenv('ARCHIVERHOST')
-    port = getenv('ARCHIVERPORT') if getenv('ARCHIVERPORT') else '8000'
 
+# API
+@importer_page.post('/api/import')
+def importer_submit():
     if not session.get('account_id') and request.form.get("save_dms"):
         return 'You must be logged in to import direct messages.', 401
-    
+
     if not request.form.get("session_key"):
         return "Session key missing.", 401
-    
+
     if request.form.get('session_key') and len(request.form.get('session_key').encode('utf-8')) > 1024:
         return "The length of the session key you sent is too large. You should let the administrator know about this.", 400
-    
+
     try:
         redis = get_conn()
         import_id = get_import_id(request.form.get("session_key"))
-        data = {
-            'key': request.form.get("session_key"),
-            'service': request.form.get("service"),
-            'channel_ids': request.form.get("channel_ids"),
-            'auto_import': request.form.get("auto_import"),
-            'save_session_key': request.form.get("save_session_key"),
-            'save_dms': request.form.get("save_dms"),
-            'contributor_id': session.get("account_id")
-        }
+        data = dict(
+            key=request.form.get("session_key"),
+            service=request.form.get("service"),
+            channel_ids=request.form.get("channel_ids"),
+            auto_import=request.form.get("auto_import"),
+            save_session_key=request.form.get("save_session_key"),
+            save_dms=request.form.get("save_dms"),
+            contributor_id=session.get("account_id")
+        )
         redis.set('imports:' + import_id, json.dumps(data))
 
-        props = {
-            'currentPage': 'import',
-            'redirect': f'/importer/status/{import_id}{ "?dms=1" if request.form.get("save_dms") else "" }'
-        }
+        props = SuccessProps(
+            currentPage='import',
+            redirect=f'/importer/status/{import_id}{ "?dms=1" if request.form.get("save_dms") else "" }'
+        )
+
         return make_response(render_template(
             'success.html',
-            props = props
+            props=props
         ), 200)
-    except Exception as e:
+    except Exception:
         current_app.logger.exception('Error connecting to archiver')
-        return f'Error while pushing import request. Is Redis running?', 500
+        return 'Error while pushing import request. Is Redis running?', 500

@@ -34,7 +34,7 @@ const webpackConfigDev = {
   devtool: "eval-source-map",
   devServer: devServer,
   entry: {
-    'dev-only': path.join(projectPath, "js", "dev-only.js")
+    'development': path.join(projectPath, "development", "entry.js")
   },
   plugins: [
     new MiniCssExtractPlugin({
@@ -53,7 +53,7 @@ const webpackConfigDev = {
         test: /\.s[ac]ss$/i,
         exclude: /\.module.s[ac]ss$/i,
         use: [
-          MiniCssExtractPlugin.loader, 
+          MiniCssExtractPlugin.loader,
           {
             loader: 'css-loader',
             options: {
@@ -68,7 +68,7 @@ const webpackConfigDev = {
               additionalData: `$kemono-site: '${kemonoSite}';`
             }
           }
-          
+
         ],
       },
       {

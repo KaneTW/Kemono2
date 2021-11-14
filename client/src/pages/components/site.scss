@@ -20,4 +20,11 @@
   &__register-cta {
     text-align: center;
   }
+
+  &__article {
+    background-color: var(--colour1-tertiary);
+    border-radius: 10px;
+    padding: $size-small;
+    margin: $size-small 0;
+  }
 }

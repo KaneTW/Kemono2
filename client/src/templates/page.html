@@ -1,0 +1,17 @@
+{% extends 'components/shell.html' %}
+
+{% import 'components/site.html' as site %}
+
+{% set page_title = 'Heading | Kemono' %}
+
+{% block title %}
+  <title>
+    {{ page_title }}
+  </title>
+{% endblock title %}
+
+{% block content %}
+{% call site.section('modifier', 'Heading') %}
+
+{% endcall %}
+{% endblock content %}

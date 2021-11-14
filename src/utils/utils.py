@@ -5,6 +5,7 @@ import json
 import random
 import hashlib
 from configs.derived_vars import is_development
+from src.types.paysites import Paysites
 
 freesites = {
     "kemono": {
@@ -27,76 +28,10 @@ paysite_list = [
     "subscribestar",
     "dlsite",
     "discord",
-    "fantia"
+    "fantia",
 ]
 
-# because fanbox requires `post_id` and `artist_id` for post link
-# any generic call to `paysite.post.link()` should have 2 arguments
-paysites = {
-    "patreon": {
-        "title": "Patreon",
-        "user": {
-            "profile": lambda user_id: f"https://www.patreon.com/user?u={user_id}",
-        },
-        "post": {
-            "link": lambda post_id: f"https://www.patreon.com/posts/{post_id}",
-        },
-    },
-    "fanbox": {
-        "title": "Pixiv Fanbox",
-        "user": {
-            "profile": lambda user_id: f"https://www.pixiv.net/fanbox/creator/{user_id}",
-        },
-        "post": {
-            "link": lambda post_id, user_id: f"https://www.pixiv.net/fanbox/creator/{user_id}/post/{post_id}",
-        },
-    },
-    "gumroad": {
-        "title": "Gumroad",
-        "user": {
-            "profile": lambda user_id: f"https://gumroad.com/{user_id}",
-        },
-        "post": {
-            "link": lambda post_id: f"https://gumroad.com/l/{post_id}",
-        },
-    },
-    "subscribestar": {
-        "title": "SubscribeStar",
-        "user": {
-            "profile": lambda user_id: f"https://subscribestar.adult/{user_id}",
-        },
-        "post": {
-            "link": lambda post_id: f"https://subscribestar.adult/posts/{post_id}",
-        },
-    },
-    "dlsite": {
-        "title": "DLsite",
-        "user": {
-            "profile": lambda user_id: f"https://www.dlsite.com/eng/circle/profile/=/maker_id/{user_id}",
-        },
-        "post": {
-            "link": lambda post_id: f"https://www.dlsite.com/ecchi-eng/work/=/product_id/{post_id}",
-        },
-    },
-    "discord": {
-        "title": "Discord",
-        "user": {
-            "profile": lambda user_id: f"",
-        },
-        "post": {
-            "link": lambda post_id: f"",
-        },
-    },
-    "fantia": {
-        "title": "Fantia",
-        "user": {
-            "profile": lambda user_id: f"https://fantia.jp/fanclubs/{user_id}",
-        },
-        "post": {
-            "link": lambda post_id: f"https://fantia.jp/posts/{post_id}",
-        },
-    }
-}
+paysites = Paysites()
 
 def set_query_parameter(url, param_name, param_value):
     scheme, netloc, path, query_string, fragment = urlsplit(url)
@@ -213,6 +148,6 @@ def get_import_id(data):
 
 # doing it in the end to avoid circular import error
 if is_development:
-    from src.dev_only.internals import service_name, kemono_dev
-    paysite_list.append(service_name)
-    paysites[service_name] = kemono_dev
+    from development import kemono_dev
+    paysite_list.append(kemono_dev.name)
+    setattr(paysites, kemono_dev.name, kemono_dev)

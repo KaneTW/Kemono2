@@ -1,0 +1,16 @@
+{% extends 'development/shell.html' %}
+
+{% import 'components/site.html' as site %}
+{% from 'development/components/nav.html' import dev_nav %}
+
+{% set nav_items = [
+  ('/development/design/current', 'Current'),
+  ('/development/design/upcoming', 'Upcoming'),
+  ('/development/design/wip', 'Work In Progress'),
+] %}
+
+{% block content %}
+{% call site.section('design', 'Design Overview') %}
+  {{ dev_nav(nav_items) }}
+{% endcall %}
+{% endblock content %}

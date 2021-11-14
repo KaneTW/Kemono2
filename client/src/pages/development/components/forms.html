@@ -1,0 +1,17 @@
+{% from 'components/meta/attributes.html' import attributes %}
+
+{% macro form() %}
+  <form {{ attributes("dev-form", **kwargs) }}>{{ caller() if caller }}</form>
+{% endmacro %}
+
+{% macro section() %}
+  <fieldset {{ attributes("dev-form__section", **kwargs) }}>{{ caller() if caller }}</fieldset>
+{% endmacro %}
+
+{% macro label(text=none) %}
+  <label {{ attributes("dev-form__label", **kwargs) }}>{{ text if not caller else caller() }}</label>
+{% endmacro %}
+
+{% macro input() %}
+  <input {{ attributes("dev-form__input", **kwargs) }}>
+{% endmacro %}

@@ -6,8 +6,9 @@
 {% from 'components/image_link.html' import image_link %}
 
 {% set paysite = g.paysites[props.service] %}
+{% set post_title = post.title if post.title else 'Untitled' %}
 {% set artist_name = props.artist.name if props.artist.name else props.user %}
-{% set page_title = "\"" ~ post.title ~ "\" by " ~ props.artist.name ~ " from " ~ paysite.title ~ " | Kemono" if props.artist else post.title ~ " | Kemono" %}
+{% set page_title = "\"" ~ post_title ~ "\" by " ~ props.artist.name ~ " from " ~ paysite.title ~ " | Kemono" if props.artist else post_title ~ " | Kemono" %}
 {% set user_link = g.freesites.kemono.user.profile(post.service, post.user) %}
 {% set user_icon = g.freesites.kemono.user.icon(post.service, post.user) %}
 {% set user_banner = g.freesites.kemono.user.banner(post.service, post.user) %}
@@ -43,16 +44,16 @@
     <nav class="post__nav-links">
       <ul class="post__nav-list">
         <li class="post__nav-item">
-          <a 
-            class="post__nav-link prev" 
+          <a
+            class="post__nav-link prev"
             href="{{ post_link ~ '/prev' }}"
           >
             ‹ previous
-          </a> 
+          </a>
         </li>
         <li class="post__nav-item">
-          <a 
-            class="post__nav-link next" 
+          <a
+            class="post__nav-link next"
             href="{{ post_link ~ '/next' }}"
           >
             next ›
@@ -72,7 +73,7 @@
         ) }}
         <div>
           <a
-            class="post__user-name" 
+            class="post__user-name"
             href="{{ user_link }}">
             {{ props.artist.name if props.artist else "Artist's page"}}
           </a>
@@ -81,14 +82,14 @@
       <div class="post__info">
         <h1 class="post__title">
           {% if post_link_in_title %}
-            <a 
-              href="/{{ post.service }}/user/{{ post.user }}/post/{{ post.id }}" 
+            <a
+              href="/{{ post.service }}/user/{{ post.user }}/post/{{ post.id }}"
               target="_blank"
             >
-              <span>{{ post.title }}</span> <span>({{ paysite.title }})</span>
+              <span>{{ post_title }}</span> <span>({{ paysite.title }})</span>
             </a>
           {% else %}
-            <span>{{ post.title }}</span> <span>({{ paysite.title }})</span>
+            <span>{{ post_title }}</span> <span>({{ paysite.title }})</span>
           {% endif %}
         </h1>
         {% if post.published %}
@@ -98,8 +99,8 @@
         {% endif %}
         <div class="post__actions">
           {% if props.flagged %}
-            <span 
-              class="post__flag post__flag--flagged" 
+            <span
+              class="post__flag post__flag--flagged"
             >
               <span class="post__flag-icon">⚑</span>
               <span>Flagged</span>
@@ -127,13 +128,13 @@
       <div class="post__comments {{ 'post__comments--no-comments' if not comments }}">
         {% for comment in comments %}
           {% set is_user = comment.commenter == post.user %}
-          <article 
-            class="comment {{ 'comment--user' if is_user }}" 
+          <article
+            class="comment {{ 'comment--user' if is_user }}"
             id="{{ comment.id }}"
           >
             <header class="comment__header">
               {% if is_user %}
-              
+
                 {% call kemono_link(comment.id, class_name="comment__icon") %}
                   {{ fancy_image('/icons/' ~ post.service ~ '/' ~ post.user) }}
                 {% endcall %}
@@ -166,9 +167,9 @@
           <p class="subtitle">No comments found for this post.</p>
         {% endfor %}
       </div>
-      
+
     </footer>
-    
+
   {% else %}
     <h1 class="subtitle no-posts">Nobody here but us chickens!</h1>
   {% endif %}
@@ -176,15 +177,15 @@
 {% endblock %}
 
 {% block components %}
-  <button 
+  <button
     class="post__fav"
     type="button"
   >
     <span class="post__fav-icon">☆</span>
     <span>Favorite</span>
   </button>
-  <span 
-    class="post__flag post__flag--flagged" 
+  <span
+    class="post__flag post__flag--flagged"
   >
     <span>⚑</span>
     <span>Flagged</span>
@@ -197,7 +198,7 @@
       This DLsite post was received as a split set of multiple files due to file size. Download all the files, then open the .exe file to compile them into a single one.
     </p>
   {% endif %}
-  
+
   {% if attachments %}
     <h2>Downloads</h2>
     <ul class="post__attachments">
@@ -205,7 +206,7 @@
         <li class="post__attachment">
           <a
             class="post__attachment-link"
-            href="/data{{ attachment.path }}?f={{ attachment.name|urlencode }}" 
+            href="/data{{ attachment.path }}?f={{ attachment.name|urlencode }}"
           >
             Download {{ attachment.name }}
           </a>
@@ -213,7 +214,7 @@
       {% endfor %}
     </ul>
   {% endif %}
-  
+
   {% if post.content %}
     <h2>Content</h2>
     <div class="post__content">
@@ -223,7 +224,7 @@
       {{ post.content|safe }}
     </div>
   {% endif %}
-  
+
   {% if previews %}
     <h2>Files</h2>
     <div class="post__files">
@@ -240,12 +241,12 @@
             </a>
           </div>
         {% elif preview.type == 'embed' %}
-          <a 
-            href="{{ preview.url }}" 
+          <a
+            href="{{ preview.url }}"
             target="_blank"
           >
             <div class="embed-view">
-              <h3 
+              <h3
                 class="{{'subtitle' if not preview.subject}}"
               >
                 {{ preview.subject if preview.subject else '(No title)' }}
@@ -261,5 +262,5 @@
       {% endfor %}
     </div>
   {% endif %}
-  
+
 {% endmacro %}

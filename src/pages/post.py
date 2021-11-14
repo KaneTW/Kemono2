@@ -14,6 +14,7 @@ from ..lib.account import load_account
 
 post = Blueprint('post', __name__)
 
+
 @post.route('/<service>/user/<user_id>/post/<post_id>/prev')
 def post_prev(service, user_id, post_id):
     previous_post_id = get_previous_post_id(post_id, user_id, service)
@@ -25,12 +26,13 @@ def post_prev(service, user_id, post_id):
     if not previous_post:
         return redirect(request.headers.get('Referer') if request.headers.get('Referer') else '/')
     else:
-        return redirect(url_for('post.get', service = previous_post['service'], artist_id = previous_post['user'], post_id = previous_post['id']))
+        return redirect(url_for('post.get', service=previous_post['service'], artist_id=previous_post['user'], post_id=previous_post['id']))
+
 
 @post.route('/<service>/user/<user_id>/post/<post_id>/next')
 def post_next(service, user_id, post_id):
     next_post_id = get_next_post_id(post_id, user_id, service)
-    
+
     next_post = None
     if next_post_id is not None:
         next_post = get_post(next_post_id, user_id, service)
@@ -38,11 +40,12 @@ def post_next(service, user_id, post_id):
     if not next_post:
         return redirect(request.headers.get('Referer') if request.headers.get('Referer') else '/')
     else:
-        return redirect(url_for('post.get', service = next_post['service'], artist_id = next_post['user'], post_id = next_post['id']))
+        return redirect(url_for('post.get', service=next_post['service'], artist_id=next_post['user'], post_id=next_post['id']))
+
 
 @post.route('/<service>/user/<artist_id>/post/<post_id>')
 def get(service, artist_id, post_id):
-    cursor = get_cursor()
+    # cursor = get_cursor()
     props = {
         'currentPage': 'posts',
         'service': service if service else 'patreon'
@@ -50,7 +53,7 @@ def get(service, artist_id, post_id):
 
     post = get_post(post_id, artist_id, service)
     if post is None:
-        response = redirect(url_for('artists.get', service = service, artist_id = artist_id))
+        response = redirect(url_for('artists.get', service=service, artist_id=artist_id))
         return response
 
     comments = get_post_comments(post_id, service)
@@ -65,15 +68,15 @@ def get(service, artist_id, post_id):
     previews = []
     attachments = []
     if len(post['file']):
-        if re.search("\.(gif|jpe?g|jpe|png|webp)$", post['file']['path'], re.IGNORECASE):
+        if re.search("\.(gif|jpe?g|jpe|png|webp)$", post['file']['path'], re.IGNORECASE):  # noqa w605
             previews.append({
                 'type': 'thumbnail',
                 'name': post['file'].get('name'),
-                'path': post['file']['path'].replace('https://kemono.party','')
+                'path': post['file']['path'].replace('https://kemono.party', '')
             })
         else:
             attachments.append({
-                'path': post['file']['path'].replace('https://kemono.party',''),
+                'path': post['file']['path'].replace('https://kemono.party', ''),
                 'name': post['file'].get('name')
             })
     if len(post['embed']):
@@ -84,11 +87,11 @@ def get(service, artist_id, post_id):
             'description': post['embed']['description']
         })
     for attachment in post['attachments']:
-        if re.search("\.(gif|jpe?g|jpe|png|webp)$", attachment['path'], re.IGNORECASE):
+        if re.search("\.(gif|jpe?g|jpe|png|webp)$", attachment['path'], re.IGNORECASE):  # noqa w605
             previews.append({
                 'type': 'thumbnail',
                 'name': attachment['name'],
-                'path': attachment['path'].replace('https://kemono.party','')
+                'path': attachment['path'].replace('https://kemono.party', '')
             })
         else:
             file_extension = PurePath(attachment['path']).suffix
@@ -101,9 +104,9 @@ def get(service, artist_id, post_id):
                 'stem': stem
             })
     scrub = Cleaner(
-        tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code', 'em', 'i', 'li', 'ol', 'strong', 'ul',
-        'img', 'br', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'div', 'span', 'ul', 'ol', 'li'],
-        attributes = {
+        tags=['a', 'abbr', 'acronym', 'b', 'blockquote', 'code', 'em', 'i', 'li', 'ol', 'strong', 'ul',
+              'img', 'br', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'div', 'span', 'ul', 'ol', 'li'],
+        attributes={
             'a': ['href', 'title'],
             'abbr': ['title'],
             'acronym': ['title'],
@@ -119,11 +122,11 @@ def get(service, artist_id, post_id):
     props['after_kitsune'] = post['added'] > datetime.datetime(2020, 12, 22, 0, 0, 0, 0)
     response = make_response(render_template(
         'post.html',
-        props = props,
-        post = post,
-        comments = comments,
-        result_previews = previews,
-        result_attachments = attachments,
+        props=props,
+        post=post,
+        comments=comments,
+        result_previews=previews,
+        result_attachments=attachments,
     ), 200)
     response.headers['Cache-Control'] = 's-maxage=60'
     return response

@@ -51,8 +51,8 @@ app.register_blueprint(dms)
 app.register_blueprint(help_app, url_prefix='/help')
 app.register_blueprint(importer_page)
 if (is_development):
-    from src.dev_only import dev_only
-    app.register_blueprint(dev_only)
+    from development import development
+    app.register_blueprint(development)
 
 
 app.config.from_pyfile('flask.cfg')

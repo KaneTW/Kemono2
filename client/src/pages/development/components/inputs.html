@@ -1,0 +1,25 @@
+{% from 'components/meta/attributes.html' import attributes %}
+
+{% import 'development/components/forms.html' as forms %}
+
+{% macro text(id, text) %}
+  {% call forms.section() %}
+    {{ forms.label(text, for=id) }}
+    {{ forms.input(id=id,
+      type="text",
+      **kwargs
+    ) }}
+  {% endcall %}
+{% endmacro %}
+
+{% macro submit_button(text=none) %}
+  {% call forms.section(class='dev-form__section--submit') %}
+    <button
+      {{ attributes(
+        "dev-form__submit",
+        type="submit",
+        **kwargs
+      ) }}
+    >{{ text }}</button>
+  {% endcall %}
+{% endmacro %}

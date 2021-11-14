@@ -1,0 +1,34 @@
+{% extends 'development/shell.html' %}
+
+{% import 'components/site.html' as site %}
+{% import 'development/components/forms.html' as forms %}
+{% import 'development/components/inputs.html' as inputs %}
+{% from 'components/navigation/local.html' import local_nav %}
+{% from 'development/components/nav.html' import dev_nav %}
+
+{% set page_title = 'Work In Progress Designs | Kemono' %}
+
+{% block title %}
+  <title>
+    {{ page_title }}
+  </title>
+{% endblock title %}
+
+{% block content %}
+{% call site.section('development-design-wip', 'Work In Progress Designs') %}
+  {{ dev_nav([
+    ('/development/design', 'Home'),
+  ]) }}
+  {{ local_nav([
+    ('forms', 'Forms')
+  ]) }}
+  {% call site.article(id='forms') %}
+    <h2>Forms</h2>
+    {% call forms.form() %}
+      <h3>Form example</h3>
+      {{ inputs.text('form-text', 'Text Input:') }}
+      {{ inputs.submit_button('Submit Button') }}
+    {% endcall %}
+  {% endcall %}
+{% endcall %}
+{% endblock content %}

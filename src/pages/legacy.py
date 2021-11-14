@@ -26,6 +26,7 @@ from ..utils.utils import make_cache_key, relative_time, delta_key, allowed_file
 
 legacy = Blueprint('legacy', __name__)
 
+
 @legacy.route('/posts')
 def posts():
     cursor = get_cursor()
@@ -61,7 +62,7 @@ def posts():
         limit = request.args.get('limit') if request.args.get('limit') and request.args.get('limit') <= 50 else 25
         query += "LIMIT %s"
         params += (limit,)
-    
+
     cursor.execute(query, params)
     results = cursor.fetchall()
 
@@ -88,11 +89,11 @@ def posts():
         previews = []
         attachments = []
         if len(post['file']):
-            if re.search("\.(gif|jpe?g|jpe|png|webp)$", post['file']['path'], re.IGNORECASE):
+            if re.search("\.(gif|jpe?g|jpe|png|webp)$", post['file']['path'], re.IGNORECASE):  # noqa w605
                 result_is_image.append(True)
                 previews.append({
                     'type': 'thumbnail',
-                    'path': post['file']['path'].replace('https://kemono.party','')
+                    'path': post['file']['path'].replace('https://kemono.party', '')
                 })
             else:
                 result_is_image.append(False)
@@ -102,7 +103,7 @@ def posts():
                 })
         else:
             result_is_image.append(False)
-        
+
         if len(post['embed']):
             previews.append({
                 'type': 'embed',
@@ -111,10 +112,10 @@ def posts():
                 'description': post['embed']['description']
             })
         for attachment in post['attachments']:
-            if re.search("\.(gif|jpe?g|jpe|png|webp)$", attachment['path'], re.IGNORECASE):
+            if re.search("\.(gif|jpe?g|jpe|png|webp)$", attachment['path'], re.IGNORECASE):  # noqa w605
                 previews.append({
                     'type': 'thumbnail',
-                    'path': attachment['path'].replace('https://kemono.party','')
+                    'path': attachment['path'].replace('https://kemono.party', '')
                 })
             else:
                 attachments.append({
@@ -131,20 +132,21 @@ def posts():
         result_flagged.append(True if len(results4) > 0 else False)
         result_previews.append(previews)
         result_attachments.append(attachments)
-    
+
     response = make_response(render_template(
         'posts.html',
-        props = props,
-        results = results,
-        base = base,
-        result_previews = result_previews,
-        result_attachments = result_attachments,
-        result_flagged = result_flagged,
-        result_after_kitsune = result_after_kitsune,
-        result_is_image = result_is_image
+        props=props,
+        results=results,
+        base=base,
+        result_previews=result_previews,
+        result_attachments=result_attachments,
+        result_flagged=result_flagged,
+        result_after_kitsune=result_after_kitsune,
+        result_is_image=result_is_image
     ), 200)
     response.headers['Cache-Control'] = 'no-store, max-age=0'
     return response
+
 
 @legacy.route('/posts/upload')
 def upload_post():
@@ -158,6 +160,7 @@ def upload_post():
     response.headers['Cache-Control'] = 's-maxage=60'
     return response
 
+
 @legacy.route('/discord/server/<id>')
 def discord_server(id):
     response = make_response(render_template(
@@ -166,6 +169,7 @@ def discord_server(id):
     response.headers['Cache-Control'] = 's-maxage=60'
     return response
 
+
 @legacy.route('/board')
 def board():
     props = {
@@ -173,10 +177,11 @@ def board():
     }
     response = make_response(render_template(
         'board_list.html',
-        props = props
+        props=props
     ), 200)
     response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
     return response
+
 
 @legacy.route('/requests')
 def requests_list():
@@ -252,15 +257,17 @@ def requests_list():
 
     response = make_response(render_template(
         'requests_list.html',
-        props = props,
-        results = results,
-        base = base
+        props=props,
+        results=results,
+        base=base
     ), 200)
     return response
 
+
 @legacy.route('/requests/<id>/vote_up', methods=['POST'])
 def vote_up(id):
-    ip = request.headers.getlist("X-Forwarded-For")[0].rpartition(' ')[-1] if 'X-Forwarded-For' in request.headers else request.remote_addr
+    ip = request.headers.getlist(
+        "X-Forwarded-For")[0].rpartition(' ')[-1] if 'X-Forwarded-For' in request.headers else request.remote_addr
     query = "SELECT * FROM requests WHERE id = %s"
     params = (id,)
 
@@ -280,7 +287,7 @@ def vote_up(id):
         props['message'] = 'You already voted on this request.'
         return make_response(render_template(
             'error.html',
-            props = props
+            props=props
         ), 401)
     else:
         record = result.get('ips')
@@ -294,8 +301,9 @@ def vote_up(id):
 
         return make_response(render_template(
             'success.html',
-            props = props
+            props=props
         ), 200)
+
 
 @legacy.route('/requests/new')
 def request_form():
@@ -305,10 +313,11 @@ def request_form():
 
     response = make_response(render_template(
         'requests_new.html',
-        props = props
+        props=props
     ), 200)
     response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
     return response
+
 
 @legacy.route('/requests/new', methods=['POST'])
 def request_submit():
@@ -317,13 +326,14 @@ def request_submit():
         'redirect': request.args.get('Referer') if request.args.get('Referer') else '/requests'
     }
 
-    ip = request.headers.getlist("X-Forwarded-For")[0].rpartition(' ')[-1] if 'X-Forwarded-For' in request.headers else request.remote_addr
+    ip = request.headers.getlist(
+        "X-Forwarded-For")[0].rpartition(' ')[-1] if 'X-Forwarded-For' in request.headers else request.remote_addr
 
     if not request.form.get('user_id'):
         props['message'] = 'You didn\'t enter a user ID.'
         return make_response(render_template(
             'error.html',
-            props = props
+            props=props
         ), 400)
 
     if getenv('TELEGRAMTOKEN'):
@@ -333,7 +343,7 @@ def request_submit():
 
         requests.post(
             'https://api.telegram.org/bot' + getenv('TELEGRAMTOKEN') + '/sendMessage',
-            params = {
+            params={
                 'chat_id': '-' + getenv('TELEGRAMCHANNEL'),
                 'parse_mode': 'HTML',
                 'text': render_template_string(snippet)
@@ -345,7 +355,7 @@ def request_submit():
         if 'image' in request.files:
             image = request.files['image']
             if image and image.filename and allowed_file(image.content_type, ['png', 'jpeg', 'gif']):
-                filename = original = slugify_filename(secure_filename(image.filename))
+                filename = slugify_filename(secure_filename(image.filename))
                 tmp = join('/tmp', filename)
                 image.save(tmp)
                 limit = int(getenv('REQUESTS_IMAGES')) if getenv('REQUESTS_IMAGES') else 1048576
@@ -356,23 +366,23 @@ def request_submit():
                     port = getenv('ARCHIVERPORT') if getenv('ARCHIVERPORT') else '8000'
                     r = requests.post(
                         f'http://{host}:{port}/api/upload/requests/images',
-                        files = { 'file' : open(tmp, 'rb') }
+                        files={'file': open(tmp, 'rb')}
                     )
                     filename = basename(r.text)
                     r.raise_for_status()
                 except Exception:
-                    return f'Error while connecting to archiver.', 500
+                    return 'Error while connecting to archiver.', 500
     except Exception as error:
         props['message'] = 'Failed to upload image. Error: {}'.format(error)
         return make_response(render_template(
             'error.html',
-            props = props
+            props=props
         ), 500)
 
-    scrub = Cleaner(tags = [])
-    text = Cleaner(tags = ['br'])
+    scrub = Cleaner(tags=[])
+    text = Cleaner(tags=['br'])
 
-    columns = ['service','"user"','title','description','price','ips']
+    columns = ['service', '"user"', 'title', 'description', 'price', 'ips']
     description = request.form.get('description').strip().replace('\n', '<br>\n')
     params = (
         scrub.clean(request.form.get('service')),
@@ -391,8 +401,8 @@ def request_submit():
     data = ['%s'] * len(params)
 
     query = "INSERT INTO requests ({fields}) VALUES ({values})".format(
-        fields = ','.join(columns),
-        values = ','.join(data)
+        fields=','.join(columns),
+        values=','.join(data)
     )
 
     cursor = get_cursor()
@@ -400,8 +410,9 @@ def request_submit():
 
     return make_response(render_template(
         'success.html',
-        props = props
+        props=props
     ), 200)
+
 
 @legacy.route('/api/upload', methods=['POST'])
 def upload():
@@ -440,12 +451,12 @@ def upload():
             port = getenv('ARCHIVERPORT') if getenv('ARCHIVERPORT') else '8000'
             r = requests.post(
                 f'http://{host}:{port}/api/upload/uploads',
-                files = { 'file' : open(join('/tmp/uploads', request.form.get('resumableFilename')), 'rb') }
+                files={'file': open(join('/tmp/uploads', request.form.get('resumableFilename')), 'rb')}
             )
             final_path = r.text
             r.raise_for_status()
         except Exception:
-            return f'Error while connecting to archiver.', 500
+            return 'Error while connecting to archiver.', 500
 
         post_model = {
             'id': ''.join(random.choice(string.ascii_letters) for x in range(8)),
@@ -467,17 +478,17 @@ def upload():
 
         post_model['embed'] = json.dumps(post_model['embed'])
         post_model['file'] = json.dumps(post_model['file'])
-        
+
         columns = post_model.keys()
         data = ['%s'] * len(post_model.values())
-        data[-1] = '%s::jsonb[]' # attachments
+        data[-1] = '%s::jsonb[]'  # attachments
         query = "INSERT INTO posts ({fields}) VALUES ({values})".format(
-            fields = ','.join(columns),
-            values = ','.join(data)
+            fields=','.join(columns),
+            values=','.join(data)
         )
         cursor = get_cursor()
         cursor.execute(query, list(post_model.values()))
-        
+
         return jsonify({
             "fileUploadStatus": True,
             "resumableIdentifier": resumable.repo.file_id
@@ -488,6 +499,7 @@ def upload():
         "resumableIdentifier": resumable.repo.file_id
     })
 
+
 @legacy.route('/api/creators')
 def creators():
     cursor = get_cursor()
@@ -496,6 +508,7 @@ def creators():
     results = cursor.fetchall()
     return make_response(jsonify(results), 200)
 
+
 @legacy.route('/api/bans')
 def bans():
     cursor = get_cursor()
@@ -503,6 +516,7 @@ def bans():
     cursor.execute(query)
     results = cursor.fetchall()
     return make_response(jsonify(results), 200)
+
 
 @legacy.route('/api/recent')
 def recent():
@@ -523,6 +537,7 @@ def recent():
     response = make_response(jsonify(results), 200)
     response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
     return response
+
 
 @legacy.route('/api/lookup')
 def lookup():
@@ -545,6 +560,7 @@ def lookup():
     response = make_response(jsonify(list(map(lambda x: x['id'], results))), 200)
     return response
 
+
 @legacy.route('/api/discord/channels/lookup')
 def discord_lookup():
     cursor = get_cursor()
@@ -557,9 +573,10 @@ def discord_lookup():
         cursor = get_cursor()
         cursor.execute("SELECT * FROM lookup WHERE service = 'discord-channel' AND id = %s", (x['channel'],))
         lookup_result = cursor.fetchall()
-        lookup.append({ 'id': x['channel'], 'name': lookup_result[0]['name'] if len(lookup_result) else '' })
+        lookup.append({'id': x['channel'], 'name': lookup_result[0]['name'] if len(lookup_result) else ''})
     response = make_response(jsonify(lookup))
     return response
+
 
 @legacy.route('/api/discord/channel/<id>')
 def discord_channel(id):
@@ -578,6 +595,7 @@ def discord_channel(id):
     results = cursor.fetchall()
     return jsonify(results)
 
+
 @legacy.route('/api/lookup/cache/<id>')
 def lookup_cache(id):
     if (request.args.get('service') is None):
@@ -587,8 +605,9 @@ def lookup_cache(id):
     params = (id, request.args.get('service'))
     cursor.execute(query, params)
     results = cursor.fetchall()
-    response = make_response(jsonify({ "name": results[0]['name'] if len(results) > 0 else '' }))
+    response = make_response(jsonify({"name": results[0]['name'] if len(results) > 0 else ''}))
     return response
+
 
 @legacy.route('/api/<service>/user/<user>/lookup')
 def user_search(service, user):
@@ -612,6 +631,7 @@ def user_search(service, user):
     results = cursor.fetchall()
     return jsonify(results)
 
+
 @legacy.route('/api/<service>/user/<user>/post/<post>')
 def post_api(service, user, post):
     cursor = get_cursor()
@@ -621,6 +641,7 @@ def post_api(service, user, post):
     results = cursor.fetchall()
     return jsonify(results)
 
+
 @legacy.route('/api/<service>/user/<user>/post/<post>/flag')
 def flag_api(service, user, post):
     cursor = get_cursor()
@@ -629,6 +650,7 @@ def flag_api(service, user, post):
     cursor.execute(query, params)
     results = cursor.fetchall()
     return "", 200 if len(results) else 404
+
 
 @legacy.route('/api/<service>/user/<user>/post/<post>/flag', methods=["POST"])
 def new_flag_api(service, user, post):
@@ -649,8 +671,8 @@ def new_flag_api(service, user, post):
         # conflict; flag already exists
         return "", 409
 
-    scrub = Cleaner(tags = [])
-    columns = ['id','"user"','service']
+    scrub = Cleaner(tags=[])
+    columns = ['id', '"user"', 'service']
     params = (
         scrub.clean(post),
         scrub.clean(user),
@@ -658,13 +680,14 @@ def new_flag_api(service, user, post):
     )
     data = ['%s'] * len(params)
     query = "INSERT INTO booru_flags ({fields}) VALUES ({values})".format(
-        fields = ','.join(columns),
-        values = ','.join(data)
+        fields=','.join(columns),
+        values=','.join(data)
     )
     cursor3 = get_cursor()
     cursor3.execute(query, params)
 
     return "", 200
+
 
 @legacy.route('/api/<service>/user/<id>')
 @cache.cached(key_prefix=make_cache_key)

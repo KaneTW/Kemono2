@@ -1,3 +1,5 @@
+{% from 'components/meta/attributes.html' import attributes %}
+
 {# call-only #}
 {% macro section(name, title=none, class_name=none) %}
   <section class="site-section site-section--{{ name }} {{ class_name if class_name }}">
@@ -24,4 +26,9 @@
       {{ caller() }}
     {% endif %}
   </h1>
+{% endmacro %}
+
+{% macro article() %}
+  <article {{ attributes("site-section__article", **kwargs) }}
+  >{{ caller() }} </article>
 {% endmacro %}
