@@ -1,0 +1,15 @@
+{% from 'components/navigation/base.html' import navigation, nav_list, nav_item %}
+{% from 'components/links.html' import kemono_link %}
+
+{# `nav_items` is a list of tuples `(url, title)` #}
+{% macro dev_nav(nav_items, id=none) %}
+  {% call navigation(id) %}
+    {% call nav_list() %}
+      {% for url, title in nav_items %}
+        {% call nav_item() %}
+          {{ kemono_link(url, title, is_noop= false) }}
+        {% endcall %}
+      {% endfor %}
+    {% endcall %}
+  {% endcall %}
+{% endmacro %}

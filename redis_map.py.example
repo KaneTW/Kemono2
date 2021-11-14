@@ -1,20 +1,18 @@
-# This file configures RedisBlaster and its routing.
-# LOGIC: Redis' synchronous nature combined with large, hulking datasets that need to be scanned repeatedly and often make for poor scalability. Let's mitigate those bottlenecks by splitting up the data Redis has to scan across databases, and entire threads of execution across instances.
-# If you just want to run things for development, or your production instance is very small, you do not need to change mappings at all.
-# Otherwise, some careful changes could improve the performance of larger instances.
+"""
+RedisBlaster configuration and its routing.
+If you just want to run things for development, or your production instance is very small, you do not need to change mappings at all.
+Otherwise, some careful changes could improve the performance of larger instances.
+"""
 
 # Simple options for the faint of heart.
 redis_host = 'kemono-redis'
 redis_port = 6379
 redis_password = None
-###
-###
-###
 
 # Available Redis nodes.
 # Passed directly to `Cluster.hosts`.
 nodes = {
-    0: { 'db': 0 }
+    0: {'db': 0}
 }
 
 # Options that apply to all nodes.
@@ -32,6 +30,7 @@ keyspaces = {
     "saved_key_import_ids": 0,
     "saved_keys": 0,
     "top_artists": 0,
+    "artists_faved": 0,
     "artists_faved_count": 0,
     "top_artists_recently": 0,
     "artists_recently_faved_count": 0,

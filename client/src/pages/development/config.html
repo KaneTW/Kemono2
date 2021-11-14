@@ -1,0 +1,45 @@
+{% extends 'development/shell.html' %}
+
+{% import 'components/site.html' as site %}
+
+{% block content %}
+{% call site.section('test-entries', 'Test Database') %}
+  <form
+    id="dev-service-keys"
+    class="form"
+    action="/development/config/service-keys"
+    method="POST"
+  >
+    <div class="form__section">
+      <p>Press "Activate" to:</p>
+      <ul>
+        <li>Add test service keys</li>
+      </ul>
+    </div>
+    <div class="form__section">
+      <button class="form__button form__button--submit" type="submit">
+        Activate
+      </button>
+    </div>
+  </form>
+
+  <form
+    id="dev-activator"
+    class="form"
+    action="/development/config"
+    method="POST"
+  >
+    <div class="form__section">
+      <p>Press "Activate" to:</p>
+      <ul>
+        <li>Add test accounts</li>
+      </ul>
+    </div>
+    <div class="form__section">
+      <button class="form__button form__button--submit" type="submit">
+        Activate
+      </button>
+    </div>
+  </form>
+{% endcall %}
+{% endblock content %}

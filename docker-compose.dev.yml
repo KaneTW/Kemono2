@@ -94,6 +94,12 @@ services:
       - data-dev:/storage
     sysctls:
       net.core.somaxconn: 40000
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/development"]
+      interval: 1m
+      timeout: 2m
+      retries: 3
+      start_period: 30s
   kemono-redis:
     image: redis:6.2.0
     container_name: kemono-redis

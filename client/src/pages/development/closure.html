@@ -1,0 +1,26 @@
+{# taken from https://gist.github.com/dah33/e18e71a81d1a0aaf59658269ada963b3 #}
+
+{% macro enclose(fn, env) %}
+    {% set closure = namespace(fn=fn, env=env) %}
+    {% do return(closure) %}
+{% endmacro %}
+
+{% macro call1(closure, x1) %}
+    {% do return(closure.fn(x1, closure.env)) %}
+{% endmacro %}
+
+{% macro call2(closure, x1, x2) %}
+    {% do return(closure.fn(x1, x2, closure.env)) %}
+{% endmacro %}
+
+{# Example: #}
+
+{% macro power(x, kwargs) %}
+    {% do return(x**kwargs.exponent) %}
+{% endmacro %}
+
+{#
+{% set square = enclose(power, dict(exponent=2)) %}
+
+{{ call1(square, 8) }}{# = 8**2 = 64 #}
+#}

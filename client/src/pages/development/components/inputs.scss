@@ -1,0 +1,12 @@
+@use "../../../css/variables" as *;
+
+.dev-form__input {
+
+}
+
+.dev-form__submit {
+  min-width: 44px;
+  min-height: 44px;
+  width: auto;
+  padding: $size-small;
+}

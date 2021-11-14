@@ -1,3 +1,7 @@
 # Features of Kemono Project
 
-- [Favorites](./favorites.md)
+- [Accounts](./accounts.md)
+- [Notifications](./notifications.md)
+- [Development mode](./development-mode.md)
+- [Keys Page](./keys-page.md)
+- [DM Import](./dm-import.md)

@@ -86,7 +86,7 @@ async function logs(importID) {
     const response = await kemonoFetch(`/api/logs/${importID}`, { method: "GET" });
 
     if (!response || !response.ok) {
-      alert(`Error 009 - ${errorList.get("009")}`);
+      alert(new KemonoError(9));
       return null;
     }
 

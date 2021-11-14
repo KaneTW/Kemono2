@@ -2,8 +2,8 @@ from flask import Blueprint, request, make_response, render_template, session, r
 
 import re
 
+from configs.derived_vars import is_development
 from ..types.kemono import User
-
 from ..utils.utils import sort_dict_list_by, offset, take, limit_int, parse_int
 from ..internals.cache.flask_cache import cache
 from ..internals.database.database import get_cursor
@@ -16,6 +16,7 @@ from .artists_types import ArtistDMsProps, ArtistPageProps
 
 artists = Blueprint('artists', __name__)
 
+
 @artists.route('/artists')
 def list():
     props = {
@@ -24,11 +25,11 @@ def list():
     base = request.args.to_dict()
     base.pop('o', None)
 
-    q = request.args.get('q')
-    commit = request.args.get('commit')
-    service = request.args.get('service')
-    sort_by = request.args.get('sort_by')
-    order = request.args.get('order')
+    # q = request.args.get('q')
+    # commit = request.args.get('commit')
+    # service = request.args.get('service')
+    # sort_by = request.args.get('sort_by')
+    # order = request.args.get('order')
     offset = parse_int(request.args.get('o'), 0)
     limit = 25
 
@@ -41,12 +42,13 @@ def list():
     props['limit'] = limit
     response = make_response(render_template(
         'artists.html',
-        props = props,
-        results = results,
-        base = base
+        props=props,
+        results=results,
+        base=base
     ), 200)
     response.headers['Cache-Control'] = 's-maxage=60'
     return response
+
 
 @artists.route('/artists/updated')
 def updated():
@@ -69,17 +71,18 @@ def updated():
 
     response = make_response(render_template(
         'updated.html',
-        base = base,
-        props = props,
-        results = results
+        base=base,
+        props=props,
+        results=results
     ), 200)
     response.headers['Cache-Control'] = 'max-age=60, public, stale-while-revalidate=2592000'
     return response
 
+
 @artists.route('/<service>/user/<artist_id>')
 def get(service: str, artist_id: str):
-    cursor = get_cursor()
-    
+    # cursor = get_cursor()
+
     base = request.args.to_dict()
     base.pop('o', None)
     base["service"] = service
@@ -106,34 +109,36 @@ def get(service: str, artist_id: str):
     display_data = make_artist_display_data(artist)
     dm_count = count_user_dms(service, artist_id)
 
-    (result_previews, result_attachments, result_flagged, result_after_kitsune, result_is_image) = get_render_data_for_posts(posts)
+    (result_previews, result_attachments, result_flagged,
+     result_after_kitsune, result_is_image) = get_render_data_for_posts(posts)
 
     props = ArtistPageProps(
-        id= artist_id,
-        service= service,
-        session= session,
-        name= artist['name'],
-        count= total_count,
-        limit= limit,
-        favorited= favorited,
-        artist= artist,
-        display_data= display_data,
-        dm_count= dm_count
+        id=artist_id,
+        service=service,
+        session=session,
+        name=artist['name'],
+        count=total_count,
+        limit=limit,
+        favorited=favorited,
+        artist=artist,
+        display_data=display_data,
+        dm_count=dm_count
     )
 
     response = make_response(render_template(
         'user.html',
-        props = props,
-        base = base,
-        results = posts,
-        result_previews = result_previews,
-        result_attachments = result_attachments,
-        result_flagged = result_flagged,
-        result_after_kitsune = result_after_kitsune,
-        result_is_image = result_is_image
+        props=props,
+        base=base,
+        results=posts,
+        result_previews=result_previews,
+        result_attachments=result_attachments,
+        result_flagged=result_flagged,
+        result_after_kitsune=result_after_kitsune,
+        result_is_image=result_is_image
     ), 200)
     response.headers['Cache-Control'] = 's-maxage=60'
     return response
+
 
 @artists.route('/<service>/user/<artist_id>/dms')
 def get_dms(service: str, artist_id: str):
@@ -153,20 +158,21 @@ def get_dms(service: str, artist_id: str):
 
     dms = get_artist_dms(service, artist_id)
     props = ArtistDMsProps(
-        id= artist_id,
-        service= service,
-        session= session,
-        artist= artist,
-        display_data= make_artist_display_data(artist),
-        dms= dms,
+        id=artist_id,
+        service=service,
+        session=session,
+        artist=artist,
+        display_data=make_artist_display_data(artist),
+        dms=dms,
     )
 
     response = make_response(render_template(
         'dms.html',
-        props = props,
+        props=props,
     ), 200)
     response.headers['Cache-Control'] = 's-maxage=60'
     return response
+
 
 def get_artist_search_results(q, service, sort_by, order, o, limit):
     if service:
@@ -174,16 +180,17 @@ def get_artist_search_results(q, service, sort_by, order, o, limit):
     else:
         artists = get_all_non_discord_artists()
 
-    page = []
+    # page = []
     matches = []
     q_lower = q.lower()
     for artist in artists:
         if q_lower in artist['name'].lower():
             matches.append(artist)
 
-    matches = sort_dict_list_by(matches, sort_by, order=='desc')
+    matches = sort_dict_list_by(matches, sort_by, order == 'desc')
 
     return (take(limit, offset(o, matches)), len(matches))
+
 
 def do_artist_post_search(id, service, search, o, limit):
     posts = get_all_posts_by_artist(id, service)
@@ -198,10 +205,12 @@ def do_artist_post_search(id, service, search, o, limit):
 
     return (take(limit, offset(o, matches)), len(matches))
 
+
 def get_artist_post_page(artist_id, service, offset, limit):
     posts = get_artist_posts(artist_id, service, offset, limit, 'published desc')
     total_count = get_artist_post_count(service, artist_id)
     return (posts, total_count)
+
 
 def make_artist_display_data(artist: dict):
     artist_id = str(artist['id'])
@@ -232,6 +241,13 @@ def make_artist_display_data(artist: dict):
             'href': f"https://fantia.jp/fanclubs/{artist_id}",
         },
     }
+
+    if is_development:
+        from development import kemono_dev
+        data_by_service_name[kemono_dev.name] = dict(
+            service=kemono_dev.title,
+            href=kemono_dev.user.profile
+        )
     data = data_by_service_name[service_name]
     data['proxy'] = f"/{service_name}/user/{artist_id}"
 
