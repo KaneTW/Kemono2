@@ -33,6 +33,7 @@ paysite_list = [
 
 paysites = Paysites()
 
+
 def set_query_parameter(url, param_name, param_value):
     scheme, netloc, path, query_string, fragment = urlsplit(url)
     query_params = parse_qs(query_string)
@@ -42,8 +43,10 @@ def set_query_parameter(url, param_name, param_value):
 
     return urlunsplit((scheme, netloc, path, new_query_string, fragment))
 
+
 def make_cache_key(*args, **kwargs):
     return request.full_path
+
 
 def relative_time(date):
     """Take a datetime and return its "age" as a string.
@@ -88,16 +91,20 @@ def relative_time(date):
 
     return FormatDelta(date).format()
 
+
 def delta_key(e):
     return e['delta_date']
+
 
 def allowed_file(mime, accepted):
     return any(x in mime for x in accepted)
 
-def get_value(d, key, default = None):
+
+def get_value(d, key, default=None):
     if key in d:
         return d[key]
     return default
+
 
 def url_is_for_non_logged_file_extension(path):
     parts = path.split('/')
@@ -110,41 +117,50 @@ def url_is_for_non_logged_file_extension(path):
             return True
     return False
 
-def sort_dict_list_by(l, key, reverse = False):
-    return sorted(l, key=lambda v: v[key], reverse=reverse)
 
-def restrict_value(value, allowed, default = None):
+def sort_dict_list_by(list_var, key, reverse=False):
+    return sorted(list_var, key=lambda v: v[key], reverse=reverse)
+
+
+def restrict_value(value, allowed, default=None):
     if value not in allowed:
         return default
     return value
 
-def take(num, l):
-    if len(l) <= num:
-        return l
-    return l[:num]
 
-def offset(num, l):
-    if len(l) <= num:
+def take(num, list_var):
+    if len(list_var) <= num:
+        return list_var
+    return list_var[:num]
+
+
+def offset(num, list_var):
+    if len(list_var) <= num:
         return []
-    return l[num:]
+    return list_var[num:]
+
 
 def limit_int(i: int, limit: int):
     if i > limit:
         return limit
     return i
 
-def parse_int(string, default = 0):
+
+def parse_int(string, default=0):
     try:
         return int(string)
     except Exception:
         return default
 
+
 def render_page_data():
     return json.dumps(g.page_data)
+
 
 def get_import_id(data):
     salt = str(random.randrange(0, 1000))
     return take(16, hashlib.sha256((data + salt).encode('utf-8')).hexdigest())
+
 
 # doing it in the end to avoid circular import error
 if is_development:

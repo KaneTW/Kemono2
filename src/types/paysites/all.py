@@ -9,6 +9,7 @@ from .subscribestar import Subscribestar
 
 # from typing import List
 
+
 class Paysites:
     discord = Discord()
     dlsite = DLSite()

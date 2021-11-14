@@ -4,12 +4,14 @@ from development.internals import kemono_dev
 from src.utils.random import generate_random_boolean, generate_random_number, generate_random_date
 from src.types.account import Service_Key
 
+
 def generate_discord_ids():
     if generate_random_boolean():
         ids = [str(generate_random_number()) for id in range(generate_random_number(1, 20))]
         return " ".join(ids)
     else:
         return None
+
 
 class Random_Service_key(Service_Key):
     def __init__(self):

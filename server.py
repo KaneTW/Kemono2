@@ -1,3 +1,23 @@
+from src.pages.importer import importer_page
+from src.pages.help import help_app
+from src.pages.favorites import favorites
+from src.pages.dms import dms
+from src.pages.account import account
+from src.pages.post import post
+from src.pages.random import random
+from src.pages.artists import artists
+from src.pages.legacy import legacy
+from src.pages.home import home
+from src.utils.utils import url_is_for_non_logged_file_extension, render_page_data, paysites, paysite_list, freesites
+from src.lib.notification import count_new_notifications
+from src.lib.account import is_logged_in, load_account
+from src.lib.ab_test import get_all_variants
+from src.types.account import Account
+from src.internals.cache.flask_cache import cache
+from configs.derived_vars import is_development
+import src.internals.cache.redis as redis
+import src.internals.database.database as database
+from flask import Flask, render_template, request, redirect, g, abort, session
 import re
 import datetime
 from datetime import timedelta
@@ -9,28 +29,7 @@ from urllib.parse import urljoin
 import logging
 from dotenv import load_dotenv
 load_dotenv(join(dirname(__file__), '.env'))
-from flask import Flask, render_template, request, redirect, g, abort, session
 
-import src.internals.database.database as database
-import src.internals.cache.redis as redis
-from configs.derived_vars import is_development
-from src.internals.cache.flask_cache import cache
-from src.types.account import Account
-from src.lib.ab_test import get_all_variants
-from src.lib.account import is_logged_in, load_account
-from src.lib.notification import count_new_notifications
-from src.utils.utils import url_is_for_non_logged_file_extension, render_page_data, paysites, paysite_list, freesites
-
-from src.pages.home import home
-from src.pages.legacy import legacy
-from src.pages.artists import artists
-from src.pages.random import random
-from src.pages.post import post
-from src.pages.account import account
-from src.pages.dms import dms
-from src.pages.favorites import favorites
-from src.pages.help import help_app
-from src.pages.importer import importer_page
 
 app = Flask(
     __name__,
@@ -74,6 +73,7 @@ cache.init_app(app)
 database.init()
 redis.init()
 
+
 @app.before_request
 def do_init_stuff():
     g.page_data = {}
@@ -91,15 +91,18 @@ def do_init_stuff():
         g.account = Account.init_from_dict(account)
         g.new_notifications_count = count_new_notifications(g.account.id)
 
+
 @app.after_request
 def do_finish_stuff(response):
     if not url_is_for_non_logged_file_extension(request.path):
         start_time = g.request_start_time
         end_time = datetime.datetime.now()
         elapsed = end_time - start_time
-        app.logger.debug('[{4}] Completed {0} request to {1} in {2}ms with ab test variants: {3}'.format(request.method, request.url, elapsed.microseconds/1000, get_all_variants(), end_time.strftime("%Y-%m-%d %X")))
+        app.logger.debug('[{4}] Completed {0} request to {1} in {2}ms with ab test variants: {3}'.format(
+            request.method, request.url, elapsed.microseconds / 1000, get_all_variants(), end_time.strftime("%Y-%m-%d %X")))
     response.autocorrect_location_header = False
     return response
+
 
 @app.errorhandler(413)
 def upload_exceeded(error):
@@ -112,8 +115,9 @@ def upload_exceeded(error):
     )
     return render_template(
         'error.html',
-        props = props
+        props=props
     ), 413
+
 
 @app.teardown_appcontext
 def close(e):
