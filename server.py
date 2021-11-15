@@ -4,6 +4,7 @@ from src.pages.favorites import favorites
 from src.pages.dms import dms
 from src.pages.account import account
 from src.pages.post import post
+from src.pages.posts import posts
 from src.pages.random import random
 from src.pages.artists import artists
 from src.pages.legacy import legacy
@@ -44,6 +45,7 @@ app.register_blueprint(legacy)
 app.register_blueprint(artists)
 app.register_blueprint(random)
 app.register_blueprint(post)
+app.register_blueprint(posts)
 app.register_blueprint(account)
 app.register_blueprint(favorites)
 app.register_blueprint(dms)

@@ -66,6 +66,9 @@ keyspaces = {
     "previous_post": 0,
     "importer_logs": 0,
     "ratelimit": 0,
+    "all_posts": 0,
+    "all_posts_for_query": 0,
+    "global_post_count": 0,
     # Kitsune Pubsub
     "imports": 0,
     "running_imports": 0
