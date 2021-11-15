@@ -29,7 +29,7 @@ def get_all_posts(offset: int, reload=False):
     all_posts = redis.get(key)
     if all_posts is None or reload:
         cursor = get_cursor()
-        query = 'SELECT * FROM posts OFFSET %s LIMIT 25 ORDER BY added desc'
+        query = 'SELECT * FROM posts ORDER BY added desc OFFSET %s LIMIT 25'
         cursor.execute(query, (offset,))
         all_posts = cursor.fetchall()
         redis.set(key, serialize_dict_list(all_posts), ex=600)
