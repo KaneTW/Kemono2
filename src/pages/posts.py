@@ -25,7 +25,7 @@ def get_posts():
     else:
         results = get_all_posts_for_query(request.args.get('q'))
         props['count'] = len(results)
-        results = results[:offset+25]
+        results = results[offset:offset+25]
 
     (result_previews, result_attachments, result_flagged,
      result_after_kitsune, result_is_image) = get_render_data_for_posts(results)
