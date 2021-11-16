@@ -58,7 +58,7 @@ def updated():
     base = request.args.to_dict()
     base.pop('o', None)
 
-    offset = int(request.args.get('o') or 0)
+    offset = parse_int(request.args.get('o'), 0)
     limit = 25
 
     props['limit'] = limit
@@ -88,7 +88,7 @@ def get(service: str, artist_id: str):
     base["service"] = service
     base["artist_id"] = artist_id
 
-    offset = int(request.args.get('o') or 0)
+    offset = parse_int(request.args.get('o'), 0)
     query = request.args.get('q')
     limit = limit_int(int(request.args.get('limit') or 25), 50)
 

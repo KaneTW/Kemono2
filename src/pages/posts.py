@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, make_response, redirect, url_for, request
 from src.lib.post import get_render_data_for_posts
 from src.lib.posts import get_all_posts, get_all_posts_for_query, count_all_posts, count_all_posts_for_query
-from src.utils.utils import limit_int
+from src.utils.utils import limit_int, parse_int
 from datetime import datetime
 
 
@@ -16,7 +16,7 @@ def get_posts():
     base = request.args.to_dict()
     base.pop('o', None)
 
-    offset = int(request.args.get('o') or 0)
+    offset = parse_int(request.args.get('o'), 0)
     props['limit'] = 25
 
     if not request.args.get('q'):
