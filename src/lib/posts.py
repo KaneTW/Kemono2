@@ -18,6 +18,23 @@ def count_all_posts(reload=False):
         cursor.execute(query)
         count = cursor.fetchone()
         redis.set(key, str(count['count']), ex=600)
+        count = int(count['count'])
+    else:
+        count = int(count)
+    return count
+
+
+def count_all_posts_for_query(q: str, reload=False):
+    redis = get_conn()
+    key = 'global_post_count_for_query:' + q
+    count = redis.get(key)
+    if count is None or reload:
+        cursor = get_cursor()
+        query = "SELECT COUNT(*) FROM posts WHERE to_tsvector('english', content || ' ' || title) @@ websearch_to_tsquery(%s)"
+        cursor.execute(query, (q,))
+        count = cursor.fetchone()
+        redis.set(key, str(count['count']), ex=600)
+        count = int(count['count'])
     else:
         count = int(count)
     return count
@@ -38,15 +55,15 @@ def get_all_posts(offset: int, reload=False):
     return all_posts
 
 
-def get_all_posts_for_query(q: str, reload=False):
+def get_all_posts_for_query(q: str, offset: int, reload=False):
     redis = get_conn()
-    key = 'all_posts_for_query:' + q
+    key = 'all_posts_for_query:' + q + ':' + str(offset)
     results = redis.get(key)
     if results is None or reload:
         cursor = get_cursor()
         query = "SET LOCAL enable_indexscan = off; "
-        query += "SELECT * FROM posts WHERE to_tsvector('english', content || ' ' || title) @@ websearch_to_tsquery(%s) ORDER BY added desc"
-        params = (q,)
+        query += "SELECT * FROM posts WHERE to_tsvector('english', content || ' ' || title) @@ websearch_to_tsquery(%s) ORDER BY added desc LIMIT 25 OFFSET %s"
+        params = (q, offset)
 
         cursor.execute(query, params)
         results = cursor.fetchall()

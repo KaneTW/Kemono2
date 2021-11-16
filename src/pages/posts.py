@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, make_response, redirect, url_for, request
 from src.lib.post import get_render_data_for_posts
-from src.lib.posts import get_all_posts, get_all_posts_for_query, count_all_posts
+from src.lib.posts import get_all_posts, get_all_posts_for_query, count_all_posts, count_all_posts_for_query
 from src.utils.utils import limit_int
 from datetime import datetime
 
@@ -23,9 +23,8 @@ def get_posts():
         results = get_all_posts(offset)
         props['count'] = count_all_posts()
     else:
-        results = get_all_posts_for_query(request.args.get('q'))
-        props['count'] = len(results)
-        results = results[offset:offset+25]
+        results = get_all_posts_for_query(request.args.get('q'), offset)
+        props['count'] = count_all_posts_for_query(request.args.get('q'))
 
     (result_previews, result_attachments, result_flagged,
      result_after_kitsune, result_is_image) = get_render_data_for_posts(results)
