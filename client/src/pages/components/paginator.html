@@ -1,6 +1,7 @@
 {% set skip = request.args.get('o')|int if request.args.get('o') else 0 %}
+{% set currentCeilingOfRange = skip + props.limit if (skip + props.limit) < props.count else props.count %}
 <small>
-  Showing {{ skip + 1 }} - {{ skip + props.limit }} of {{ props.count }}
+  Showing {{ skip + 1 }} - {{ currentCeilingOfRange }} of {{ props.count }}
 </small>
 <menu>
   {% if skip >= props.limit %}
