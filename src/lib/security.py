@@ -32,4 +32,4 @@ def is_rate_limited(r, key: str, limit: int, period: timedelta):
     return True
 
 def is_login_rate_limited(account_id):
-    return is_rate_limited(get_conn(), f'ratelimit:login:{account_id}', 10, timedelta(300))
+    return is_rate_limited(get_conn(), f'ratelimit:login:{account_id}', 10, timedelta(seconds=300))
