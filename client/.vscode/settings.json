@@ -8,4 +8,19 @@
     "[scss]": {
         "editor.tabSize": 2
     },
+    // this option does work and is required for emmet in jinja to work
+    "files.associations": {
+        "*.html": "jinja-html"
+    },
+    "emmet.includeLanguages": {
+        "jinja-html": "html"
+    },
+    "search.exclude": {
+        "**/node_modules": true,
+        "**/bower_components": true,
+        "**/*.code-search": true,
+        "**/dev": true,
+        "**/dist": true
+    },
+    "javascript.preferences.importModuleSpecifierEnding": "js",
 }

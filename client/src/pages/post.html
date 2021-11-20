@@ -221,7 +221,13 @@
       {% if props.service == "subscribestar" and after_kitsune %}
         <div>
       {% endif %}
-      {{ post.content|safe }}
+      {% if props.service == 'fantia' %}
+        <pre>
+          {{ post.content|safe }}
+        </pre>
+      {% else %}
+        {{ post.content|safe }}
+      {% endif %}
     </div>
   {% endif %}
 
