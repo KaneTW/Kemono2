@@ -2,10 +2,13 @@ from ..internals.cache.redis import get_conn
 from ..internals.database.database import get_cursor
 from ..utils.utils import get_value
 from ..types.kemono import User
+from threading import Lock
 import ujson
 import dateutil
 import copy
 import datetime
+
+artists_faved_lock = Lock()
 
 def get_top_artists_by_faves(offset, count, reload = False):
     redis = get_conn()
@@ -33,6 +36,7 @@ def get_top_artists_by_faves(offset, count, reload = False):
 
 def get_count_of_artists_faved(reload = False):
     redis = get_conn()
+    artists_faved_lock.acquire()
     key = 'artists_faved'
     count = redis.get(key)
     if count is None or reload:
@@ -49,6 +53,7 @@ def get_count_of_artists_faved(reload = False):
         redis.set(key, count, ex = 3600)
     else:
         count = int(count)
+    artists_faved_lock.release()
     return count
 
 def get_random_artist_keys(count, reload = False):
