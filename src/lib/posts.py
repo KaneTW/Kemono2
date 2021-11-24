@@ -22,6 +22,7 @@ def count_all_posts(reload=False):
             count = cursor.fetchone()
             redis.set(key, str(count['count']), ex=600)
             count = int(count['count'])
+            lock.release()
         else:
             return count_all_posts(reload=reload)
     else:
@@ -42,6 +43,7 @@ def count_all_posts_for_query(q: str, reload=False):
             count = cursor.fetchone()
             redis.set(key, str(count['count']), ex=600)
             count = int(count['count'])
+            lock.release()
         else:
             return count_all_posts_for_query(q, reload=reload)
     else:
@@ -61,6 +63,7 @@ def get_all_posts(offset: int, reload=False):
             cursor.execute(query, (offset,))
             all_posts = cursor.fetchall()
             redis.set(key, serialize_dict_list(all_posts), ex=600)
+            lock.release()
         else:
             return get_all_posts(offset, reload=reload)
     else:
@@ -83,6 +86,7 @@ def get_all_posts_for_query(q: str, offset: int, reload=False):
             cursor.execute(query, params)
             results = cursor.fetchall()
             redis.set(key, serialize_dict_list(results), ex=600)
+            lock.release()
         else:
             return get_all_posts_for_query(q, offset, reload=reload)
     else:

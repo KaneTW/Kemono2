@@ -20,6 +20,7 @@ def get_random_posts_keys(count, reload=False):
             cursor.execute(query, (count,))
             post_keys = cursor.fetchall()
             redis.set(key, ujson.dumps(post_keys), ex=600)
+            lock.release()
         else:
             return get_random_posts_keys(count, reload=reload)
     else:
@@ -39,6 +40,7 @@ def get_all_post_keys(reload=False):
             cursor.execute(query)
             post_keys = cursor.fetchall()
             redis.set(key, ujson.dumps(post_keys), ex=600)
+            lock.release()
         else:
             return get_all_post_keys(reload=reload)
     else:
@@ -58,6 +60,7 @@ def get_post(post_id, artist_id, service, reload=False):
             cursor.execute(query, (post_id, artist_id, service))
             post = cursor.fetchone()
             redis.set(key, serialize_post(post), ex=600)
+            lock.release()
         else:
             return get_post(post_id, artist_id, service, reload=reload)
     else:
@@ -77,6 +80,7 @@ def get_post_comments(post_id, service, reload=False):
             cursor.execute(query, (post_id, service))
             comments = cursor.fetchall()
             redis.set(key, serialize_comments(comments), ex=600)
+            lock.release()
         else:
             return get_post_comments(post_id, service, reload=reload)
     else:
@@ -96,6 +100,7 @@ def get_all_posts_by_artist(artist_id, service, reload=False):
             cursor.execute(query, (artist_id, service))
             posts = cursor.fetchall()
             redis.set(key, serialize_posts(posts), ex=600)
+            lock.release()
         else:
             return get_all_posts_by_artist(artist_id, service, reload=reload)
     else:
@@ -115,6 +120,7 @@ def get_artist_posts(artist_id, service, offset, limit, sort='id', reload=False)
             cursor.execute(query, (artist_id, service, offset, limit,))
             posts = cursor.fetchall()
             redis.set(key, serialize_posts(posts), ex=600)
+            lock.release()
         else:
             return get_artist_posts(artist_id, service, offset, limit, sort=sort, reload=reload)
     else:
@@ -134,6 +140,7 @@ def is_post_flagged(service, artist_id, post_id, reload=False):
             cursor.execute(query, (post_id, artist_id, service,))
             flagged = cursor.fetchone() is not None
             redis.set(key, str(flagged), ex=600)
+            lock.release()
         else:
             return is_post_flagged(service, artist_id, post_id, reload=reload)
     else:
@@ -174,6 +181,7 @@ def get_next_post_id(post_id, artist_id, service, reload=False):
             else:
                 next_post = next_post['id']
             redis.set(key, str(next_post), ex=600)
+            lock.release()
         else:
             return get_next_post_id(post_id, artist_id, service, reload=reload)
     else:
@@ -218,6 +226,7 @@ def get_previous_post_id(post_id, artist_id, service, reload=False):
             else:
                 prev_post = prev_post['id']
             redis.set(key, str(prev_post), ex=600)
+            lock.release()
         else:
             return get_previous_post_id(post_id, artist_id, service, reload=reload)
     else:

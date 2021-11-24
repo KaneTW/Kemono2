@@ -34,6 +34,7 @@ def get_top_artists_by_faves(offset, count, reload=False):
             cursor.execute(query, (offset, count,))
             artists = cursor.fetchall()
             redis.set(key, serialize_artists(artists), ex=3600)
+            lock.release()
         else:
             return get_top_artists_by_faves(offset, count, reload=reload)
     else:
@@ -60,6 +61,7 @@ def get_count_of_artists_faved(reload=False):
             cursor.execute(query)
             count = cursor.fetchone()['count']
             redis.set(key, count, ex=3600)
+            lock.release()
         else:
             return get_count_of_artists_faved(reload=reload)
     else:
@@ -80,6 +82,7 @@ def get_random_artist_keys(count, reload=False):
             cursor.execute(query, (count,))
             artist_keys = cursor.fetchall()
             redis.set(key, ujson.dumps(artist_keys), ex=600)
+            lock.release()
         else:
             return get_random_artist_keys(count, reload=reload)
     else:
@@ -99,6 +102,7 @@ def get_non_discord_artist_keys(reload=False):
             cursor.execute(query)
             artist_keys = cursor.fetchall()
             redis.set(key, ujson.dumps(artist_keys), ex=600)
+            lock.release()
         else:
             return get_non_discord_artist_keys(reload=reload)
     else:
@@ -118,6 +122,7 @@ def get_all_non_discord_artists(reload=False):
             cursor.execute(query)
             artists = cursor.fetchall()
             redis.set(key, serialize_artists(artists), ex=600)
+            lock.release()
         else:
             return get_all_non_discord_artists(reload=reload)
     else:
@@ -137,6 +142,7 @@ def get_artists_by_service(service, reload=False):
             cursor.execute(query, (service,))
             artists = cursor.fetchall()
             redis.set(key, serialize_artists(artists), ex=600)
+            lock.release()
         else:
             return get_artists_by_service(service, reload=reload)
     else:
@@ -156,6 +162,7 @@ def get_artist(service: str, artist_id: str, reload: bool = False) -> dict:
             cursor.execute(query, (artist_id, service,))
             artist = cursor.fetchone()
             redis.set(key, serialize_artist(artist), ex=600)
+            lock.release()
         else:
             return get_artist(service, artist_id, reload=reload)
     else:
@@ -175,6 +182,7 @@ def get_artist_post_count(service, artist_id, reload=False):
             cursor.execute(query, (artist_id,))
             count = cursor.fetchone()['count']
             redis.set(key, str(count), ex=600)
+            lock.release()
         else:
             return get_artist_post_count(service, artist_id, reload=reload)
     else:
@@ -198,6 +206,7 @@ def get_artist_last_updated(service, artist_id, reload=False):
             else:
                 last_updated = datetime.datetime.min
             redis.set(key, last_updated.isoformat(), ex=600)
+            lock.release()
         else:
             get_artist_last_updated(service, artist_id, reload=reload)
     else:
@@ -222,6 +231,7 @@ def get_artists_by_update_time(offset, reload=False):
             cursor.execute(query, (params,))
             artists = cursor.fetchall()
             redis.set(key, serialize_artists(artists), ex=600)
+            lock.release()
         else:
             get_artists_by_update_time(offset, reload=reload)
     else:

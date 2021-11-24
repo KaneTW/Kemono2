@@ -65,7 +65,6 @@ def get_saved_key_import_ids(key_id, reload=False):
             cursor.execute(query, (int(key_id),))
             saved_key_import_ids = cursor.fetchall()
             redis.set(key, serialize_dict_list(saved_key_import_ids), ex=3600)
-
             lock.release()
         else:
             return get_saved_key_import_ids(key_id, reload=reload)
@@ -97,6 +96,7 @@ def get_saved_keys(account_id: int, reload: bool = False):
             cursor.execute(query, args_dict)
             result = cursor.fetchall()
             redis.set(key, serialize_dict_list(result), ex=3600)
+            lock.release()
         else:
             return get_saved_keys(account_id, reload=reload)
     else:

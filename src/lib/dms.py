@@ -23,6 +23,7 @@ def get_unapproved_dms(import_id: str, reload: bool = False) -> List[DM]:
             cursor.execute(query, (import_id,))
             dms = cursor.fetchall()
             redis.set(key, serialize_dms(dms), ex=1)
+            lock.release()
         else:
             return get_unapproved_dms(import_id, reload=reload)
     else:
@@ -43,6 +44,7 @@ def get_artist_dms(service: str, artist_id: int, reload: bool = False) -> List[D
             cursor.execute(query, (service, artist_id))
             dms = cursor.fetchall()
             redis.set(key, serialize_dms(dms), ex=600)
+            lock.release()
         else:
             return get_artist_dms(service, artist_id, reload=reload)
     else:
@@ -63,6 +65,7 @@ def get_all_dms(offset: int, limit: int, reload: bool = False) -> List[DM]:
             cursor.execute(query, (offset, limit))
             dms = cursor.fetchall()
             redis.set(key, serialize_dms(dms), ex=600)
+            lock.release()
         else:
             return get_all_dms(offset, limit, reload=reload)
     else:
@@ -83,6 +86,7 @@ def get_all_dms_count(reload: bool = False) -> int:
             cursor.execute(query)
             count = int(cursor.fetchone()['count'])
             redis.set(key, str(count), ex=600)
+            lock.release()
         else:
             return get_all_dms_count(reload=reload)
     else:
@@ -102,6 +106,7 @@ def get_all_dms_by_query(q: str, offset: int, limit: int, reload: bool = False) 
             cursor.execute(query, (q, offset, limit))
             dms = cursor.fetchall()
             redis.set(key, serialize_dms(dms), ex=600)
+            lock.release()
         else:
             return get_all_dms_by_query(q, offset, limit, reload=reload)
     else:
@@ -122,6 +127,7 @@ def get_all_dms_by_query_count(q: str, reload: bool = False) -> int:
             cursor.execute(query, (q,))
             count = int(cursor.fetchone()['count'])
             redis.set(key, str(count), ex=600)
+            lock.release()
         else:
             return get_all_dms_by_query_count(q, reload=reload)
     else:
@@ -142,6 +148,7 @@ def count_user_dms(service: str, user_id: str, reload: bool = False) -> int:
             result = cursor.fetchall()
             count = result[0]['count']
             redis.set(key, str(count), ex=600)
+            lock.release()
         else:
             return count_user_dms(service, user_id, reload=reload)
     else:
