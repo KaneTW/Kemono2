@@ -1,4 +1,4 @@
-from ..internals.cache.redis import get_conn, deserialize_dict_list, serialize_dict_list
+from ..internals.cache.redis import get_conn, deserialize_dict_list, serialize_dict_list, KemonoRedisLock
 from ..internals.database.database import get_cursor
 from ..utils.utils import get_value
 from ..types.kemono import User
@@ -14,7 +14,7 @@ def count_all_posts(reload=False):
     key = 'global_post_count'
     count = redis.get(key)
     if count is None or reload:
-        lock = redis_lock.Lock(redis, key, expire=60, auto_renewal=True)
+        lock = KemonoRedisLock(redis, key, expire=60, auto_renewal=True)
         if lock.acquire(blocking=False):
             cursor = get_cursor()
             query = 'SELECT COUNT(*) FROM posts'
@@ -35,7 +35,7 @@ def count_all_posts_for_query(q: str, reload=False):
     key = 'global_post_count_for_query:' + q
     count = redis.get(key)
     if count is None or reload:
-        lock = redis_lock.Lock(redis, key, expire=60, auto_renewal=True)
+        lock = KemonoRedisLock(redis, key, expire=60, auto_renewal=True)
         if lock.acquire(blocking=False):
             cursor = get_cursor()
             query = "SELECT COUNT(*) FROM posts WHERE to_tsvector('english', content || ' ' || title) @@ websearch_to_tsquery(%s)"
@@ -56,7 +56,7 @@ def get_all_posts(offset: int, reload=False):
     key = 'all_posts:' + str(offset)
     all_posts = redis.get(key)
     if all_posts is None or reload:
-        lock = redis_lock.Lock(redis, key, expire=60, auto_renewal=True)
+        lock = KemonoRedisLock(redis, key, expire=60, auto_renewal=True)
         if lock.acquire(blocking=False):
             cursor = get_cursor()
             query = 'SELECT * FROM posts ORDER BY added desc OFFSET %s LIMIT 25'
@@ -76,7 +76,7 @@ def get_all_posts_for_query(q: str, offset: int, reload=False):
     key = 'all_posts_for_query:' + q + ':' + str(offset)
     results = redis.get(key)
     if results is None or reload:
-        lock = redis_lock.Lock(redis, key, expire=60, auto_renewal=True)
+        lock = KemonoRedisLock(redis, key, expire=60, auto_renewal=True)
         if lock.acquire(blocking=False):
             cursor = get_cursor()
             query = "SET LOCAL enable_indexscan = off; "

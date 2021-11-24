@@ -1,4 +1,4 @@
-from ..internals.cache.redis import get_conn
+from ..internals.cache.redis import get_conn, KemonoRedisLock
 from ..internals.database.database import get_cursor
 import ujson
 import redis_lock
@@ -13,7 +13,7 @@ def get_random_posts_keys(count, reload=False):
     key = 'random_post_keys:' + str(count)
     post_keys = redis.get(key)
     if post_keys is None or reload:
-        lock = redis_lock.Lock(redis, key, expire=60, auto_renewal=True)
+        lock = KemonoRedisLock(redis, key, expire=60, auto_renewal=True)
         if lock.acquire(blocking=False):
             cursor = get_cursor()
             query = "SELECT id, \"user\", service FROM posts WHERE file != '{}' AND attachments != '{}' ORDER BY random() LIMIT %s"
@@ -33,7 +33,7 @@ def get_all_post_keys(reload=False):
     key = 'all_post_keys'
     post_keys = redis.get(key)
     if post_keys is None or reload:
-        lock = redis_lock.Lock(redis, key, expire=60, auto_renewal=True)
+        lock = KemonoRedisLock(redis, key, expire=60, auto_renewal=True)
         if lock.acquire(blocking=False):
             cursor = get_cursor()
             query = "SELECT id, \"user\", service FROM posts"
@@ -53,7 +53,7 @@ def get_post(post_id, artist_id, service, reload=False):
     key = 'post:' + service + ':' + str(artist_id) + ':' + str(post_id)
     post = redis.get(key)
     if post is None or reload:
-        lock = redis_lock.Lock(redis, key, expire=60, auto_renewal=True)
+        lock = KemonoRedisLock(redis, key, expire=60, auto_renewal=True)
         if lock.acquire(blocking=False):
             cursor = get_cursor()
             query = 'SELECT * FROM posts WHERE id = %s AND \"user\" = %s AND service = %s'
@@ -73,7 +73,7 @@ def get_post_comments(post_id, service, reload=False):
     key = 'comments:' + service + ':' + str(post_id)
     comments = redis.get(key)
     if comments is None or reload:
-        lock = redis_lock.Lock(redis, key, expire=60, auto_renewal=True)
+        lock = KemonoRedisLock(redis, key, expire=60, auto_renewal=True)
         if lock.acquire(blocking=False):
             cursor = get_cursor()
             query = 'SELECT * FROM comments WHERE post_id = %s AND service = %s'
@@ -93,7 +93,7 @@ def get_all_posts_by_artist(artist_id, service, reload=False):
     key = 'posts_by_artist:' + service + ':' + str(artist_id)
     posts = redis.get(key)
     if posts is None or reload:
-        lock = redis_lock.Lock(redis, key, expire=60, auto_renewal=True)
+        lock = KemonoRedisLock(redis, key, expire=60, auto_renewal=True)
         if lock.acquire(blocking=False):
             cursor = get_cursor()
             query = 'SELECT * FROM posts WHERE \"user\" = %s AND service = %s'
@@ -113,7 +113,7 @@ def get_artist_posts(artist_id, service, offset, limit, sort='id', reload=False)
     key = 'artist_posts_offset:' + service + ':' + str(artist_id) + ':' + str(offset)
     posts = redis.get(key)
     if posts is None or reload:
-        lock = redis_lock.Lock(redis, key, expire=60, auto_renewal=True)
+        lock = KemonoRedisLock(redis, key, expire=60, auto_renewal=True)
         if lock.acquire(blocking=False):
             cursor = get_cursor()
             query = 'SELECT * FROM posts WHERE \"user\" = %s AND service = %s ORDER BY ' + sort + ' OFFSET %s LIMIT %s'
@@ -133,7 +133,7 @@ def is_post_flagged(service, artist_id, post_id, reload=False):
     key = 'is_post_flagged:' + service + ':' + str(artist_id) + ':' + str(post_id)
     flagged = redis.get(key)
     if flagged is None or reload:
-        lock = redis_lock.Lock(redis, key, expire=60, auto_renewal=True)
+        lock = KemonoRedisLock(redis, key, expire=60, auto_renewal=True)
         if lock.acquire(blocking=False):
             cursor = get_cursor()
             query = "SELECT * FROM booru_flags WHERE id = %s AND \"user\" = %s AND service = %s"
@@ -153,7 +153,7 @@ def get_next_post_id(post_id, artist_id, service, reload=False):
     key = 'next_post:' + service + ':' + str(artist_id) + ':' + str(post_id)
     next_post = redis.get(key)
     if next_post is None or reload:
-        lock = redis_lock.Lock(redis, key, expire=60, auto_renewal=True)
+        lock = KemonoRedisLock(redis, key, expire=60, auto_renewal=True)
         if lock.acquire(blocking=False):
             cursor = get_cursor()
             query = """
@@ -198,7 +198,7 @@ def get_previous_post_id(post_id, artist_id, service, reload=False):
     key = 'previous_post:' + service + ':' + str(artist_id) + ':' + str(post_id)
     prev_post = redis.get(key)
     if prev_post is None or reload:
-        lock = redis_lock.Lock(redis, key, expire=60, auto_renewal=True)
+        lock = KemonoRedisLock(redis, key, expire=60, auto_renewal=True)
         if lock.acquire(blocking=False):
             cursor = get_cursor()
             query = """

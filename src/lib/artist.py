@@ -1,4 +1,4 @@
-from ..internals.cache.redis import get_conn
+from ..internals.cache.redis import get_conn, KemonoRedisLock
 from ..internals.database.database import get_cursor
 from ..utils.utils import get_value
 from ..types.kemono import User
@@ -9,15 +9,13 @@ import dateutil
 import copy
 import datetime
 
-artists_faved_lock = Lock()
-
 
 def get_top_artists_by_faves(offset, count, reload=False):
     redis = get_conn()
     key = 'top_artists:' + str(offset) + ':' + str(count)
     artists = redis.get(key)
     if artists is None or reload:
-        lock = redis_lock.Lock(redis, key, expire=60, auto_renewal=True)
+        lock = KemonoRedisLock(redis, key, expire=60, auto_renewal=True)
         if lock.acquire(blocking=False):
             cursor = get_cursor()
             query = """
@@ -44,11 +42,10 @@ def get_top_artists_by_faves(offset, count, reload=False):
 
 def get_count_of_artists_faved(reload=False):
     redis = get_conn()
-    artists_faved_lock.acquire()
     key = 'artists_faved'
     count = redis.get(key)
     if count is None or reload:
-        lock = redis_lock.Lock(redis, key, expire=60, auto_renewal=True)
+        lock = KemonoRedisLock(redis, key, expire=60, auto_renewal=True)
         if lock.acquire(blocking=False):
             cursor = get_cursor()
             query = """
@@ -66,7 +63,6 @@ def get_count_of_artists_faved(reload=False):
             return get_count_of_artists_faved(reload=reload)
     else:
         count = int(count)
-    artists_faved_lock.release()
     return count
 
 
@@ -75,7 +71,7 @@ def get_random_artist_keys(count, reload=False):
     key = 'random_artist_keys:' + str(count)
     artist_keys = redis.get(key)
     if artist_keys is None or reload:
-        lock = redis_lock.Lock(redis, key, expire=60, auto_renewal=True)
+        lock = KemonoRedisLock(redis, key, expire=60, auto_renewal=True)
         if lock.acquire(blocking=False):
             cursor = get_cursor()
             query = "SELECT id, service FROM lookup WHERE service != 'discord-channel' ORDER BY random() LIMIT %s"
@@ -95,7 +91,7 @@ def get_non_discord_artist_keys(reload=False):
     key = 'non_discord_artist_keys'
     artist_keys = redis.get(key)
     if artist_keys is None or reload:
-        lock = redis_lock.Lock(redis, key, expire=60, auto_renewal=True)
+        lock = KemonoRedisLock(redis, key, expire=60, auto_renewal=True)
         if lock.acquire(blocking=False):
             cursor = get_cursor()
             query = "SELECT id, service FROM lookup WHERE service != 'discord-channel'"
@@ -115,7 +111,7 @@ def get_all_non_discord_artists(reload=False):
     key = 'non_discord_artists'
     artists = redis.get(key)
     if artists is None or reload:
-        lock = redis_lock.Lock(redis, key, expire=60, auto_renewal=True)
+        lock = KemonoRedisLock(redis, key, expire=60, auto_renewal=True)
         if lock.acquire(blocking=False):
             cursor = get_cursor()
             query = "SELECT * FROM lookup WHERE service != 'discord-channel'"
@@ -135,7 +131,7 @@ def get_artists_by_service(service, reload=False):
     key = 'artists_by_service:' + service
     artists = redis.get(key)
     if artists is None or reload:
-        lock = redis_lock.Lock(redis, key, expire=60, auto_renewal=True)
+        lock = KemonoRedisLock(redis, key, expire=60, auto_renewal=True)
         if lock.acquire(blocking=False):
             cursor = get_cursor()
             query = "SELECT * FROM lookup WHERE service = %s"
@@ -155,7 +151,7 @@ def get_artist(service: str, artist_id: str, reload: bool = False) -> dict:
     key = 'artist:' + service + ':' + str(artist_id)
     artist = redis.get(key)
     if artist is None or reload:
-        lock = redis_lock.Lock(redis, key, expire=60, auto_renewal=True)
+        lock = KemonoRedisLock(redis, key, expire=60, auto_renewal=True)
         if lock.acquire(blocking=False):
             cursor = get_cursor()
             query = 'SELECT * FROM lookup WHERE id = %s AND service = %s'
@@ -175,7 +171,7 @@ def get_artist_post_count(service, artist_id, reload=False):
     key = 'artist_post_count:' + service + ':' + str(artist_id)
     count = redis.get(key)
     if count is None or reload:
-        lock = redis_lock.Lock(redis, key, expire=60, auto_renewal=True)
+        lock = KemonoRedisLock(redis, key, expire=60, auto_renewal=True)
         if lock.acquire(blocking=False):
             cursor = get_cursor()
             query = 'SELECT count(*) as count FROM posts WHERE \"user\" = %s'
@@ -195,7 +191,7 @@ def get_artist_last_updated(service, artist_id, reload=False):
     key = 'artist_last_updated:' + service + ':' + str(artist_id)
     last_updated = redis.get(key)
     if last_updated is None or reload:
-        lock = redis_lock.Lock(redis, key, expire=60, auto_renewal=True)
+        lock = KemonoRedisLock(redis, key, expire=60, auto_renewal=True)
         if lock.acquire(blocking=False):
             cursor = get_cursor()
             query = 'SELECT max(added) as max FROM posts WHERE service = %s AND "user" = %s'
@@ -220,7 +216,7 @@ def get_artists_by_update_time(offset, reload=False):
     key = 'artists_by_update_time:' + str(offset)
     artists = redis.get(key)
     if artists is None or reload:
-        lock = redis_lock.Lock(redis, key, expire=60, auto_renewal=True)
+        lock = KemonoRedisLock(redis, key, expire=60, auto_renewal=True)
         if lock.acquire(blocking=False):
             cursor = get_cursor()
             query = "SELECT * FROM lookup WHERE service != 'discord-channel' ORDER BY updated desc "

@@ -1,5 +1,5 @@
 from typing import List
-from ..internals.cache.redis import get_conn
+from ..internals.cache.redis import get_conn, KemonoRedisLock
 from ..internals.database.database import get_cursor
 from ..utils.utils import get_value
 from ..types.kemono import DM
@@ -16,7 +16,7 @@ def get_unapproved_dms(import_id: str, reload: bool = False) -> List[DM]:
     key = 'unapproved_dms:' + import_id
     dms = redis.get(key)
     if dms is None or reload:
-        lock = redis_lock.Lock(redis, key, expire=60, auto_renewal=True)
+        lock = KemonoRedisLock(redis, key, expire=60, auto_renewal=True)
         if lock.acquire(blocking=False):
             cursor = get_cursor()
             query = 'SELECT * FROM unapproved_dms WHERE import_id = %s'
@@ -37,7 +37,7 @@ def get_artist_dms(service: str, artist_id: int, reload: bool = False) -> List[D
     key = 'dms:' + service + ':' + str(artist_id)
     dms = redis.get(key)
     if dms is None or reload:
-        lock = redis_lock.Lock(redis, key, expire=60, auto_renewal=True)
+        lock = KemonoRedisLock(redis, key, expire=60, auto_renewal=True)
         if lock.acquire(blocking=False):
             cursor = get_cursor()
             query = 'SELECT * FROM dms WHERE service = %s AND "user" = %s'
@@ -58,7 +58,7 @@ def get_all_dms(offset: int, limit: int, reload: bool = False) -> List[DM]:
     key = 'all_dms:' + str(offset)
     dms = redis.get(key)
     if dms is None or reload:
-        lock = redis_lock.Lock(redis, key, expire=60, auto_renewal=True)
+        lock = KemonoRedisLock(redis, key, expire=60, auto_renewal=True)
         if lock.acquire(blocking=False):
             cursor = get_cursor()
             query = 'SELECT * FROM dms OFFSET %s LIMIT %s'
@@ -79,7 +79,7 @@ def get_all_dms_count(reload: bool = False) -> int:
     key = 'all_dms_count'
     count = redis.get(key)
     if count is None or reload:
-        lock = redis_lock.Lock(redis, key, expire=60, auto_renewal=True)
+        lock = KemonoRedisLock(redis, key, expire=60, auto_renewal=True)
         if lock.acquire(blocking=False):
             cursor = get_cursor()
             query = 'SELECT COUNT(*) FROM dms'
@@ -99,7 +99,7 @@ def get_all_dms_by_query(q: str, offset: int, limit: int, reload: bool = False) 
     key = 'all_dms_by_query:' + base64.b64encode(q.encode('utf-8')).decode('utf-8') + ':' + str(offset)
     dms = redis.get(key)
     if dms is None or reload:
-        lock = redis_lock.Lock(redis, key, expire=60, auto_renewal=True)
+        lock = KemonoRedisLock(redis, key, expire=60, auto_renewal=True)
         if lock.acquire(blocking=False):
             cursor = get_cursor()
             query = 'SELECT * FROM dms WHERE to_tsvector(\'english\', content) @@ websearch_to_tsquery(%s) OFFSET %s LIMIT %s'
@@ -120,7 +120,7 @@ def get_all_dms_by_query_count(q: str, reload: bool = False) -> int:
     key = 'all_dms_by_query_count:' + base64.b64encode(q.encode('utf-8')).decode('utf-8')
     count = redis.get(key)
     if count is None or reload:
-        lock = redis_lock.Lock(redis, key, expire=60, auto_renewal=True)
+        lock = KemonoRedisLock(redis, key, expire=60, auto_renewal=True)
         if lock.acquire(blocking=False):
             cursor = get_cursor()
             query = 'SELECT COUNT(*) FROM dms WHERE to_tsvector(\'english\', content) @@ websearch_to_tsquery(%s)'
@@ -140,7 +140,7 @@ def count_user_dms(service: str, user_id: str, reload: bool = False) -> int:
     key = f"dms_count:{service}:{user_id}"
     count = redis.get(key)
     if count is None or reload:
-        lock = redis_lock.Lock(redis, key, expire=60, auto_renewal=True)
+        lock = KemonoRedisLock(redis, key, expire=60, auto_renewal=True)
         if lock.acquire(blocking=False):
             cursor = get_cursor()
             query = 'SELECT COUNT(*) FROM dms WHERE service = %s AND "user" = %s'

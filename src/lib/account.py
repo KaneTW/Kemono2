@@ -10,7 +10,7 @@ from threading import Lock
 from bleach.sanitizer import Cleaner
 from ..internals.database.database import get_cursor
 from ..utils.utils import get_value
-from ..internals.cache.redis import get_conn, serialize_dict_list, deserialize_dict_list
+from ..internals.cache.redis import get_conn, serialize_dict_list, deserialize_dict_list, KemonoRedisLock
 from ..lib.favorites import add_favorite_artist
 from ..lib.artist import get_artist
 from ..lib.security import is_login_rate_limited
@@ -53,7 +53,7 @@ def get_saved_key_import_ids(key_id, reload=False):
     key = 'saved_key_import_ids:' + str(key_id)
     saved_key_import_ids = redis.get(key)
     if saved_key_import_ids is None or reload:
-        lock = redis_lock.Lock(redis, key, expire=60, auto_renewal=True)
+        lock = KemonoRedisLock(redis, key, expire=60, auto_renewal=True)
         if lock.acquire(blocking=False):
             cursor = get_cursor()
             # TODO: select columns
@@ -80,7 +80,7 @@ def get_saved_keys(account_id: int, reload: bool = False):
     saved_keys = redis.get(key)
     result = None
     if saved_keys is None or reload:
-        lock = redis_lock.Lock(redis, key, expire=60, auto_renewal=True)
+        lock = KemonoRedisLock(redis, key, expire=60, auto_renewal=True)
         if lock.acquire(blocking=False):
             cursor = get_cursor()
             args_dict = dict(
