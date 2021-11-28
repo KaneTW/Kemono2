@@ -1,4 +1,4 @@
-from src.pages.importer import importer_page
+from src.pages.imports import imports
 from src.pages.help import help_app
 from src.pages.favorites import favorites
 from src.pages.dms import dms
@@ -50,7 +50,7 @@ app.register_blueprint(account)
 app.register_blueprint(favorites)
 app.register_blueprint(dms)
 app.register_blueprint(help_app, url_prefix='/help')
-app.register_blueprint(importer_page)
+app.register_blueprint(imports)
 if (is_development):
     from development import development
     app.register_blueprint(development)

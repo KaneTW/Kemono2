@@ -6,7 +6,7 @@ from flask import Blueprint, request, make_response, render_template, current_ap
 from src.lib.dms import get_unapproved_dms, approve_dm, cleanup_unapproved_dms
 
 from src.types.props import SuccessProps
-from .importer_types import DMPageProps, StatusPageProps
+from .types import DMPageProps, StatusPageProps
 
 importer_page = Blueprint('importer_page', __name__)
 
