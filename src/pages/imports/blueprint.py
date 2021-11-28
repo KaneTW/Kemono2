@@ -1,11 +1,13 @@
 import json
-from src.internals.cache.redis import get_conn, serialize_dict_list, deserialize_dict_list
+from src.internals.cache.redis import get_conn
+from src.lib.imports import validate_import_key
 from src.utils.utils import get_import_id
 from flask import Blueprint, request, make_response, render_template, current_app, g, session
 
 from src.lib.dms import get_unapproved_dms, approve_dm, cleanup_unapproved_dms
 
 from src.types.props import SuccessProps
+from src.types.kemono_error import KemonoError
 from .types import DMPageProps, StatusPageProps
 
 importer_page = Blueprint('importer_page', __name__)
@@ -130,6 +132,7 @@ def get_importer_logs(import_id):
 
 
 # API
+# TODO: move into separate blueprint
 @importer_page.post('/api/import')
 def importer_submit():
     if not session.get('account_id') and request.form.get("save_dms"):
@@ -138,14 +141,16 @@ def importer_submit():
     if not request.form.get("session_key"):
         return "Session key missing.", 401
 
-    if request.form.get('session_key') and len(request.form.get('session_key').encode('utf-8')) > 1024:
-        return "The length of the session key you sent is too large. You should let the administrator know about this.", 400
+    validated_key = validate_import_key(request.form.get("session_key"), request.form.get("service"))
+
+    if isinstance(validated_key, KemonoError):
+        return (validated_key.message, 400)
 
     try:
         redis = get_conn()
-        import_id = get_import_id(request.form.get("session_key"))
+        import_id = get_import_id(validated_key)
         data = dict(
-            key=request.form.get("session_key"),
+            key=validated_key,
             service=request.form.get("service"),
             channel_ids=request.form.get("channel_ids"),
             auto_import=request.form.get("auto_import"),
