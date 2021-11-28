@@ -36,3 +36,7 @@ XxJRiGbXlDkdqYhAgA2AyTcCAwEAAQ==
 
 # (static) salt for autoimport key hashing. you should change this once and keep it safe.
 salt = "lolololololololol"
+
+# enable/disable redis key pushing
+pubsub = False
+pubsub_queue_limit = 200
