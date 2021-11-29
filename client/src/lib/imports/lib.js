@@ -10,7 +10,7 @@ import { serviceConstraints } from "./type.js";
  * @param {string} service
  * @returns {string | KemonoError}
  */
-export function validate_import_key(key, service) {
+export function validateImportKey(key, service) {
   const formattedKey = key.trim();
   const keyLength = formattedKey.length;
   const { minLength, maxLength } = serviceConstraints[service];

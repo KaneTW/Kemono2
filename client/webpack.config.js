@@ -43,6 +43,7 @@ const webpackConfig = {
     extensions: [".js"],
     alias: {
       ["@wp/pages"]: path.join(projectPath, "pages", "_index.js"),
+      ["@wp/lib"]: path.join(projectPath, "lib", "_index.js"),
       ["@wp/components"]: path.join(projectPath, "pages", "components", "_index.js"),
       ["@wp/js"]: path.join(projectPath, "js"),
       ["@wp/css"]: path.join(projectPath, "css"),

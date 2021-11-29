@@ -158,7 +158,7 @@ def importer_submit():
             save_dms=request.form.get("save_dms"),
             contributor_id=session.get("account_id")
         )
-        redis.set('imports:' + import_id, json.dumps(data))
+        redis.set(f'imports: {import_id}', json.dumps(data))
 
         props = SuccessProps(
             currentPage='import',

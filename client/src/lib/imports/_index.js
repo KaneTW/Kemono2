@@ -1,1 +1,1 @@
-export { validate_import_key } from "./lib.js";
+export { validateImportKey } from "./lib.js";

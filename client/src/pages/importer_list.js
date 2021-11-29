@@ -1,7 +1,9 @@
+import { KemonoError } from "@wp/utils";
+import { validateImportKey } from "@wp/lib";
 import { showTooltip, registerMessage } from "@wp/components";
 
 /**
- * @param {HTMLElement} section 
+ * @param {HTMLElement} section
  */
 export function importerPage(section) {
   const isLoggedIn = localStorage.getItem("logged_in") === "yes";
@@ -25,12 +27,12 @@ function switchDiscordSection(discordSection) {
   return (event) => {
     if (event.target.id === "service") {
       event.stopPropagation();
-  
+
       /**
        * @type {HTMLSelectElement}
        */
       const select = event.target;
-  
+
       if (select.value === "discord") {
         discordSection.classList.remove("form__section--hidden");
       } else {
@@ -38,7 +40,7 @@ function switchDiscordSection(discordSection) {
       }
     }
   }
-  
+
 }
 
 /**
@@ -49,12 +51,12 @@ function switchConsentSection(dmConsentSection) {
   return (event) => {
     if (event.target.id === "service") {
       event.stopPropagation();
-  
+
       /**
        * @type {HTMLSelectElement}
        */
       const select = event.target;
-  
+
       // the dm importer is currently patreon only
       if (select.value === "patreon") {
         dmConsentSection.classList.remove("form__section--hidden");
@@ -63,7 +65,7 @@ function switchConsentSection(dmConsentSection) {
       }
     }
   }
-  
+
 }
 
 /**
@@ -86,5 +88,38 @@ function handleSubmit(isLoggedIn) {
       showTooltip(dmConsent, registerMessage(null));
       return;
     }
+
+    /**
+     * @type {string}
+     */
+    const service = form.elements["service"].value;
+    /**
+     * @type {HTMLInputElement}
+     */
+    const importKeyInput = form.elements["session-key"];
+    /**
+     * @type {string}
+     */
+    const importKey = importKeyInput.value;
+
+    if (!importKey.length) {
+      event.preventDefault();
+      const paragraph = document.createElement("p");
+      paragraph.textContent = "Session key missing.";
+      showTooltip(importKeyInput, paragraph);
+      return;
+    }
+
+    const validatedKey = validateImportKey(importKey, service);
+
+    if (validatedKey instanceof KemonoError) {
+      event.preventDefault();
+      const paragraph = document.createElement("p");
+      paragraph.textContent = validatedKey.message;
+      showTooltip(importKeyInput, paragraph);
+      return;
+    }
+
+    importKeyInput.value = validatedKey;
   }
 }
