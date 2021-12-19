@@ -1,4 +1,12 @@
 {
+  // "json.schemas": [
+  //   {
+  //     "fileMatch": [
+  //       "/json-schema/*.json"
+  //     ],
+  //     "url": "/json-schema/base.schema.json"
+  //   }
+  // ],
   "[json]": {
     "editor.tabSize": 2,
   },

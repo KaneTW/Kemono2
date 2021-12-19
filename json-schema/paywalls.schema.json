@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "title": "Paywalls",
+  "description": "A list of paywalls",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": {
+    "$ref": "#/definitions/paywall"
+  },
+  "definitions": {
+    "paywall": {
+      "title": "Paywall",
+      "description": "Various paywall info.",
+      "type": "object",
+      "required": [
+        "title",
+        "validation_constraints"
+      ],
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Full name of the paywall."
+        },
+        "validation_constraints": {
+          "type": "string",
+          "description": "Constraints on the session key."
+        }
+      }
+    }
+  }
+}

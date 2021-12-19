@@ -1,0 +1,27 @@
+{
+  "$schema": "./paywalls.schema.json",
+  "patreon": {
+    "title": "Patreon",
+    "validation_constraints": "43 characters without newline, ascii"
+  },
+  "fanbox": {
+    "title": "Pixiv Fanbox",
+    "validation_constraints": "format is (int)_(string), ascii"
+  },
+  "fantia": {
+    "title": "Fantia",
+    "validation_constraints": "32 characters without newline, hex, lower"
+  },
+  "gumroad": {
+    "title": "Gumroad",
+    "validation_constraints": "at least 200 characters, ascii"
+  },
+  "subscribestar": {
+    "title": "SubscribeStar",
+    "validation_constraints": "ascii"
+  },
+  "discord": {
+    "title": "Discord",
+    "validation_constraints": "ascii, regex: /(mfa\.[a-z0-9_-]{20,})|([a-z0-9_-]{23,28}\.[a-z0-9_-]{6,7}\.[a-z0-9_-]{27})/i"
+  }
+}
