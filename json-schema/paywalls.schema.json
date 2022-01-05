@@ -1,13 +1,7 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema",
   "title": "Paywalls",
   "description": "A list of paywalls",
   "type": "object",
-  "properties": {
-    "$schema": {
-      "type": "string"
-    }
-  },
   "additionalProperties": {
     "$ref": "#/definitions/paywall"
   },
@@ -16,18 +10,63 @@
       "title": "Paywall",
       "description": "Various paywall info.",
       "type": "object",
+      "additionalProperties": false,
       "required": [
         "title",
-        "validation_constraints"
+        "origin",
+        "import_key"
       ],
       "properties": {
         "title": {
           "type": "string",
           "description": "Full name of the paywall."
         },
-        "validation_constraints": {
+        "origin": {
           "type": "string",
-          "description": "Constraints on the session key."
+          "format": "uri",
+          "description": "Absolute url to the paywall origin."
+        },
+        "import_key": {
+          "$ref": "#/definitions/import_key"
+        }
+      }
+    },
+    "import_key": {
+      "type": "object",
+      "title": "ImportKey",
+      "description": "The key required to import from the site. The whitespaces should be trimmed before the validation.",
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "pattern": {
+          "type": "string",
+          "format": "regex"
+        },
+        "length": {
+          "type": "number",
+          "description": "Either this or `min_length` and `max_length`."
+        },
+        "min_length": {
+          "type": "number"
+        },
+        "max_length": {
+          "type": "number",
+          "default": 1024
+        },
+        "encoding": {
+          "type": "string",
+          "enum": [
+            "ascii",
+            "hex"
+          ],
+          "default": "ascii"
+        },
+        "examples": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     }

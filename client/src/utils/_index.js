@@ -178,14 +178,8 @@ export function waitAsync(time) {
 }
 
 /**
- * @link https://stackoverflow.com/questions/2444447/string-that-contains-all-ascii-characters#answer-2444466
- * @param {string} inputString
+ * @param {string} str
  */
-export function isASCIIString(inputString) {
-  const hasNonASCII = Array.from(inputString)
-    .some((letter) => {
-      return letter.charCodeAt(0) < 32 || letter.charCodeAt(0) > 126
-    });
-
-  return !hasNonASCII;
+export function isLowerCase(str) {
+  return Boolean(str.match(/[0-9a-z]+/i))
 }
