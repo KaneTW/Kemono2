@@ -12,6 +12,8 @@
  * @returns {string[]} An array of error messages, if any.
  */
 
+const maxLength = 1024;
+
 /**
  * @type {Record<string, KeyValidator>}
  */
@@ -41,8 +43,6 @@ export function validateImportKey(key, service) {
     errors,
     result: formattedKey
   }
-
-  return formattedKey;
 }
 
 import { isLowerCase } from "@wp/utils";
@@ -51,8 +51,9 @@ import { isLowerCase } from "@wp/utils";
  * @type KeyValidator
  */
 function patreonKey(key, errors) {
-  if (key.length !== 43) {
-    errors.push(`The key length of "${key.length}" is not a valid Patreon key. Required length: 43.`)
+  const reqLength = 43;
+  if (key.length !== reqLength) {
+    errors.push(`The key length of "${key.length}" is not a valid Patreon key. Required length: "${reqLength}".`)
   }
 
   return errors
@@ -63,6 +64,11 @@ function patreonKey(key, errors) {
  */
 function fanboxKey(key, errors) {
   const pattern = /^\d+_\w+$/i;
+
+  if (key.length > maxLength) {
+    errors.push(`The key length of "${key.length}" is over the maximum of "${maxLength}".`)
+  }
+
   if (!key.match(pattern)) {
     errors.push(`The key doesn't match the required pattern of "${String(pattern)}"`);
   }
@@ -98,6 +104,10 @@ function gumroadKey(key, errors) {
     errors.push(`The key length of "${key.length}" is less than minimum required "${minLength}".`);
   }
 
+  if (key.length > maxLength) {
+    errors.push(`The key length of "${key.length}" is over the maximum of "${maxLength}".`)
+  }
+
   return errors;
 }
 
@@ -105,10 +115,9 @@ function gumroadKey(key, errors) {
  * @type KeyValidator
  */
 function subscribestarKey(key, errors) {
-  const maxLength = 1024;
 
   if (key.length > maxLength) {
-    errors.push(`The key length of "${key.length}" is over the maximum of "${minLength}".`)
+    errors.push(`The key length of "${key.length}" is over the maximum of "${maxLength}".`)
   }
 
   return errors;
@@ -118,6 +127,11 @@ function subscribestarKey(key, errors) {
  * @type KeyValidator
  */
 function dlsiteKey(key, errors) {
+
+  if (key.length > maxLength) {
+    errors.push(`The key length of "${key.length}" is over the maximum of "${maxLength}".`)
+  }
+
   return errors;
 }
 
@@ -128,7 +142,7 @@ function discordKey(key, errors) {
   const pattern = /(mfa.[a-z0-9_-]{20,})|([a-z0-9_-]{23,28}.[a-z0-9_-]{6,7}.[a-z0-9_-]{27})/i;
 
   if (!key.match(pattern)) {
-    errors.push(`The key doesn't match the required pattern of "${String(pattern)}"`)
+    errors.push(`The key doesn't match the required pattern of "${String(pattern)}".`)
   }
 
   return errors;

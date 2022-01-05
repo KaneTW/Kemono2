@@ -135,22 +135,25 @@ def get_importer_logs(import_id):
 # TODO: move into separate blueprint
 @importer_page.post('/api/import')
 def importer_submit():
+    key = request.form.get("session_key")
     if not session.get('account_id') and request.form.get("save_dms"):
         return 'You must be logged in to import direct messages.', 401
 
     if not request.form.get("session_key"):
         return "Session key missing.", 401
 
-    validated_key = validate_import_key(request.form.get("session_key"), request.form.get("service"))
+    result = validate_import_key(key, request.form.get("service"))
 
-    if isinstance(validated_key, KemonoError):
-        return (validated_key.message, 400)
+    if not result.is_valid:
+        return (result.errors, 422)
+
+    formatted_key = result.modified_result if result.modified_result else key
 
     try:
         redis = get_conn()
-        import_id = get_import_id(validated_key)
+        import_id = get_import_id(formatted_key)
         data = dict(
-            key=validated_key,
+            key=formatted_key,
             service=request.form.get("service"),
             channel_ids=request.form.get("channel_ids"),
             auto_import=request.form.get("auto_import"),
