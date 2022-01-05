@@ -1,4 +1,4 @@
-from .types import ServiceConstraints, ValidationResult
+from .types import service_constraints, ValidationResult
 
 
 def validate_import_key(key: str, service: str) -> ValidationResult:
@@ -7,9 +7,9 @@ def validate_import_key(key: str, service: str) -> ValidationResult:
     """
     # Trim spaces from both sides.
     formatted_key = key.strip()
-    errors = ServiceConstraints[service](formatted_key, [])
+    errors = service_constraints[service](formatted_key, [])
 
-    return ValidationResult(
+    return ValidationResult[str](
         is_valid=not errors,
         errors=errors,
         modified_result=formatted_key

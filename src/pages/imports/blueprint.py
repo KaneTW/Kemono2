@@ -7,7 +7,6 @@ from flask import Blueprint, request, make_response, render_template, current_ap
 from src.lib.dms import get_unapproved_dms, approve_dm, cleanup_unapproved_dms
 
 from src.types.props import SuccessProps
-from src.types.kemono_error import KemonoError
 from .types import DMPageProps, StatusPageProps
 
 importer_page = Blueprint('importer_page', __name__)
@@ -145,7 +144,7 @@ def importer_submit():
     result = validate_import_key(key, request.form.get("service"))
 
     if not result.is_valid:
-        return (result.errors, 422)
+        return ("\n".join(result.errors), 422)
 
     formatted_key = result.modified_result if result.modified_result else key
 
@@ -165,7 +164,7 @@ def importer_submit():
 
         props = SuccessProps(
             currentPage='import',
-            redirect=f'/importer/status/{import_id}{ "?dms=1" if request.form.get("save_dms") else "" }'
+            redirect=f'/importer/status/{import_id}{"?dms=1" if request.form.get("save_dms") else "" }'
         )
 
         return make_response(render_template(

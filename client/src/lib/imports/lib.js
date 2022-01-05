@@ -1,3 +1,5 @@
+import { isLowerCase } from "@wp/utils";
+
 /**
  * @typedef ValidationResult
  * @property {boolean} isValid
@@ -12,7 +14,7 @@
  * @returns {string[]} An array of error messages, if any.
  */
 
-const maxLength = 1024;
+const maxLength = 500;
 
 /**
  * @type {Record<string, KeyValidator>}
@@ -44,8 +46,6 @@ export function validateImportKey(key, service) {
     result: formattedKey
   }
 }
-
-import { isLowerCase } from "@wp/utils";
 
 /**
  * @type KeyValidator

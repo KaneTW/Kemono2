@@ -52,7 +52,7 @@
         },
         "max_length": {
           "type": "number",
-          "default": 1024
+          "default": 500
         },
         "encoding": {
           "type": "string",
