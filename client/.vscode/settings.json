@@ -1,13 +1,4 @@
 {
-    "[jinja-html]": {
-        "editor.tabSize": 2
-    },
-    "[javascript]": {
-        "editor.tabSize": 2
-    },
-    "[scss]": {
-        "editor.tabSize": 2
-    },
     // this option does work and is required for emmet in jinja to work
     "files.associations": {
         "*.html": "jinja-html"
@@ -23,4 +14,15 @@
         "**/dist": true
     },
     "javascript.preferences.importModuleSpecifierEnding": "js",
+    "javascript.preferences.quoteStyle": "double",
+    "javascript.format.semicolons": "insert",
+    "[jinja-html]": {
+        "editor.tabSize": 2
+    },
+    "[javascript]": {
+        "editor.tabSize": 2
+    },
+    "[scss]": {
+        "editor.tabSize": 2
+    },
 }
