@@ -119,7 +119,7 @@ def url_is_for_non_logged_file_extension(path):
 
 
 def sort_dict_list_by(list_var, key, reverse=False):
-    return sorted(list_var, key=lambda v: v[key], reverse=reverse)
+    return sorted(list_var, key=lambda v: (v[key] is None, v[key]), reverse=reverse)
 
 
 def restrict_value(value, allowed, default=None):
