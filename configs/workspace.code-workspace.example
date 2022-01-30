@@ -19,6 +19,8 @@
 	],
 	"settings": {
     "files.exclude": {
+			"venv/": true,
+			"dist/": true,
 			"client/": true,
 			"archiver/": true,
 			"docs/": true,
@@ -41,14 +43,5 @@
 		"emmet.includeLanguages": {
 			"jinja-html": "html"
 		},
-	},
-	"extensions": {
-		"recommendations": [
-			"ms-python.python",
-			"samuelcolvin.jinjahtml",
-			"ms-azuretools.vscode-docker",
-			"ms-python.vscode-pylance",
-			"ms-toolsai.jupyter"
-		],
 	}
 }

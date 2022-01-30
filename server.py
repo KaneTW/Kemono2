@@ -48,7 +48,7 @@ app = Flask(
 
 app.url_map.strict_slashes = False
 
-# app.register_blueprint(api)
+app.register_blueprint(api)
 app.register_blueprint(pages)
 app.register_blueprint(legacy)
 app.register_blueprint(artists)
