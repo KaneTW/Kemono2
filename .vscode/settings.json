@@ -8,9 +8,15 @@
     },
     {
       "fileMatch": [
+<<<<<<< HEAD
         "/json-schema/api/*.json"
       ],
       "url": "/json-schema/api.schema.json"
+=======
+        "/json-schema/paywalls.json"
+      ],
+      "url": "/json-schema/paywalls.schema.json"
+>>>>>>> 61189f66c07d1ce054d794fe8c43f4b0b8f6d625
     },
   ],
   "[json]": {

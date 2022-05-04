@@ -1,5 +1,12 @@
 import json
+<<<<<<< HEAD:src/pages/importer.py
 from datetime import datetime
+=======
+from src.lib.imports import validate_import_key
+from src.internals.cache.redis import get_conn, scan_keys
+from src.utils.utils import get_import_id
+from flask import Blueprint, request, make_response, render_template, current_app, g, session
+>>>>>>> 61189f66c07d1ce054d794fe8c43f4b0b8f6d625:src/pages/imports/blueprint.py
 
 from flask import (Blueprint, current_app, g, make_response, render_template,
                    request, session)
@@ -9,9 +16,13 @@ from src.internals.cache.redis import (deserialize_dict_list, get_conn,
 from src.lib.dms import approve_dm, cleanup_unapproved_dms, get_unapproved_dms
 from src.types.kemono import Unapproved_DM
 from src.types.props import SuccessProps
+<<<<<<< HEAD:src/pages/importer.py
 from src.utils.utils import get_import_id
 
 from .importer_types import DMPageProps, ImportProps, StatusPageProps
+=======
+from .types import DMPageProps, StatusPageProps
+>>>>>>> 61189f66c07d1ce054d794fe8c43f4b0b8f6d625:src/pages/imports/blueprint.py
 
 importer_page = Blueprint('importer_page', __name__)
 
@@ -124,16 +135,27 @@ def get_importer_logs(import_id: str):
 
 
 # API
+# TODO: move into separate blueprint
 @importer_page.post('/api/import')
 def importer_submit():
+    key = request.form.get("session_key")
     if not session.get('account_id') and request.form.get("save_dms"):
         return 'You must be logged in to import direct messages.', 401
 
     if not request.form.get("session_key"):
         return "Session key missing.", 401
 
+<<<<<<< HEAD:src/pages/importer.py
     if request.form.get('session_key') and len(request.form.get('session_key').encode('utf-8')) > 1024:
         return "The length of the session key you sent is too large. You should let the administrator know about this.", 400
+=======
+    result = validate_import_key(key, request.form.get("service"))
+
+    if not result.is_valid:
+        return ("\n".join(result.errors), 422)
+
+    formatted_key = result.modified_result if result.modified_result else key
+>>>>>>> 61189f66c07d1ce054d794fe8c43f4b0b8f6d625:src/pages/imports/blueprint.py
 
     try:
         redis = get_conn()
@@ -142,7 +164,7 @@ def importer_submit():
             _import = _import.decode('utf8')
             existing_import = redis.get(_import)
             existing_import_data = json.loads(existing_import)
-            if existing_import_data['key'] == request.form.get("session_key"):
+            if existing_import_data['key'] == formatted_key:
                 props = SuccessProps(
                     message='This key is already being used for an import. Redirecting to logs...',
                     currentPage='import',
@@ -154,9 +176,13 @@ def importer_submit():
                     props=props
                 ), 200)
 
+<<<<<<< HEAD:src/pages/importer.py
         import_id = get_import_id(request.form.get("session_key"))
+=======
+        import_id = get_import_id(formatted_key)
+>>>>>>> 61189f66c07d1ce054d794fe8c43f4b0b8f6d625:src/pages/imports/blueprint.py
         data = dict(
-            key=request.form.get("session_key"),
+            key=formatted_key,
             service=request.form.get("service"),
             channel_ids=request.form.get("channel_ids"),
             auto_import=request.form.get("auto_import"),
@@ -164,11 +190,15 @@ def importer_submit():
             save_dms=request.form.get("save_dms"),
             contributor_id=session.get("account_id")
         )
+<<<<<<< HEAD:src/pages/importer.py
         redis.set(f'imports:{import_id}', json.dumps(data))
+=======
+        redis.set(f'imports: {import_id}', json.dumps(data))
+>>>>>>> 61189f66c07d1ce054d794fe8c43f4b0b8f6d625:src/pages/imports/blueprint.py
 
         props = SuccessProps(
             currentPage='import',
-            redirect=f'/importer/status/{import_id}{ "?dms=1" if request.form.get("save_dms") else "" }'
+            redirect=f'/importer/status/{import_id}{"?dms=1" if request.form.get("save_dms") else "" }'
         )
 
         return make_response(render_template(

@@ -1,3 +1,28 @@
+<<<<<<< HEAD
+=======
+from src.pages.imports import imports
+from src.pages.help import help_app
+from src.pages.favorites import favorites
+from src.pages.dms import dms
+from src.pages.account import account
+from src.pages.post import post
+from src.pages.posts import posts
+from src.pages.random import random
+from src.pages.artists import artists
+from src.pages.legacy import legacy
+from src.pages.home import home
+from src.utils.utils import url_is_for_non_logged_file_extension, render_page_data, paysites, paysite_list, freesites
+from src.lib.notification import count_new_notifications
+from src.lib.account import is_logged_in, load_account
+from src.lib.ab_test import get_all_variants
+from src.types.account import Account
+from src.internals.cache.flask_cache import cache
+from configs.derived_vars import is_development
+import src.internals.cache.redis as redis
+import src.internals.database.database as database
+from flask import Flask, render_template, request, redirect, g, abort, session
+import re
+>>>>>>> 61189f66c07d1ce054d794fe8c43f4b0b8f6d625
 import datetime
 import logging
 import re
@@ -59,7 +84,7 @@ app.register_blueprint(account)
 app.register_blueprint(favorites)
 app.register_blueprint(dms)
 app.register_blueprint(help_app, url_prefix='/help')
-app.register_blueprint(importer_page)
+app.register_blueprint(imports)
 if (is_development):
     from development import development
     app.register_blueprint(development)
