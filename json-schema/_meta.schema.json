@@ -272,11 +272,7 @@
         },
         {
           "const": "uri-template",
-<<<<<<< HEAD
           "description": "A URI Template (of any level) according to https://datatracker.ietf.org/doc/html/rfc6570. If you don't already know what a URI Template is, you probably don't need this value."
-=======
-          "description": "A URI Template (of any level) according to https://datatracker.ietf.org/doc/html/rfc6570. If you don’t already know what a URI Template is, you probably don’t need this value."
->>>>>>> 61189f66c07d1ce054d794fe8c43f4b0b8f6d625
         },
         {
           "const": "json-pointer",
