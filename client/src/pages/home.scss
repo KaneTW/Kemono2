@@ -1,3 +1,71 @@
+@use "../css/variables.scss" as *;
+
 .site-section--home {
 
+}
+// minheights
+
+.jumbo-welcome {
+    overflow-y: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    box-shadow: 0 1px 3px rgb(0 0 0 / 25%);
+    align-items: center;
+    justify-content: flex-end;
+    min-height: 450px;
+    background-color: rgba(0,0,0,.7);
+    margin: 0.5rem;
+    @media (max-width: $width-tablet) {
+        background-color: #3b3e44;
+    }
+}
+
+.jumbo-welcome-mascot {
+    transform: translateZ(0);
+    display: flex;
+    min-height: 450px;
+    width: 100%;
+    height: 100%;
+    @media (max-width: $width-tablet) {
+        display: none;
+    }
+}
+
+.jumbo-welcome-description {
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    padding: 0.5em 2em;
+}
+
+.jumbo-welcome-description-header {
+    text-align: center;
+}
+
+.jumbo-welcome-credits {
+    overflow: hidden;
+    display: block;
+    float: right;
+    text-align: right;
+}
+
+.jumbo-welcome-mascot-tan {
+    background-image: url('/static/ktan.png');
+    width: 100%;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+.jumbo-welcome-background {
+    z-index: -1;
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    height: 100%;
+    width: 100%;
+    background-image: url('/static/krokobyaka.jpg');
+    background-position: center;
+    background-size: cover;
 }

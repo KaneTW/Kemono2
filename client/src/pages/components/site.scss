@@ -1,7 +1,6 @@
 @use "../../css/variables" as *;
 
 .site-section {
-  max-width: calc(1440px + 2em);
   margin: 0 auto;
 
   &__header {
@@ -19,12 +18,5 @@
 
   &__register-cta {
     text-align: center;
-  }
-
-  &__article {
-    background-color: var(--colour1-tertiary);
-    border-radius: 10px;
-    padding: $size-small;
-    margin: $size-small 0;
   }
 }

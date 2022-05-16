@@ -2,7 +2,6 @@
 {% macro attributes(class_name) %}
   class="{{ class_name ~ ' ' ~ kwargs.pop('class') if kwargs.class else class_name }}"
   {% for attribute in kwargs %}
-    {# for `data-*` attributes #}
-    {{ attribute | replace("_", "-") }}="{{ kwargs[attribute] }}"
+    {{ attribute }}="{{ kwargs[attribute] }}"
   {% endfor %}
 {% endmacro %}

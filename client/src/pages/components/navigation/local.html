@@ -1,27 +1,12 @@
 {% from 'components/meta/attributes.html' import attributes %}
 {% from 'components/links.html' import local_link %}
 
-{% macro local_nav(items) %}
-  <nav {{ attributes("navigation navigation--local", **kwargs) }}>
-    {% if items %}
-      <p>Table of contents:</p>
-      {{ local_list(items) }}
-    {% else %}
-      {{ caller() if caller }}
-    {% endif %}
-  </nav>
+{% macro local_nav() %}
+  <nav {{ attributes("navigation navigation--local", **kwargs) }}>{{ caller() }}</nav>
 {% endmacro %}
 
-{% macro local_list(items) %}
-  <ul {{ attributes("navigation__list navigation__list--local", **kwargs) }}>
-    {% if items %}
-      {% for id, text in items %}
-        {{ local_item(id, text) }}
-      {% endfor %}
-    {% else %}
-      {{ caller() if caller }}
-    {% endif %}
-  </ul>
+{% macro local_list() %}
+  <ul {{ attributes("navigation__list navigation__list--local", **kwargs) }}>{{ caller() }}</ul>
 {% endmacro %}
 
 {% macro local_list_ordered() %}

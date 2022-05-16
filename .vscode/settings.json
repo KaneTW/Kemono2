@@ -12,12 +12,6 @@
       ],
       "url": "/json-schema/api.schema.json"
     },
-    {
-      "fileMatch": [
-        "/json-schema/paywalls.json"
-      ],
-      "url": "/json-schema/paywalls.schema.json"
-    },
   ],
   "[json]": {
     "editor.tabSize": 2,

@@ -1,5 +1,33 @@
 @use "../../css/variables" as *;
 
+.global-footer {
+  padding: 5px 20px;
+  margin: 0;
+  font-weight: normal;
+  font-size: 14px;
+  text-align: center;
+
+  .footer {
+    list-style-type: none;
+    font-size: 14px;
+    text-align: center;
+    padding: 0;
+
+    & li {
+      color: var(--colour0-primary);
+      display: inline;
+      margin: 0 0.5em 0 0;
+
+      & a {
+        --local-colour1-primary: var(--colour0-primary);
+        --local-colour1-secondary: var(--colour0-primary);
+        --local-colour2-primary: var(--colour1-tertiary);
+        --local-colour2-secondary: var(--colour1-secondary);
+      }
+    }
+  }
+}
+
 // TODO: split logic properly
 .global-header {
   // border-bottom: $size-thin solid var(--colour0-secondary);
@@ -16,6 +44,44 @@
     text-align: center;
     padding: 0;
 
+    & a {
+      --local-colour1-primary: var(--colour0-primary);
+      --local-colour1-secondary: var(--colour0-primary);
+      --local-colour2-primary: var(--colour1-tertiary);
+      --local-colour2-secondary: var(--colour1-secondary);
+
+      &.aux-link {
+        font-weight: bold;
+        
+        &--support {
+          --local-colour1-primary: hsl(3, 100%, 70%);
+          --local-colour1-secondary: hsl(3, 70%, 65%);
+          --local-colour2-primary: hsl(3, 100%, 20%);
+          --local-colour2-secondary: hsl(3, 70%, 20%);
+        }
+
+        &--board {
+          --local-colour1-primary: hsl(224, 27%, 49%);
+          --local-colour1-secondary: hsl(224, 27%, 49%);
+          --local-colour2-primary: hsl(224, 27%, 20%);
+          --local-colour2-secondary: hsl(224, 15%, 20%);
+        }
+
+        &--telegram {
+          --local-colour1-primary: hsl(200, 100%, 50%);
+          --local-colour1-secondary: hsl(200, 70%, 50%);
+          --local-colour2-primary: hsl(210, 100%, 20%);
+          --local-colour2-secondary: hsl(210, 70%, 20%);
+        }
+
+        &--tpd {
+          --local-colour1-primary: hsl(35, 100%, 50%);
+          --local-colour1-secondary: hsl(35, 100%, 50%);
+          --local-colour2-primary: hsl(35, 100%, 20%);
+          --local-colour2-secondary: hsl(35, 70%, 20%);
+        }
+      }
+    }
     & li {
       color: var(--colour0-primary);
       display: inline;
@@ -62,3 +128,71 @@
 }
 
 // .global-overlay {}
+
+
+.content-wrapper {
+  width: 100%;
+  overflow: auto;
+
+  & > .main,
+  & > .global-footer {
+    padding: 1em;
+
+    @media (max-width: $sidebar-min-width) {
+      padding: 1em 0;
+    }
+  }
+
+  .header {
+    width: 100%;
+    background: hsl(220deg 7% 17%);
+    display: flex;
+    align-items: center;
+    padding: 0 10px 0 5px;
+    margin-top: calc(-1.2rem - 20px);
+    transition: margin-top 250ms ease-in-out 0s;
+
+    @media (max-width: $sidebar-min-width) {
+      margin-top: 0;
+    }
+
+    @media (min-width: #{$sidebar-min-width + 1}) {
+      &.sidebar-retracted {
+        margin-top: 0;
+      }
+    }
+
+    #burgor {
+      cursor: pointer;
+      height: 2.5rem;
+      padding: 5px;
+      
+      & > img {
+        height: 100%;
+      }
+    }
+  }
+
+  .backdrop {
+    position: absolute;
+    background: rgb(0 0 0 / 40%);
+    width: 100%;
+    height: 100%;
+    opacity: 1;
+    transition: opacity 250ms ease-in-out 0s;
+    z-index: 2;
+
+    &.backdrop-hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    @media (min-width: #{$sidebar-min-width + 1}) {
+      display: none;
+    }
+  }
+}
+
+.transition-preload * {
+  transition: none !important;
+}

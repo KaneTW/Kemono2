@@ -1,0 +1,127 @@
+@use "../../../css/variables" as *;
+
+.global-sidebar {
+  display: flex;
+  width: 12rem;
+  min-width: 160px;
+  flex-direction: column;
+  overflow: auto;
+  background: rgb(40 42 46);
+  padding: 0.5em 0;
+  transition: margin-left 250ms ease-in-out 0s;
+
+  @media (max-width: $sidebar-min-width) {
+    position: absolute;
+    height: 100%;
+    width: 15rem;
+    margin-left: -15rem;
+    z-index: 3;
+
+    &.expanded {
+      margin-left: 0;
+    }
+  }
+
+  @media (min-width: #{$sidebar-min-width + 1}) {
+    &.retracted {
+      margin-left: -12rem;
+    }
+  }
+
+  &-entry {
+    display: flex;
+    flex-direction: column;
+    margin-left: 1rem;
+    margin-right: 1rem;
+    margin-top: 0.5rem;
+
+    a {
+      color: unset;
+      border: 0;
+      transition-property: unset;
+      transition-duration: unset;
+    }
+
+    &.stuck-bottom {
+      margin-top: auto;
+    }
+
+    &.clickable-header-entry {
+      display: flex;
+      justify-content: space-between;
+      flex-direction: row;
+      align-items: center;
+    }
+
+    .close-sidebar {
+      cursor: pointer;
+      height: 28px;
+      margin-left: 10px;
+
+      @media (max-width: $sidebar-min-width) {
+        height: 34px;
+        margin-left: 20px;
+      }
+
+      & > img {
+        height: 100%;
+      }
+      &:hover, &:focus {
+        background: rgb(255 255 255 / 10%);
+      }
+    }
+
+    &-item {
+      display: flex;
+      align-items: center;
+      padding-left: 0.5rem;
+      height: 28px;
+
+      @media (max-width: $sidebar-min-width) {
+        height: 34px;
+      }
+
+      &.clickable-header {
+        cursor: pointer;
+        width: 100%;
+      }
+
+      &.header, &.clickable-header {
+        font-weight: bold;
+      }
+
+      &.home-button {
+        flex: 1;
+      }
+
+      &:not(.header):not(&.clickable-header) {
+        padding-left: 1.5rem;
+        cursor: pointer;
+      }
+
+      &:not(.header):hover, &.clickable-header:hover,
+      &:not(.header):focus, &.clickable-header:focus {
+        background: rgb(255 255 255 / 10%);
+      }
+      &.clickable-header {
+          padding-top: 0;
+      }
+        
+      &.donate {
+        color: hsl(3, 100%, 70%);
+      }
+
+      &.chan {
+        color: hsl(224, 27%, 49%);
+      }
+
+      &.tg {
+        color: hsl(200, 100%, 50%);
+      }
+
+      &.tpd {
+        color: hsl(35, 100%, 50%);
+      }
+    }
+  }
+}
