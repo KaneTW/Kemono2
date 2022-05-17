@@ -15,8 +15,8 @@ services:
       - data-dev:/storage
   kemono-app-dev:
     build:
-      context: .
-      dockerfile: Dockerfile.dev
+      context: ..
+      dockerfile: ./Dockerfile.dev
     container_name: kemono
     restart: unless-stopped
     depends_on:
@@ -48,8 +48,8 @@ services:
       start_period: 30s
   kemono-frontend-dev:
     build:
-      context: ./client
-      dockerfile: Dockerfile.dev
+      context: ../client
+      dockerfile: ../client/Dockerfile.dev
     container_name: kemono-frontend-dev
     environment:
       - NODE_ENV=development
@@ -78,8 +78,8 @@ services:
     #  - 5432:5432
   kemono-archiver:
     build:
-      context: ./archiver
-      dockerfile: Dockerfile.dev
+      context: ../archiver
+      dockerfile: ../archiver/Dockerfile.dev
     container_name: kemono-archiver
     restart: unless-stopped
     depends_on:

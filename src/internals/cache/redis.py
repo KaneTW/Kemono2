@@ -1,12 +1,14 @@
-from flask import current_app
-from os import getenv
+import redis_lock
 import dateutil
 import datetime
-import copy
 import ujson
+import copy
 import rb
-import redis_map
-import redis_lock
+
+from flask import current_app
+from os import getenv
+
+from src.config import Configuration
 
 cluster: rb.Cluster = None
 
@@ -14,13 +16,14 @@ cluster: rb.Cluster = None
 class KemonoRouter(rb.BaseRouter):
     def get_host_for_key(self, key):
         top_level_prefix_of_key = key.split(':')[0]
-        if (redis_map.keyspaces.get(top_level_prefix_of_key) is not None):
-            return redis_map.keyspaces[top_level_prefix_of_key]
+        if (Configuration().redis['keyspaces'].get(top_level_prefix_of_key) is not None):
+            return Configuration().redis['keyspaces'][top_level_prefix_of_key]
         else:
             raise rb.UnroutableCommand()
 
 
 class KemonoRedisLock(redis_lock.Lock):
+    ''' Reword to make the module compatible with Redis-Blaster. '''
     def release(self):
         if self._lock_renewal_thread is not None:
             self._stop_lock_renewer()
@@ -48,19 +51,21 @@ class KemonoRedisLock(redis_lock.Lock):
 
 def init():
     global cluster
-    cluster = rb.Cluster(hosts=redis_map.nodes, host_defaults=redis_map.node_options, router_cls=KemonoRouter)
+    cluster = rb.Cluster(
+        host_defaults=Configuration().redis['node_options'],
+        hosts=dict((i, host) for i, host in enumerate(Configuration().redis['nodes'])),
+        router_cls=KemonoRouter
+    )
     return cluster
-
-# def get_pool():
-#     global pool
-#     return pool
 
 
 def get_conn():
     return cluster.get_routing_client()
 
+
 def scan_keys(pattern):
     return cluster.get_local_client_for_key(pattern).scan_iter(match=pattern, count=5000)
+
 
 def serialize_dict(data):
     to_serialize = {

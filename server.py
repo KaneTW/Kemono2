@@ -13,6 +13,7 @@ from flask import Flask, abort, g, redirect, render_template, request, session
 import src.internals.cache.redis as redis
 import src.internals.database.database as database
 from configs.derived_vars import is_development
+from src.config import Configuration
 from src.internals.cache.flask_cache import cache
 from src.lib.ab_test import get_all_variants
 from src.lib.account import is_logged_in, load_account
@@ -42,8 +43,8 @@ load_dotenv(join(dirname(__file__), '.env'))
 
 app = Flask(
     __name__,
-    static_folder='client/dev/static',
-    template_folder='client/dev/pages'
+    static_folder=Configuration().webserver['static_folder'],
+    template_folder=Configuration().webserver['template_folder']
 )
 
 app.url_map.strict_slashes = False
@@ -65,7 +66,16 @@ if (is_development):
     app.register_blueprint(development)
 
 
-app.config.from_pyfile('flask.cfg')
+app.config.update(
+    dict(
+        CACHE_TYPE='simple',
+        CACHE_DEFAULT_TIMEOUT=60,
+        ENABLE_PASSWORD_VALIDATOR=True,
+        ENABLE_LOGIN_RATE_LIMITING=True,
+        SESSION_REFRESH_EACH_REQUEST=False,
+        SECRET_KEY=Configuration().webserver['secret']
+    )
+)
 app.jinja_options = dict(
     trim_blocks=True,
     lstrip_blocks=True
@@ -87,16 +97,19 @@ redis.init()
 
 @app.before_request
 def do_init_stuff():
+    app.permanent_session_lifetime = timedelta(days=30)
+
     g.page_data = {}
     g.request_start_time = datetime.datetime.now()
     g.freesites = freesites
     g.paysite_list = paysite_list
     g.paysites = paysites
-    g.origin = getenv("KEMONO_SITE")
-    g.canonical_url = urljoin(getenv("KEMONO_SITE"), request.path)
+    g.origin = Configuration().site
+    g.canonical_url = urljoin(Configuration().site, request.path)
+
     session.permanent = True
-    app.permanent_session_lifetime = timedelta(days=30)
     session.modified = False
+
     account = load_account()
     if account:
         g.account = Account.init_from_dict(account)

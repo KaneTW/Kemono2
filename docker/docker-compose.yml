@@ -26,7 +26,9 @@ services:
     # ports:
     #  - 5432:5432
   kemono-app:
-    build: .
+    build:
+      context: ..
+      dockerfile: ./Dockerfile
     container_name: kemono
     restart: unless-stopped
     depends_on:
@@ -55,7 +57,8 @@ services:
       start_period: 30s
   kemono-frontend:
     build:
-      context: ./client
+      context: ../client
+      dockerfile: ../client/Dockerfile
     container_name: kemono-frontend
     environment:
       - NODE_ENV=production
@@ -63,8 +66,8 @@ services:
       - frontend-assets:/app/dist
   kemono-archiver:
     build:
-      context: ./archiver
-      dockerfile: Dockerfile
+      context: ../archiver
+      dockerfile: ../archiver/Dockerfile
     container_name: kemono-archiver
     restart: unless-stopped
     depends_on:
