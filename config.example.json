@@ -2,7 +2,7 @@
   "site": "http://localhost:6942",
   "development_mode": true,
   "webserver": {
-    "secret": "",
+    "secret": "REPLACE THIS.",
     "workers": 4,
     "port": 6942
   },
