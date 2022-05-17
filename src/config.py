@@ -33,8 +33,8 @@ class Configuration:
             # Default here will kill workers after a certain amount of requests.
             # "Jitter" helps with timing, so your site doesn't down itself during a purge.
             # Recommended if you are running in production; keeps memory clean.
-            'max_requests': 1000,
-            'max_requests_jitter': 10
+            'max-requests': 1000,
+            'max-requests-jitter': 10
         })
         # The port the site will be served on.
         self.webserver['port'] = self.webserver.get('port', 6942)

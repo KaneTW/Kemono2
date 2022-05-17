@@ -22,14 +22,17 @@ if __name__ == '__main__':
                 cwd='client'
             )
 
+        opts = Configuration().webserver['gunicorn_options'].items()
+        opts = ' '.join(list(f'--{k} {v}' for k, v in opts))
+        if not Configuration().webserver['ip_security']:
+            opts += ' --forwarded_allow_ips=*'
+            opts += ' --proxy_allow_ips=*'
         subprocess.run(f'''
             gunicorn \\
                 { '--reload' if Configuration().development_mode else '' } \\
                 --workers { Configuration().webserver['workers'] } \\
                 --threads { Configuration().webserver['threads'] } \\
-                {'--forwarded_allow_ips=* '
-                    '--proxy_allow_ips=*' if not Configuration().webserver['ip_security'] else ''} \\
-                {' '.join(f'--{k} {v}' for k, v in Configuration().webserver['gunicorn_options'])}
+                {opts} \\
                 -b 0.0.0.0:{ Configuration().webserver['port'] } \\
             server:app
         ''', shell=True, check=True)
