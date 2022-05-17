@@ -27,7 +27,6 @@ if __name__ == '__main__':
                 { '--reload' if Configuration().development_mode else '' } \\
                 --workers { Configuration().webserver['workers'] } \\
                 --threads { Configuration().webserver['threads'] } \\
-                --max_requests { Configuration().webserver['harakiri'] } \\
                 {'--forwarded_allow_ips=* '
                     '--proxy_allow_ips=*' if not Configuration().webserver['ip_security'] else ''} \\
                 {' '.join(f'--{k} {v}' for k, v in Configuration().webserver['gunicorn_options'])}

@@ -29,7 +29,13 @@ class Configuration:
         # If you've dealt with how the trust of forwarding IPs works upstream, flip this off.
         self.webserver['ip_security'] = self.webserver.get('ip_security', True)
         # Set additional Gunicorn options if you want. Overrides any of the other options.
-        self.webserver['gunicorn_options'] = self.webserver.get('gunicorn_options', {})
+        self.webserver['gunicorn_options'] = self.webserver.get('gunicorn_options', {
+            # Default here will kill workers after a certain amount of requests.
+            # "Jitter" helps with timing, so your site doesn't down itself during a purge.
+            # Recommended if you are running in production; keeps memory clean.
+            'max_requests': 1000,
+            'max_requests_jitter': 10
+        })
         # The port the site will be served on.
         self.webserver['port'] = self.webserver.get('port', 6942)
         # The location of the resources that will be served.
