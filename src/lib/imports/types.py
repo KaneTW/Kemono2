@@ -4,7 +4,7 @@ from re import compile as compile_regexp
 from typing import List, TypeVar, Generic
 
 T = TypeVar("T")
-max_length = 500
+max_length = 1024
 
 
 @dataclass
