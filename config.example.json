@@ -17,7 +17,7 @@
     "defaults": {
       "host": "127.0.0.1",
       "port": 6379,
-      "database": 0
+      "db": 0
     },
     "nodes": [{ "db": 0 }],
     "keyspaces": {

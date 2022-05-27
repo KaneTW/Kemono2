@@ -1,23 +1,35 @@
 import subprocess
 import gunicorn
 import sys
+import os
 
 from src.config import Configuration
 
 if __name__ == '__main__':
+    ''' Bugs to fix at a later time:                             '''
+    '''     - Pages can get stuck with an older version of their '''
+    '''       HTML, even after disabling anything and everything '''
+    '''       related to cache. The only resolution as of now is '''
+    '''       a restart of the entire webserver.                 '''
+
     try:
+        if not os.path.isdir('./client/node_modules'):
+            subprocess.run(
+                ['npm', 'install'],
+                check=True,
+                cwd='client'
+            )
+
         if Configuration().development_mode:
             subprocess.Popen(
-                'npm run dev',
+                ['npm', 'run', 'dev'],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
-                shell=True,
                 cwd='client'
             )
         else:
             subprocess.run(
-                'npm run build',
-                shell=True,
+                ['npm', 'run', 'build'],
                 check=True,
                 cwd='client'
             )

@@ -62,6 +62,7 @@ class Configuration:
         self.redis['node_options'] = self.redis.get('defaults', {
             "host": "127.0.0.1",
             "port": 6379,
+            "db": 0
         })
         self.redis['nodes'] = self.redis.get('nodes', [{"db": 0}])
         self.redis['keyspaces'] = self.redis.get('keyspaces', {

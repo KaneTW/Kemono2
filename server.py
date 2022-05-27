@@ -66,16 +66,16 @@ if (is_development):
     app.register_blueprint(development)
 
 
-app.config.update(
-    dict(
-        CACHE_TYPE='simple',
-        CACHE_DEFAULT_TIMEOUT=60,
-        ENABLE_PASSWORD_VALIDATOR=True,
-        ENABLE_LOGIN_RATE_LIMITING=True,
-        SESSION_REFRESH_EACH_REQUEST=False,
-        SECRET_KEY=Configuration().webserver['secret']
-    )
-)
+app.config.update(dict(
+    ENABLE_PASSWORD_VALIDATOR=True,
+    ENABLE_LOGIN_RATE_LIMITING=True,
+    SESSION_REFRESH_EACH_REQUEST=False,
+    SECRET_KEY=Configuration().webserver['secret'],
+    CACHE_TYPE='null' if Configuration().development_mode else 'simple',
+    CACHE_DEFAULT_TIMEOUT=None if Configuration().development_mode else 60,
+    SEND_FILE_MAX_AGE_DEFAULT=0,
+    TEMPLATES_AUTO_RELOAD=True if Configuration().development_mode else False
+))
 app.jinja_options = dict(
     trim_blocks=True,
     lstrip_blocks=True

@@ -1,3 +1,10 @@
+# Kemono.
+.DS_Store
+tusker.toml
+config.json
+flask.cfg
+kitsune.py
+
 # Dev only files
 test/
 
@@ -154,6 +161,3 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
-flask.cfg
-kitsune.py
-redis_map.py
