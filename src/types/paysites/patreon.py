@@ -20,3 +20,4 @@ class Patreon(Paysite):
     user: User = User()
     post: Post = Post()
     title: str = 'Patreon'
+    color: str = '#fa5742'

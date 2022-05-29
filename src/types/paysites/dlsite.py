@@ -20,3 +20,4 @@ class DLSite(Paysite):
     title: str = 'DLsite'
     user: User = User()
     post: Post = Post()
+    color: str = '#052a83'

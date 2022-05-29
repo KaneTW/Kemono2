@@ -20,3 +20,4 @@ class Fantia(Paysite):
     title: str = 'Fantia'
     user: User = User()
     post: Post = Post()
+    color: str = '#e1097f'

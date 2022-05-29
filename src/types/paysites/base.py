@@ -36,3 +36,4 @@ class Paysite(AbstractDataclass):
     title: str
     user: Service_User
     post: Service_Post
+    color: str

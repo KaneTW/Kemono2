@@ -20,3 +20,4 @@ class Gumroad(Paysite):
     title: str = 'Gumroad'
     user: User = User()
     post: Post = Post()
+    color: str = '#2b9fa4'

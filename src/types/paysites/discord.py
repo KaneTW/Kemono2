@@ -23,3 +23,4 @@ class Discord(Paysite):
     title: str = 'Discord'
     user: User = User()
     post: Post = Post()
+    color: str = '#5165f6'

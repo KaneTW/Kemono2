@@ -20,3 +20,4 @@ class Kemono_Dev(Paysite):
     title: str = 'Kemono Dev'
     user: User = User()
     post: Post = Post()
+    color: str = '#808080'

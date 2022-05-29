@@ -20,3 +20,4 @@ class Subscribestar(Paysite):
     title: str = 'SubscribeStar'
     user: User = User()
     post: Post = Post()
+    color: str = '#009688'

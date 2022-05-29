@@ -20,3 +20,4 @@ class Fanbox(Paysite):
     title: str = 'Pixiv Fanbox'
     user: User = User()
     post: Post = Post()
+    color: str = '#2c333c'
