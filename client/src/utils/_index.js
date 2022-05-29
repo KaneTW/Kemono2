@@ -70,6 +70,7 @@ export function fixImageLinks(imageElements) {
       // && !image.previousSibling
       // TODO: fix this later
       && !link.classList.contains("user-header__profile")
+      && !link.classList.contains("user-card")
       && !link.classList.contains("image-link")
     ) {
       link.classList.add("image-link");

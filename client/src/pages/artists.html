@@ -67,10 +67,14 @@
         {% include 'components/paginator.html' %}
       </div>
     {% endif %}
-    {% call card_list('table') %}
-      {{ user_card_header(is_count=true) }}
+    {% call card_list('phone') %}
       {% for user in results %}
-        {{ user_card(user, is_count=true) }}
+        {{ user_card(
+            user,
+            is_count=true,
+            single_of='favorite',
+            plural_of='favorites'
+        ) }}
       {% else %}
         <p class="subtitle card-list__item--no-results">
           No artists found for your query.

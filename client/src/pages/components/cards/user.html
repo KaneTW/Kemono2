@@ -20,16 +20,23 @@
 {% macro user_card(
   user, 
   is_count=false,
+  single_of='',
+  plural_of='',
   is_date=false,
   class_name=none
 ) %}
   {% set user_link = g.freesites.kemono.user.profile(user.service, user.id) %}
-  {% set user_icon = g.freesites.kemono.user.icon(user.service, user.id) %}
-  <article 
+  {% set user_icon = 'https://kemono.party' ~ g.freesites.kemono.user.icon(user.service, user.id) %}
+  {% set user_banner = 'https://kemono.party' ~ g.freesites.kemono.user.banner(user.service, user.id) %}
+
+  <a
+    href="{{ user_link }}"
     class="user-card {{ class_name if class_name }}"
     data-id="{{ user.id }}"
     data-service="{{ user.service }}"
+    style="background-image: linear-gradient(rgb(0 0 0 / 50%), rgb(0 0 0 / 80%)), url({{ user_banner }});"
   >
+    {# Icon. #}
     <div class="user-card__icon">
       {{ image_link(
         url=user_link,
@@ -37,36 +44,44 @@
         class_name='user-card__user-icon'
       ) }}
     </div>
-    <div class="user-card__name">
-      {{ fancy_link(user_link, user.name) }}
+
+    {# Secondary identifiers and elements. #}
+    <div class="user-card__info">
+      <span
+        class="user-card__service"
+        style="background-color: {{ g.paysites[user.service].color }};"
+      >
+        {{ g.paysites[user.service].title }}
+      </span>
+
+      <div class="user-card__name">{{ user.name }}</div>
+
+      {% if is_date %}
+        <div class="user-card__updated">
+          {{ timestamp(user.updated) }}
+        </div>
+      {% endif %}
+      {% if is_count %}
+        <div class="user-card__count">
+          {% if user.count %}
+            <b>{{ user.count }}</b> {{ plural_of if user.count > 1 else single_of }}
+          {% else %}
+            {{ 'No ' ~ plural_of if plural_of else 'None' }}
+          {% endif %}
+        </div>
+      {% endif %}
     </div>
-    <div class="user-card__service">
-      {{ g.paysites[user.service].title }}
-    </div>
-    {% if is_date %}
-      <div class="user-card__updated">
-        {{ timestamp(user.updated) }}
-      </div>
-    {% endif %}
-    {% if is_count %}
-      <div class="user-card__count">
-        {{ user.count if user.count else 'None' }}
-      </div>
-    {% endif %}
-  </article>
+  </a>
 {% endmacro %}
 
 {% macro user_card_skeleton() %}
-  <article class="user-card">
-    <div class="user-card__icon">
+  <a class="user-card">
+    <div class="user-card__icon"></div>
+    <div class="user-card__info">
+      <span class="user-card__service"></span>
+      <div class="user-card__name"></div>
+      <div class="user-card__updated"></div>
+      <div class="user-card__count"></div>
     </div>
-    <div class="user-card__name">
-    </div>
-    <div class="user-card__service">
-    </div>
-    <div class="user-card__updated">
-    </div>
-    <div class="user-card__count">
-    </div>
-  </article>
+  </a>
 {% endmacro %}

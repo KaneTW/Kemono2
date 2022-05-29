@@ -1,58 +1,69 @@
 @use "../../../css/variables" as *;
 
 .user-card {
-  display: grid;
-  grid-template-columns: 3em 10em 7em 15em;
-  grid-template-rows: minmax(3em, 1fr);
-  justify-items: center;
+  position: relative;
+  display: flex;
   align-items: center;
-  gap: 2em;
-  line-height: 1.5;
-  background-color: var(--colour1-tertiary);
+  padding: 1.25rem;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  grid-gap: 1rem;
+  gap: 1rem;
   border-radius: 10px;
-  border: $size-thin solid transparent;
-  margin: 0 auto;
-  overflow: hidden;
-  transition-duration: var(--duration-global);
-  transition-property: border-color, box-shadow;
-
-  &--fav {
-    border-color: var(--favourite-colour2-primary);
-  }
+  background-color: #282a2e;
+  background-size: cover;
+  transition: top ease 0.1s;
+  top: 0;
+  border-bottom: none;
+  --local-colour1-primary: none;
+  --local-colour1-secondary: none;
+  --local-colour2-primary: none;
+  --local-colour2-secondary: none;
 
   &:hover,
   &:focus-within {
-    box-shadow: 0px 0px 3px 5px var(--positive-colour1-secondary);
+    top: -3px;
+  }
+  
+  &__info {
+    padding: 5px;
   }
 
-  &--header {
-    font-weight: bold;
-    text-transform: capitalize;
-    justify-items: center;
-    border-radius: 0;
-
-    &:hover,
-    &:focus-within {
-      // border-color: var(--positive-colour1-secondary);
-      box-shadow: none;
-    }
-
-    & .user-card__icon {
-      display: grid;
-      align-items: center;
-      align-self: center;
-      border-radius: 0;
-    }
+  &__service {
+    color: #fff;
+    font-weight: 700;
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 14px;
   }
 
   &__icon {
+    width: 80px;
+    height: 80px;
     align-self: center;
-    height: 3em;
     overflow: hidden;
     border-radius: 10px;
+
+    background-image: url('/static/loading.gif');
+    background-position: center;
+    background-repeat: no-repeat;
+
+    & img {
+      object-fit: cover;
+    }
   }
 
   &__name {
-    justify-self: flex-start;
+    font-weight: 300;
+    font-size: 28px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    color: #fff;
+  }
+
+  &__count {
+    color: #fff;
   }
 }

@@ -10,13 +10,12 @@
         {% include 'components/paginator.html' %}
       </div>
     {% endif %}
-    {% call card_list('table') %}
-      {{ user_card_header(is_date=true) }}
+    {% call card_list('phone') %}
       {% for user in results %}
         {{ user_card(user, is_date=true) }}
       {% else %}
         <p class="no-posts subtitle">
-          No artists found for your query.
+          No artists found.
         </p>
       {% endfor %}
     {% endcall %}

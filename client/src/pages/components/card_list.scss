@@ -36,7 +36,7 @@
     flex-flow: var(--local-flex-flow);
     justify-content: var(--local-justify);
     align-items: var(--local-align);
-    gap: 1em;
+    gap: 0.5em;
 
     & > * {
       flex: 0 1 var(--card-size);
