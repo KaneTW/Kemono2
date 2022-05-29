@@ -20,50 +20,53 @@
     <li {% if class_name %} class="{{ class_name }}" {% endif %}><b>{{ content }}</b></li>
   {%endif%}
 {% endmacro %}
-<small>
-  Showing {{ skip + 1 }} - {{ currentCeilingOfRange }} of {{ props.count }}
-</small>
-{% set rng = range(0, (TOTAL_BUTTONS * 2) + 1) %}
-<menu>
-  {%if showFirstPostsButton or showLastPostsButton %}
-    {%if showFirstPostsButton %}
-      {{ paginator_button('<<', href=url_for(request.endpoint, o = 0, **base)) }}
+
+{% if props.count > props.limit %}
+  <small>
+    Showing {{ skip + 1 }} - {{ currentCeilingOfRange }} of {{ props.count }}
+  </small>
+  {% set rng = range(0, (TOTAL_BUTTONS * 2) + 1) %}
+  <menu>
+    {%if showFirstPostsButton or showLastPostsButton %}
+      {%if showFirstPostsButton %}
+        {{ paginator_button('<<', href=url_for(request.endpoint, o = 0, **base)) }}
+      {%else%}
+        {{ paginator_button('<<', class_name='pagination-button-disabled' ~ (' pagination-desktop' if currPageNum - MANDATORY_BUTTONS - 1 else '')) }}
+      {%endif%}
+    {%endif%}
+    {%if not showFirstPostsButton %}
+      {%if currPageNum - MANDATORY_BUTTONS - 1 %}
+        {{ paginator_button('<<', href=url_for(request.endpoint, o = 0, **base), class_name='pagination-mobile') }}
+      {%elif (totalPages - currPageNum > MANDATORY_BUTTONS) and not showLastPostsButton %}
+        {{ paginator_button('<<', class_name='pagination-button-disabled pagination-mobile') }}
+      {%endif%}
+    {%endif%}
+    {%if currPageNum > 1 %}
+      {{ paginator_button('<', href=url_for(request.endpoint, o = (currPageNum - 2) * props.limit, **base))}}
     {%else%}
-      {{ paginator_button('<<', class_name='pagination-button-disabled' ~ (' pagination-desktop' if currPageNum - MANDATORY_BUTTONS - 1 else '')) }}
+      {{ paginator_button('<', class_name='pagination-button-disabled')}}
     {%endif%}
-  {%endif%}
-  {%if not showFirstPostsButton %}
-    {%if currPageNum - MANDATORY_BUTTONS - 1 %}
-      {{ paginator_button('<<', href=url_for(request.endpoint, o = 0, **base), class_name='pagination-mobile') }}
-    {%elif (totalPages - currPageNum > MANDATORY_BUTTONS) and not showLastPostsButton %}
-      {{ paginator_button('<<', class_name='pagination-button-disabled pagination-mobile') }}
-    {%endif%}
-  {%endif%}
-  {%if currPageNum > 1 %}
-    {{ paginator_button('<', href=url_for(request.endpoint, o = (currPageNum - 2) * props.limit, **base))}}
-  {%else%}
-    {{ paginator_button('<', class_name='pagination-button-disabled')}}
-  {%endif%}
-  {% for page in rng if (page + basePageNum) and ((page + basePageNum) <= totalPages) %}
-    {{ paginator_button((page + basePageNum), href=url_for(request.endpoint, o = (page + basePageNum - 1) * props.limit, **base) if (page + basePageNum) != currPageNum else none, class_name='pagination-button-optional' if ((page + basePageNum) < optionalBeforeButtons or (page + basePageNum) > optionalAfterButtons) and (page + basePageNum) != currPageNum else ('pagination-button-disabled pagination-button-current' if (page + basePageNum) == currPageNum else ('pagination-button-after-current' if (page + basePageNum) == (currPageNum + 1) else ''))) }}
-  {% endfor %}
-  {%if currPageNum < totalPages %}
-    {{ paginator_button('>', href=url_for(request.endpoint, o = currPageNum * props.limit, **base)) }}
-  {%else%}
-    {{ paginator_button('>', class_name='pagination-button-disabled' ~(' pagination-button-after-current' if totalPages else '')) }}
-  {%endif%}
-  {%if showFirstPostsButton or showLastPostsButton %}
-    {%if showLastPostsButton %}
-      {{ paginator_button('>>', href=url_for(request.endpoint, o = (totalPages - 1) * props.limit, **base)) }}
+    {% for page in rng if (page + basePageNum) and ((page + basePageNum) <= totalPages) %}
+      {{ paginator_button((page + basePageNum), href=url_for(request.endpoint, o = (page + basePageNum - 1) * props.limit, **base) if (page + basePageNum) != currPageNum else none, class_name='pagination-button-optional' if ((page + basePageNum) < optionalBeforeButtons or (page + basePageNum) > optionalAfterButtons) and (page + basePageNum) != currPageNum else ('pagination-button-disabled pagination-button-current' if (page + basePageNum) == currPageNum else ('pagination-button-after-current' if (page + basePageNum) == (currPageNum + 1) else ''))) }}
+    {% endfor %}
+    {%if currPageNum < totalPages %}
+      {{ paginator_button('>', href=url_for(request.endpoint, o = currPageNum * props.limit, **base)) }}
     {%else%}
-      {{ paginator_button('>>', class_name='pagination-button-disabled' ~ (' pagination-desktop' if totalPages - currPageNum > MANDATORY_BUTTONS else '')) }}
+      {{ paginator_button('>', class_name='pagination-button-disabled' ~(' pagination-button-after-current' if totalPages else '')) }}
     {%endif%}
-  {%endif%}
-  {%if not showLastPostsButton %}
-    {%if totalPages - currPageNum > MANDATORY_BUTTONS%}
-      {{ paginator_button('>>', href=url_for(request.endpoint, o = (totalPages - 1) * props.limit, **base), class_name='pagination-mobile') }}
-    {%elif (currPageNum > OPTIONAL_BUTTONS) and not showFirstPostsButton %}
-      {{ paginator_button('>>', class_name='pagination-button-disabled pagination-mobile') }}
+    {%if showFirstPostsButton or showLastPostsButton %}
+      {%if showLastPostsButton %}
+        {{ paginator_button('>>', href=url_for(request.endpoint, o = (totalPages - 1) * props.limit, **base)) }}
+      {%else%}
+        {{ paginator_button('>>', class_name='pagination-button-disabled' ~ (' pagination-desktop' if totalPages - currPageNum > MANDATORY_BUTTONS else '')) }}
+      {%endif%}
     {%endif%}
-  {%endif%}
-</menu>
+    {%if not showLastPostsButton %}
+      {%if totalPages - currPageNum > MANDATORY_BUTTONS%}
+        {{ paginator_button('>>', href=url_for(request.endpoint, o = (totalPages - 1) * props.limit, **base), class_name='pagination-mobile') }}
+      {%elif (currPageNum > OPTIONAL_BUTTONS) and not showFirstPostsButton %}
+        {{ paginator_button('>>', class_name='pagination-button-disabled pagination-mobile') }}
+      {%endif%}
+    {%endif%}
+  </menu>
+{% endif %}
