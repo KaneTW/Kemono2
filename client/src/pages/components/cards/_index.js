@@ -106,12 +106,16 @@ function initUserCardFromElement(element) {
  * @param {string} className 
  */
 function initUserCardFromScratch(user, isCount, isDate, className) {
-  const profileIcon = freesites.kemono.user.icon(user.service, user.id)
-  const profileLink = freesites.kemono.user.profile(user.service, user.id);
+  const profileIcon = 'https://kemono.party' + freesites.kemono.user.icon(user.service, user.id)
+  const profileBanner = 'https://kemono.party' + freesites.kemono.user.banner(user.service, user.id)
+  const profileLink = 'https://kemono.party' + freesites.kemono.user.profile(user.service, user.id);
   /**
    * @type {HTMLElement}
    */
   const userCard = createComponent("user-card");
+
+  userCard.style.backgroundImage = `linear-gradient(rgb(0 0 0 / 50%), rgb(0 0 0 / 80%)), url(${profileBanner})`;
+
   const imageLink = ImageLink(null,
     profileLink,
     profileIcon,
@@ -121,10 +125,7 @@ function initUserCardFromScratch(user, isCount, isDate, className) {
     true,
     'user-card__user-icon'
   );
-  const fancyLink = FancyLink(null,
-    profileLink,
-    user.name
-  );
+
   const userIcon = userCard.querySelector(".user-card__icon");
   const userName = userCard.querySelector(".user-card__name");
   const userService = userCard.querySelector(".user-card__service");
@@ -132,8 +133,9 @@ function initUserCardFromScratch(user, isCount, isDate, className) {
   const userUpdated = userCard.querySelector(".user-card__updated");
 
   userIcon.appendChild(imageLink);
-  userName.appendChild(fancyLink);
+  userName.textContent = user.name;
   userService.textContent = paysites[user.service].title;
+  userService.style.backgroundColor = paysites[user.service].color;
 
   if (className) {
     userCard.classList.add(className);

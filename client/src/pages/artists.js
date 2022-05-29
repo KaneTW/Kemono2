@@ -260,7 +260,7 @@ async function loadCards(displayStatus, cardContainer, pagination) {
   /**
    * @type {[ HTMLDivElement, HTMLElement ]}
    */
-  const [header, ...cards] = cardContainer.children;
+  const [...cards] = cardContainer.children;
   cards.forEach((card) => {
     card.remove();
   });

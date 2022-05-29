@@ -89,11 +89,12 @@ export const paysiteList = [
 ]
 
 /**
- * @type {{[paysite:string]: {title: string, user: { profile: (userID: string) => string }, post: {}}}}
+ * @type {{[paysite:string]: {title: string, color: string, user: { profile: (userID: string) => string }, post: {}}}}
  */
 export const paysites = {
   patreon: {
     title: "Patreon",
+    color: "#fa5742",
     user: {
       profile: (userID) => `https://www.patreon.com/user?u=${userID}`
     },
@@ -101,6 +102,7 @@ export const paysites = {
   },
   fanbox: {
     title: "Pixiv Fanbox",
+    color: "#2c333c",
     user: {
       profile: (userID) => `https://www.pixiv.net/fanbox/creator/${userID}`
     },
@@ -108,6 +110,7 @@ export const paysites = {
   },
   subscribestar: {
     title: "SubscribeStar",
+    color: "#009688",
     user: {
       profile: (userID) => `https://subscribestar.adult/${userID}`
     },
@@ -115,6 +118,7 @@ export const paysites = {
   },
   gumroad: {
     title: "Gumroad",
+    color: "#2b9fa4",
     user: {
       profile: (userID) => `https://gumroad.com/${userID}`
     },
@@ -122,6 +126,7 @@ export const paysites = {
   },
   discord: {
     title: "Discord",
+    color: "#5165f6",
     user: {
       profile: (userID) => ``
     },
@@ -129,6 +134,7 @@ export const paysites = {
   },
   dlsite: {
     title: "DLsite",
+    color: "#052a83",
     user: {
       profile: (userID) => `https://www.dlsite.com/eng/circle/profile/=/maker_id/${userID}`
     },
@@ -136,6 +142,7 @@ export const paysites = {
   },
   fantia: {
     title: "Fantia",
+    color: "#e1097f",
     user: {
       profile: (userID) => `user_id: f"https://fantia.jp/fanclubs/${userID}`
     },
@@ -157,6 +164,7 @@ export const freesites = {
        * @param {string} artistID 
        */
       icon: (service, artistID) => `/icons/${service}/${artistID}`,
+      banner: (service, artistID) => `/banners/${service}/${artistID}`,
     },
     post: {
       /**
