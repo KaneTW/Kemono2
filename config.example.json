@@ -1,9 +1,9 @@
 {
   "site": "http://localhost:6942",
   "development_mode": true,
+  "automatic_migrations": true,
   "webserver": {
-    "secret": "REPLACE THIS.",
-    "workers": 4,
+    "_secret": "To avoid users from being signed out after a server restart, replace me with a strong string and remove the underscore from my name.",
     "port": 6942
   },
   "database": {

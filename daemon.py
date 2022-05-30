@@ -1,9 +1,12 @@
+import generate_tusker_config
 import subprocess
 import gunicorn
+import psycopg2
 import sys
 import os
 
 from src.config import Configuration
+from src.internals.database import database
 
 if __name__ == '__main__':
     ''' Bugs to fix at a later time:                             '''
@@ -33,6 +36,27 @@ if __name__ == '__main__':
                 check=True,
                 cwd='client'
             )
+
+        if Configuration().automatic_migrations:
+            ''' Generate Tusker config... '''
+            generate_tusker_config()
+
+            ''' ...and run migrations. '''
+            database.init()
+            for migration in os.listdir('migrations'):
+                with open(os.path.join('migrations', migration)) as f:
+                    for query in f.read().split(';'):
+                        query = query.strip()
+                        if query:
+                            with database.pool.getconn() as conn:
+                                with conn.cursor() as db:
+                                    try:
+                                        db.execute(query)
+                                    except psycopg2.Error as e:
+                                        if e.pgcode == '42P07':
+                                            ''' Ignore errors about tables already existing. '''
+                                            continue
+                                        raise
 
         opts = Configuration().webserver['gunicorn_options'].items()
         opts = ' '.join(list(f'--{k} {v}' for k, v in opts))

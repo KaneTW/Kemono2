@@ -18,6 +18,7 @@ class Configuration:
 
         self.site = config.get('site', 'http://localhost:6942')
         self.development_mode = config.get('development_mode', True)
+        self.automatic_migrations = config.get('automatic_migrations', True)
 
         ''' Configuration for the frontend server. '''
         self.webserver = config.get('webserver', {})
