@@ -93,8 +93,8 @@
     min-width: $button-min-height;
     width: 100%;
     font-family: inherit;
-    font-size: 100%;
-    border-radius: 5px;
+    font-size: 18px;
+    border-radius: 10px;
     padding: $size-small;
   }
 
@@ -128,11 +128,17 @@
       max-width: $width-phone;
       text-align: center;
       color: var(--colour0-primary);
-      background-image: linear-gradient(
-        hsl(220, 7%, 17%),
-        hsl(0, 0%, 7%)
-      );
+      background-image: linear-gradient(#32373e, #262a31);
+      box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.2), 0 4px 6px -4px rgb(0 0 0 / 0.2);
       border: 0;
+      transition: none;
+      transition-property: box-shadow;
+      transition-duration: var(--duration-global);
+      
+      &:hover,
+      &:focus-within {
+        box-shadow: none;
+      }
     }
   }
 }
