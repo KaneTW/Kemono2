@@ -1,4 +1,3 @@
-# import urllib
 import json
 
 from flask import Blueprint, request, make_response, render_template, session, redirect, flash, url_for, current_app, g

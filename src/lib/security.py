@@ -33,3 +33,6 @@ def is_rate_limited(r, key: str, limit: int, period: timedelta):
 
 def is_login_rate_limited(account_id):
     return is_rate_limited(get_conn(), f'ratelimit:login:{account_id}', 10, timedelta(seconds=300))
+
+def is_upload_rate_limited(ip_address):
+    return is_rate_limited(get_conn(), f'ratelimit:uploads:{ip_address}', 10, timedelta(seconds=60 * 60 * 24))

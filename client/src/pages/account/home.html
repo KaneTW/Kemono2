@@ -1,5 +1,7 @@
 {% extends 'components/shell.html' %}
 
+{% from 'components/image_link.html' import image_link %}
+
 {% from 'components/timestamp.html' import timestamp %}
 {% from 'components/links.html' import kemono_link %}
 
@@ -15,29 +17,33 @@
 
 {% block content %}
 <section class="site-section site-section--account">
-  <header class="site-section__header">
-    <h1 class="site-section__heading">
-      Account
-    </h1>
-  </header>
-  <div>
-    <p class="def-list__section">
-      Name: <b>{{ props.account.username }}</b>
-    </p>
-    <p class="def-list__section">
-      Role:
-      <span class="acc-info__role">
-        {{ kemono_link(
-          url= role_links[props.account.role],
-          text= props.account.role,
-          is_noop= false
+  <div class="account-view">
+    <div class="account-view__header">
+      {# Finishing icons later... #}
+      {# <div class="account-view__icon">
+        {{ image_link(
+          src='/static/user-placeholder.jpg',
+          class_name=''
         ) }}
+      </div> #}
+      <span class="account-view__greeting">
+        Hello,
+        <span class="account-view__identity">
+          {{ props.account.username }}
+        </span>
       </span>
-    </p>
-    <p class="def-list__section">
-      Joined:
-      <span>{{ props.account.created_at }}</span>
-    </p>
+
+      <div class="account-view__info">
+        Joined {{ props.account.created_at|relative_date }} |
+        <span class="account-view__role">
+          {{ kemono_link(
+            url= role_links[props.account.role],
+            text= props.account.role,
+            is_noop= false
+          ) }}
+        </span>
+      </div>
+    </div>
     <p class="def-list__section">
       Notifications:
       <span>

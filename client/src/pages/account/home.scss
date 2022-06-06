@@ -1,18 +1,35 @@
 .site-section--account {
-  .acc-info {
+  max-width: 480px;
+  background-color: #282a2e;
+  box-shadow: 1px 2px 5px 4px rgb(0 0 0 / 0.2);
+  border-radius: 4px;
+  // border: 0.5px solid rgba(17, 17, 17, 1);
+  & .account-view {
+    margin: 0 auto;
+    padding: 8px;
+  
+    &__header {
+      text-align: center;
+    }
+  
+    &__greeting {
+      color: hsl(0, 0%, 45%);
+      font-weight: 300;
+      font-size: 28px;
+    }
+
+    &__identity {
+      color: #fff;
+      font-weight: normal;
+    }
+
+    &__info {
+      font-size: 12px;
+      color: hsl(0, 0%, 45%);
+    }
+  
     &__role {
       text-transform: capitalize;
-    }
-  }
-
-  .def-list {
-    &__section {
-      dt {
-        float: left;
-      }
-      dd {
-        float: left;
-      }
     }
   }
 }
