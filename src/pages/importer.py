@@ -132,8 +132,13 @@ def importer_submit():
     if not request.form.get("session_key"):
         return "Session key missing.", 401
 
-    if request.form.get('session_key') and len(request.form.get('session_key').encode('utf-8')) > 1024:
-        return "The length of the session key you sent is too large. You should let the administrator know about this.", 400
+    key = request.form.get("session_key").strip()
+    result = validate_import_key(key, request.form.get("service"))
+
+    if not result.is_valid:
+        return ("\n".join(result.errors), 422)
+
+    formatted_key = result.modified_result if result.modified_result else key
 
     try:
         redis = get_conn()
