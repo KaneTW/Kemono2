@@ -59,7 +59,7 @@ def gumroadKey(key: str, errors: List[str]):
     key_length = len(key)
 
     if (key_length < min_length):
-        errors.append(f'The key length of "${key_length}" is less than minimum required "${min_length}".')
+        errors.append(f'The key length of "{key_length}" is less than minimum required "{min_length}".')
 
     if key_length > max_length:
         errors.append(f'The key length of "{key_length}" is over the maximum of "{max_length}".')

@@ -71,6 +71,6 @@ if __name__ == '__main__':
                 {opts} \\
                 -b 0.0.0.0:{ Configuration().webserver['port'] } \\
             server:app
-        ''', shell=True, check=True)
+        ''', shell=True, check=True, close_fds=True)
     except KeyboardInterrupt:
         sys.exit()

@@ -14,6 +14,7 @@ from flask import Flask, abort, g, redirect, render_template, request, session
 import src.internals.cache.redis as redis
 import src.internals.database.database as database
 from configs.derived_vars import is_development
+
 from src.config import Configuration
 from src.internals.cache.flask_cache import cache
 from src.lib.ab_test import get_all_variants
@@ -25,7 +26,7 @@ from src.pages.artists import artists
 from src.pages.dms import dms
 from src.pages.favorites import favorites
 from src.pages.help import help_app
-from src.pages.importer import importer_page
+from src.pages.imports import imports
 from src.pages.legacy import legacy
 from src.pages.post import post
 from src.pages.posts import posts
@@ -59,9 +60,9 @@ app.register_blueprint(post)
 app.register_blueprint(posts)
 app.register_blueprint(account)
 app.register_blueprint(favorites)
+app.register_blueprint(imports)
 app.register_blueprint(dms)
 app.register_blueprint(help_app, url_prefix='/help')
-app.register_blueprint(importer_page)
 if (is_development):
     from development import development
     app.register_blueprint(development)

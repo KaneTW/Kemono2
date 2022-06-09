@@ -1,17 +1,26 @@
 import json
-from datetime import datetime
+from src.internals.cache.redis import (
+    deserialize_dict,
+    serialize_dict,
+    scan_keys,
+    get_conn,
+)
+from src.lib.imports import validate_import_key
+from src.utils.utils import get_import_id
 
-from flask import (Blueprint, current_app, g, make_response, render_template,
-                   request, session)
-
-from src.internals.cache.redis import (deserialize_dict_list, get_conn,
-                                       scan_keys, serialize_dict_list)
+from flask import (
+    Blueprint,
+    current_app,
+    g,
+    make_response,
+    render_template,
+    request,
+    session
+)
 from src.lib.dms import approve_dm, cleanup_unapproved_dms, get_unapproved_dms
 from src.types.kemono import Unapproved_DM
 from src.types.props import SuccessProps
-from src.utils.utils import get_import_id
-
-from .importer_types import DMPageProps, ImportProps, StatusPageProps
+from .types import DMPageProps, StatusPageProps, ImportProps
 
 importer_page = Blueprint('importer_page', __name__)
 
@@ -124,6 +133,7 @@ def get_importer_logs(import_id: str):
 
 
 # API
+# TODO: move into separate blueprint
 @importer_page.post('/api/import')
 def importer_submit():
     if not session.get('account_id') and request.form.get("save_dms"):
@@ -147,7 +157,7 @@ def importer_submit():
             _import = _import.decode('utf8')
             existing_import = redis.get(_import)
             existing_import_data = json.loads(existing_import)
-            if existing_import_data['key'] == request.form.get("session_key"):
+            if existing_import_data['key'] == formatted_key:
                 props = SuccessProps(
                     message='This key is already being used for an import. Redirecting to logs...',
                     currentPage='import',
@@ -159,9 +169,9 @@ def importer_submit():
                     props=props
                 ), 200)
 
-        import_id = get_import_id(request.form.get("session_key"))
+        import_id = get_import_id(formatted_key)
         data = dict(
-            key=request.form.get("session_key"),
+            key=formatted_key,
             service=request.form.get("service"),
             channel_ids=request.form.get("channel_ids"),
             auto_import=request.form.get("auto_import"),
@@ -173,7 +183,7 @@ def importer_submit():
 
         props = SuccessProps(
             currentPage='import',
-            redirect=f'/importer/status/{import_id}{ "?dms=1" if request.form.get("save_dms") else "" }'
+            redirect=f'/importer/status/{import_id}{"?dms=1" if request.form.get("save_dms") else "" }'
         )
 
         return make_response(render_template(
