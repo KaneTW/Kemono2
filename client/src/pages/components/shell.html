@@ -134,6 +134,7 @@
         { 'text': 'Favorites', 'link': '/favorites', 'class_name': 'favorites hidden' },
         { 'text': 'Login', 'link': '/account/login', 'class_name': 'login' }
       ], 'account') }}
+      {{ nav_entry(g.custom_links, 'stuck-bottom') }}
       {# {% call nav_entry(class_name='stuck-bottom') %}
         {{ nav_header('Community') }}
         {{ nav_item('/support', 'Donate', 'donate') }}

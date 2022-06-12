@@ -108,6 +108,7 @@ def do_init_stuff():
     g.paysite_list = paysite_list
     g.paysites = paysites
     g.origin = Configuration().site
+    g.custom_links = Configuration().webserver['ui']['sidebar_items']
     g.canonical_url = urljoin(Configuration().site, request.path)
 
     session.permanent = True

@@ -48,6 +48,10 @@ class Configuration:
             'template_folder',
             'client/dev/pages' if self.development_mode else 'dist/pages'
         )
+        # Interface customization.
+        self.webserver['ui'] = self.webserver.get('ui', {})
+        # Add custom links to the bottom of the sidebar.
+        self.webserver['ui']['sidebar_items'] = self.webserver['ui'].get('sidebar_items', [])
 
         self.database = config.get('database', {})
         self.database['host'] = self.database.get('host', '127.0.0.1')

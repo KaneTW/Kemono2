@@ -10,12 +10,24 @@
       {% for item in items %}
         {% if item.header %}
           {% if item.link %}
-            {{ nav_item(item.link, item.text, "clickable-header " ~ (item.class_name if item.class_name)) }}
+            {{ nav_item(
+                item.link,
+                item.text,
+                "clickable-header " ~ (item.class_name if item.class_name)
+              )
+            }}
           {% else %}
             {{ nav_header(item.text, item.class_name) }}
           {% endif %}
         {% else %}
-          {{ nav_item(item.link, item.text, item.class_name) }}
+          {{ nav_item(
+              item.link,
+              item.text,
+              item.class_name,
+              item.is_external,
+              item.color
+            )
+          }}
         {% endif %}
       {% endfor %}
     {% else %}
@@ -34,9 +46,12 @@
   </div>
 {% endmacro %}
 
-{% macro nav_item(link, text=link, class_name=none, is_external=false) %}
+{% macro nav_item(link, text=link, class_name=none, is_external=false, color=none) %}
   <a
   class="global-sidebar-entry-item {{ class_name if class_name }}"
+  {% if color %}
+    style="color: {{ color }}"
+  {% endif %}
   href="{{ link }}"
   {% if is_external %}
   target="_blank"
