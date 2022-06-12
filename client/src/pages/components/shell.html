@@ -12,20 +12,32 @@
 <html prefix="og: https://ogp.me/ns#">
   <head>
     <script>var page_data = {{ render_page_data()|safe }}</script>
-    <script>
-      var _paq = window._paq = window._paq || [];
-      /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
-      _paq.push(['trackPageView']);
-      _paq.push(['enableLinkTracking']);
-      (function() {
-        var u="//beta.kemono.party/";
-        _paq.push(['setTrackerUrl', u+'onomek']);
-        _paq.push(['setSiteId', '2']);
-        var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-        g.async=true; g.src=u+'onomek.js'; s.parentNode.insertBefore(g,s);
-      })();
-    </script>
-    <noscript><p><img src="//beta.kemono.party/onomek?idsite=2&amp;rec=1" style="border:0;" alt="" /></p></noscript>
+
+    {% if g.matomo_enabled|safe %}
+      <script>
+        var _paq = window._paq = window._paq || [];
+        /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+        _paq.push(['trackPageView']);
+        _paq.push(['enableLinkTracking']);
+        (function() {
+          var u="//{{ g.matomo_domain }}/";
+          _paq.push(['setTrackerUrl', u+'{{ g.matomo_code }}']);
+          _paq.push(['setSiteId', '{{ g.matomo_site_id }}']);
+          var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+          g.async=true; g.src=u+'{{ g.matomo_code }}.js'; s.parentNode.insertBefore(g,s);
+        })();
+      </script>
+      <noscript>
+        <p>
+          <img
+            src="//{{ g.matomo_domain }}/{{ g.matomo_code }}?idsite={{ g.matomo_site_id }}&amp;rec=1"
+            style="border:0;"
+            alt=""
+          />
+        </p>
+      </noscript>
+    {% endif %}
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     {% block title %}
@@ -135,13 +147,6 @@
         { 'text': 'Login', 'link': '/account/login', 'class_name': 'login' }
       ], 'account') }}
       {{ nav_entry(g.custom_links, 'stuck-bottom') }}
-      {# {% call nav_entry(class_name='stuck-bottom') %}
-        {{ nav_header('Community') }}
-        {{ nav_item('/support', 'Donate', 'donate') }}
-        {{ nav_item('https://chan.kemono.party/', 'Partychan', 'chan', is_external=true) }}
-        {{ nav_item('https://t.me/kemonowelcome', 'Telegram', 'tg', is_external=true) }}
-        {{ nav_item('https://theporndude.com/', 'ThePornDude', 'tpd', is_external=true) }}
-      {% endcall %} #}
     </div>
 
     <div class="content-wrapper">

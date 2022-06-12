@@ -48,10 +48,27 @@ class Configuration:
             'template_folder',
             'client/dev/pages' if self.development_mode else 'dist/pages'
         )
-        # Interface customization.
+        # Interface preferences and customization options.
         self.webserver['ui'] = self.webserver.get('ui', {})
         # Add custom links to the bottom of the sidebar.
         self.webserver['ui']['sidebar_items'] = self.webserver['ui'].get('sidebar_items', [])
+        # Matomo preferences.
+        self.webserver['ui']['matomo'] = self.webserver['ui'].get('matomo', {})
+        self.webserver['ui']['matomo']['enabled'] = self.webserver['ui']['matomo'].get('matomo', False)
+        # Fill in the information based on the embed code you get from the panel;
+        """
+            [...]
+            (function() {
+              var u="//{{   tracking_domain   }}/";
+              _paq.push(['setTrackerUrl', u+'{{   tracking_code   }}']);
+              _paq.push(['setSiteId', '{{   site_id   }}']);
+              var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+              g.async=true; g.src=u+'{{   tracking_code   }}.js'; s.parentNode.insertBefore(g,s);
+            })();
+        """
+        self.webserver['ui']['matomo']['tracking_domain'] = self.webserver['ui']['matomo'].get('tracking_domain', 'beta.kemono.party')
+        self.webserver['ui']['matomo']['tracking_code'] = self.webserver['ui']['matomo'].get('tracking_code', 'onomek')
+        self.webserver['ui']['matomo']['site_id'] = self.webserver['ui']['matomo'].get('site_id', 2)
 
         self.database = config.get('database', {})
         self.database['host'] = self.database.get('host', '127.0.0.1')
