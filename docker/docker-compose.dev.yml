@@ -22,20 +22,8 @@ services:
     depends_on:
       kemono-db:
         condition: service_healthy
-    env_file:
-      - .env
-    environment:
-      - FLASK_ENV=development
-      - KEMONO_SITE=http://localhost:5000
-      - PGUSER=nano
-      - PGPASSWORD=shinonome
-      - PGDATABASE=kemonodb
-      - PGHOST=kemono-db
-      - ARCHIVERHOST=kemono-archiver
-      - ARCHIVERPORT=80
     volumes:
       - .:/app
-      - ./redis_map.py:/app/redis_map.py
       - frontend-assets-dev:/app/dist:ro
       - data-dev:/storage
     sysctls:

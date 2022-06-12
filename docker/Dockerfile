@@ -3,8 +3,7 @@ FROM python:3.8
 RUN apt-get update \
     && apt-get install -y \
         libpq-dev \
-        curl \
-    && pip3 install uwsgi
+        curl
 
 WORKDIR /app
 
@@ -16,4 +15,4 @@ COPY . /app
 
 ENV LANG=C.UTF-8
 
-CMD uwsgi --ini ./uwsgi.ini
+CMD python daemon.py

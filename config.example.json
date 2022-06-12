@@ -1,13 +1,13 @@
 {
-  "site": "http://localhost:6942",
+  "site": "http://localhost:5000",
   "development_mode": true,
   "automatic_migrations": true,
   "webserver": {
     "_secret": "To avoid users from being signed out after a server restart, replace me with a strong string and remove the underscore from my name.",
-    "port": 6942
+    "port": 80
   },
   "database": {
-    "host": "127.0.0.1",
+    "host": "kemono-db",
     "user": "nano",
     "password": "shinonome",
     "database": "kemonodb",
@@ -15,7 +15,7 @@
   },
   "redis": {
     "defaults": {
-      "host": "127.0.0.1",
+      "host": "kemono-redis",
       "port": 6379,
       "db": 0
     }
