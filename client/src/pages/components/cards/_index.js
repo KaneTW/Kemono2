@@ -106,9 +106,9 @@ function initUserCardFromElement(element) {
  * @param {string} className 
  */
 function initUserCardFromScratch(user, isCount, isDate, className) {
-  const profileIcon = 'https://kemono.party' + freesites.kemono.user.icon(user.service, user.id)
-  const profileBanner = 'https://kemono.party' + freesites.kemono.user.banner(user.service, user.id)
-  const profileLink = 'https://kemono.party' + freesites.kemono.user.profile(user.service, user.id);
+  const profileIcon = freesites.kemono.user.icon(user.service, user.id);
+  const profileBanner = freesites.kemono.user.banner(user.service, user.id);
+  const profileLink = freesites.kemono.user.profile(user.service, user.id);
   /**
    * @type {HTMLElement}
    */

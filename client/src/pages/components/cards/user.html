@@ -26,8 +26,8 @@
   class_name=none
 ) %}
   {% set user_link = g.freesites.kemono.user.profile(user.service, user.id) %}
-  {% set user_icon = 'https://kemono.party' ~ g.freesites.kemono.user.icon(user.service, user.id) %}
-  {% set user_banner = 'https://kemono.party' ~ g.freesites.kemono.user.banner(user.service, user.id) %}
+  {% set user_icon = g.freesites.kemono.user.icon(user.service, user.id) %}
+  {% set user_banner = g.freesites.kemono.user.banner(user.service, user.id) %}
 
   <a
     href="{{ user_link }}"
