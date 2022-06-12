@@ -23,8 +23,6 @@ services:
     volumes:
       - db-data:/var/lib/postgresql/data/
     restart: unless-stopped
-    # ports:
-    #  - 5432:5432
   kemono-app:
     build:
       context: ..
@@ -34,17 +32,6 @@ services:
     depends_on:
       kemono-db:
         condition: service_healthy
-    env_file:
-      - .env
-    environment:
-      - FLASK_ENV=production
-      - KEMONO_SITE=http://localhost:8000
-      - PGUSER=nano
-      - PGPASSWORD=shinonome
-      - PGDATABASE=kemonodb
-      - PGHOST=kemono-db
-      - ARCHIVERHOST=kemono-archiver
-      - ARCHIVERPORT=80
     volumes:
       - frontend-assets:/app/dist:ro
     sysctls:

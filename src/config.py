@@ -81,11 +81,12 @@ class Configuration:
             self.database['user'] = self.database.get('user', 'shinonome')
 
         self.redis = config.get('redis', {})
-        self.redis['node_options'] = self.redis.get('defaults', {
-            "host": "127.0.0.1",
-            "port": 6379,
-            "db": 0
-        })
+
+        self.redis['node_options'] = self.redis.get('defaults', {})
+        self.redis['node_options']['host'] = self.redis['node_options'].get('host', '127.0.0.1')
+        self.redis['node_options']['port'] = self.redis['node_options'].get('port', 6379)
+        self.redis['node_options']['db'] = self.redis['node_options'].get('db', 0)
+
         self.redis['nodes'] = self.redis.get('nodes', [{"db": 0}])
         self.redis['keyspaces'] = self.redis.get('keyspaces', {})
         keyspaces = [
