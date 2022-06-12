@@ -46,6 +46,7 @@ const webpackConfig = {
       ["@wp/pages"]: path.join(projectPath, "pages", "_index.js"),
       ["@wp/components"]: path.join(projectPath, "pages", "components", "_index.js"),
       ["@wp/env"]: path.join(projectPath, "env"),
+      ["@wp/lib"]: path.join(projectPath, "lib"),
       ["@wp/js"]: path.join(projectPath, "js"),
       ["@wp/css"]: path.join(projectPath, "css"),
       ["@wp/assets"]: path.join(projectPath, "assets"),
