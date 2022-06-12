@@ -67,8 +67,7 @@
         {% include 'components/paginator.html' %}
       </div>
 
-      {% call card_list('table') %}
-        {{ user_card_header(is_date=true) }}
+      {% call card_list('phone') %}
         {% for user in results %}
           {{ user_card(user, is_date=true) }}
         {% else %}

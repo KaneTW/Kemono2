@@ -1,8 +1,9 @@
 .site-section--favorites {
   div.dropdowns {
-    display:grid;
+    display: grid;
     grid-template-columns: max-content max-content;
-    grid-gap:5px;
+    grid-gap: 5px;
+    justify-content: center;
   }
 
   div.dropdowns > label {
