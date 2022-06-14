@@ -2,7 +2,7 @@ test/
 archiver/
 storage/
 dist/
-client/
+# client/
 __pycache__
 venv
 .env
