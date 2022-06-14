@@ -1,14 +1,13 @@
-import generate_tusker_config
 import subprocess
-import gunicorn
 import psycopg2
 import sys
 import os
 
+import generate_tusker_config
+import generate_uwsgi_config
+
 from src.config import Configuration
 from src.internals.database import database
-
-from server import run_webserver
 
 
 def run_migration(migration) -> bool:
@@ -46,44 +45,40 @@ if __name__ == '__main__':
         'KEMONO_SITE': Configuration().webserver['site']
     }
 
-    if not Configuration().webserver['ip_security']:
-        environment_vars['FORWARDED_ALLOW_IPS'] = '*'
-        environment_vars['FORWARDED_ALLOW_IPS'] = '*'
-
     try:
-        if not os.path.isdir('./client/node_modules'):
-            subprocess.run(
-                ['npm', 'install'],
-                check=True,
-                cwd='client',
-                env=environment_vars
-            )
+        # if not os.path.isdir('./client/node_modules'):
+        #     subprocess.run(
+        #         ['npm', 'install'],
+        #         check=True,
+        #         cwd='client',
+        #         env=environment_vars
+        #     )
 
-        if Configuration().development_mode:
-            subprocess.Popen(
-                ['npm', 'run', 'dev'],
-                stdout=subprocess.PIPE,
-                stderr=subprocess.STDOUT,
-                cwd='client',
-                env=environment_vars
-            )
-        else:
-            subprocess.run(
-                ['npm', 'run', 'build'],
-                check=True,
-                cwd='client',
-                env=environment_vars
-            )
+        # if Configuration().development_mode:
+        #     subprocess.Popen(
+        #         ['npm', 'run', 'dev'],
+        #         stdout=subprocess.PIPE,
+        #         stderr=subprocess.STDOUT,
+        #         cwd='client',
+        #         env=environment_vars
+        #     )
+        # else:
+        #     subprocess.run(
+        #         ['npm', 'run', 'build'],
+        #         check=True,
+        #         cwd='client',
+        #         env=environment_vars
+        #     )
 
         if Configuration().automatic_migrations:
             ''' Generate Tusker config... '''
             generate_tusker_config.generate()
-
+            generate_uwsgi_config.generate()
             ''' ...and run migrations. '''
             database.init()
             for migration in os.listdir('migrations'):
                 run_migration(migration)
 
-        run_webserver()
+        subprocess.run(['uwsgi', '--ini', './uwsgi.ini'], check=True, close_fds=True, env=environment_vars)
     except KeyboardInterrupt:
         sys.exit()

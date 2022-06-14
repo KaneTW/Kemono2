@@ -28,14 +28,8 @@ class Configuration:
         self.webserver['threads'] = self.webserver.get('threads', 2)
         # If you've dealt with how the trust of forwarding IPs works upstream, flip this off.
         self.webserver['ip_security'] = self.webserver.get('ip_security', True)
-        # Set additional Gunicorn options if you want. Overrides any of the other options.
-        self.webserver['gunicorn_options'] = self.webserver.get('gunicorn_options', {
-            # Default here will kill workers after a certain amount of requests.
-            # "Jitter" helps with timing, so your site doesn't down itself during a purge.
-            # Recommended if you are running in production; keeps memory clean.
-            'max-requests': 1000,
-            'max-requests-jitter': 10
-        })
+        # Set additional uWSGI options if you want. Overrides any of the other options.
+        self.webserver['uwsgi_options'] = self.webserver.get('uwsgi_options', {})
         # The port the site will be served on.
         self.webserver['port'] = self.webserver.get('port', 6942)
         # The URL at which the site is publicly accessible.

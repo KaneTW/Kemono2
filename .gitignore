@@ -1,6 +1,7 @@
 # Kemono.
 .DS_Store
 tusker.toml
+uwsgi.ini
 config.json
 flask.cfg
 kitsune.py

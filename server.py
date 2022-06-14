@@ -13,7 +13,6 @@ from flask import Flask, abort, g, redirect, render_template, request, session
 import src.internals.cache.redis as redis
 import src.internals.database.database as database
 from configs.derived_vars import is_development
-from gunicorn.app.base import BaseApplication
 
 from src.config import Configuration
 from src.internals.cache.flask_cache import cache
@@ -98,22 +97,6 @@ database.init()
 redis.init()
 
 
-class StandaloneApplication(BaseApplication):
-    def __init__(self, app, options=None):
-        self.options = options or {}
-        self.application = app
-        super().__init__()
-
-    def load_config(self):
-        config = {key: value for key, value in self.options.items()
-                  if key in self.cfg.settings and value is not None}
-        for key, value in config.items():
-            self.cfg.set(key.lower(), value)
-
-    def load(self):
-        return self.application
-
-
 @app.before_request
 def do_init_stuff():
     app.permanent_session_lifetime = timedelta(days=30)
@@ -185,19 +168,3 @@ def close(e):
                 pool.putconn(connection)
             except:
                 pass
-
-
-def run_webserver():
-    options = {
-        'reload': Configuration().development_mode,
-        'bind': '%s:%s' % ('0.0.0.0', Configuration().webserver['port']),
-        'workers': Configuration().webserver['workers'],
-        'threads': Configuration().webserver['threads'],
-        **Configuration().webserver['gunicorn_options']
-    }
-
-    if not Configuration().webserver['ip_security']:
-        options['forwarded_allow_ips'] = '*'
-        options['proxy_allow_ips'] = '*'
-
-    StandaloneApplication(app, options).run()
