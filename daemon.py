@@ -36,6 +36,7 @@ if __name__ == '__main__':
     '''       a restart of the entire webserver.                 '''
 
     environment_vars = {
+        **os.environ.copy(),
         'FLASK_ENV': 'development' if Configuration().development_mode else 'production',
         'NODE_ENV': 'development' if Configuration().development_mode else 'production',
         'KEMONO_SITE': Configuration().webserver['site']
