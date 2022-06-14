@@ -9,6 +9,8 @@ WORKDIR /app
 
 COPY requirements.txt requirements.txt
 
+RUN npm install -g npm
+RUN npm ci --also=dev
 RUN pip3 install -r requirements.txt
 
 COPY . /app
