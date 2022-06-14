@@ -48,11 +48,11 @@ class Configuration:
         # The location of the resources that will be served.
         self.webserver['static_folder'] = self.webserver.get(
             'static_folder',
-            'client/dev/static' if self.development_mode else 'dist/static'
+            'client/dev/static' if self.development_mode else 'client/dist/static'
         )
         self.webserver['template_folder'] = self.webserver.get(
             'template_folder',
-            'client/dev/pages' if self.development_mode else 'dist/pages'
+            'client/dev/pages' if self.development_mode else 'client/dist/pages'
         )
         # Interface preferences and customization options.
         self.webserver['ui'] = self.webserver.get('ui', {})
