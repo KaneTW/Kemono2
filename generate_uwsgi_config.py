@@ -5,7 +5,7 @@ from src.config import Configuration
 
 def generate():
     opts = Configuration().webserver['uwsgi_options'].items()
-    opts = ' '.join(list(f'{k} = {v}' for k, v in opts))
+    opts = '\n'.join(list(f'{k} = {v}' for k, v in opts))
 
     config_str = f'''
         [uwsgi]
