@@ -46,29 +46,29 @@ if __name__ == '__main__':
     }
 
     try:
-        # if not os.path.isdir('./client/node_modules'):
-        #     subprocess.run(
-        #         ['npm', 'install'],
-        #         check=True,
-        #         cwd='client',
-        #         env=environment_vars
-        #     )
+        if not os.path.isdir('./client/node_modules'):
+            subprocess.run(
+                ['npm', 'install'],
+                check=True,
+                cwd='client',
+                env=environment_vars
+            )
 
-        # if Configuration().development_mode:
-        #     subprocess.Popen(
-        #         ['npm', 'run', 'dev'],
-        #         stdout=subprocess.PIPE,
-        #         stderr=subprocess.STDOUT,
-        #         cwd='client',
-        #         env=environment_vars
-        #     )
-        # else:
-        #     subprocess.run(
-        #         ['npm', 'run', 'build'],
-        #         check=True,
-        #         cwd='client',
-        #         env=environment_vars
-        #     )
+        if Configuration().development_mode:
+            subprocess.Popen(
+                ['npm', 'run', 'dev'],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                cwd='client',
+                env=environment_vars
+            )
+        else:
+            subprocess.run(
+                ['npm', 'run', 'build'],
+                check=True,
+                cwd='client',
+                env=environment_vars
+            )
 
         if Configuration().automatic_migrations:
             ''' Generate Tusker config... '''
