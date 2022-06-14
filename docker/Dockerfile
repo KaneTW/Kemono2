@@ -10,12 +10,10 @@ WORKDIR /app
 COPY requirements.txt requirements.txt
 RUN pip3 install -r requirements.txt
 
-RUN npm install -g npm
-WORKDIR /app/client
-RUN npm ci --also=dev
-WORKDIR /app
-
 COPY . /app
+
+RUN npm install -g npm
+RUN cd client && npm ci --also=dev && cd ..
 
 ENV LANG=C.UTF-8
 
