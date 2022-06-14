@@ -59,21 +59,21 @@ if __name__ == '__main__':
                 env=environment_vars
             )
 
-        # if Configuration().development_mode:
-        #     subprocess.Popen(
-        #         ['npm', 'run', 'dev'],
-        #         stdout=subprocess.PIPE,
-        #         stderr=subprocess.STDOUT,
-        #         cwd='client',
-        #         env=environment_vars
-        #     )
-        # else:
-        #     subprocess.run(
-        #         ['npm', 'run', 'build'],
-        #         check=True,
-        #         cwd='client',
-        #         env=environment_vars
-        #     )
+        if Configuration().development_mode:
+            subprocess.Popen(
+                ['npm', 'run', 'dev'],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                cwd='client',
+                env=environment_vars
+            )
+        else:
+            subprocess.run(
+                ['npm', 'run', 'build'],
+                check=True,
+                cwd='client',
+                env=environment_vars
+            )
 
         if Configuration().automatic_migrations:
             ''' Generate Tusker config... '''
@@ -85,19 +85,5 @@ if __name__ == '__main__':
                 run_migration(migration)
 
         run_webserver()
-        # opts = Configuration().webserver['gunicorn_options'].items()
-        # opts = ' '.join(list(f'--{k} {v}' for k, v in opts))
-        # if not Configuration().webserver['ip_security']:
-        #     opts += ' --forwarded_allow_ips=*'
-        #     opts += ' --proxy_allow_ips=*'
-        # subprocess.run(f'''
-        #     gunicorn \\
-        #         { '--reload' if Configuration().development_mode else '' } \\
-        #         --workers { Configuration().webserver['workers'] } \\
-        #         --threads { Configuration().webserver['threads'] } \\
-        #         {opts} \\
-        #         -b 0.0.0.0:{ Configuration().webserver['port'] } \\
-        #     server:app
-        # ''', shell=True, check=True, close_fds=True, env=environment_vars)
     except KeyboardInterrupt:
         sys.exit()
