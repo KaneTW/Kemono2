@@ -8,6 +8,8 @@ import os
 from src.config import Configuration
 from src.internals.database import database
 
+from server import run_webserver
+
 
 def run_migration(migration) -> bool:
     with open(os.path.join('migrations', migration)) as f:
@@ -25,6 +27,8 @@ def run_migration(migration) -> bool:
                                 continue
                             raise
                     conn.commit()
+                    database.pool.putconn(conn)
+
     return True
 
 
@@ -42,6 +46,10 @@ if __name__ == '__main__':
         'KEMONO_SITE': Configuration().webserver['site']
     }
 
+    if not Configuration().webserver['ip_security']:
+        environment_vars['FORWARDED_ALLOW_IPS'] = '*'
+        environment_vars['FORWARDED_ALLOW_IPS'] = '*'
+
     try:
         if not os.path.isdir('./client/node_modules'):
             subprocess.run(
@@ -51,21 +59,21 @@ if __name__ == '__main__':
                 env=environment_vars
             )
 
-        if Configuration().development_mode:
-            subprocess.Popen(
-                ['npm', 'run', 'dev'],
-                stdout=subprocess.PIPE,
-                stderr=subprocess.STDOUT,
-                cwd='client',
-                env=environment_vars
-            )
-        else:
-            subprocess.run(
-                ['npm', 'run', 'build'],
-                check=True,
-                cwd='client',
-                env=environment_vars
-            )
+        # if Configuration().development_mode:
+        #     subprocess.Popen(
+        #         ['npm', 'run', 'dev'],
+        #         stdout=subprocess.PIPE,
+        #         stderr=subprocess.STDOUT,
+        #         cwd='client',
+        #         env=environment_vars
+        #     )
+        # else:
+        #     subprocess.run(
+        #         ['npm', 'run', 'build'],
+        #         check=True,
+        #         cwd='client',
+        #         env=environment_vars
+        #     )
 
         if Configuration().automatic_migrations:
             ''' Generate Tusker config... '''
@@ -76,19 +84,20 @@ if __name__ == '__main__':
             for migration in os.listdir('migrations'):
                 run_migration(migration)
 
-        opts = Configuration().webserver['gunicorn_options'].items()
-        opts = ' '.join(list(f'--{k} {v}' for k, v in opts))
-        if not Configuration().webserver['ip_security']:
-            opts += ' --forwarded_allow_ips "*"'
-            opts += ' --proxy_allow_ips "*"'
-        subprocess.run(f'''
-            gunicorn \\
-                { '--reload' if Configuration().development_mode else '' } \\
-                --workers { Configuration().webserver['workers'] } \\
-                --threads { Configuration().webserver['threads'] } \\
-                {opts} \\
-                -b 0.0.0.0:{ Configuration().webserver['port'] } \\
-            server:app
-        ''', shell=True, check=True, close_fds=True, env=environment_vars)
+        run_webserver()
+        # opts = Configuration().webserver['gunicorn_options'].items()
+        # opts = ' '.join(list(f'--{k} {v}' for k, v in opts))
+        # if not Configuration().webserver['ip_security']:
+        #     opts += ' --forwarded_allow_ips=*'
+        #     opts += ' --proxy_allow_ips=*'
+        # subprocess.run(f'''
+        #     gunicorn \\
+        #         { '--reload' if Configuration().development_mode else '' } \\
+        #         --workers { Configuration().webserver['workers'] } \\
+        #         --threads { Configuration().webserver['threads'] } \\
+        #         {opts} \\
+        #         -b 0.0.0.0:{ Configuration().webserver['port'] } \\
+        #     server:app
+        # ''', shell=True, check=True, close_fds=True, env=environment_vars)
     except KeyboardInterrupt:
         sys.exit()
