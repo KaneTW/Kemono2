@@ -73,12 +73,12 @@ if __name__ == '__main__':
         if Configuration().automatic_migrations:
             ''' Generate Tusker config... '''
             generate_tusker_config.generate()
-            generate_uwsgi_config.generate()
             ''' ...and run migrations. '''
             database.init()
             for migration in os.listdir('migrations'):
                 run_migration(migration)
 
+        generate_uwsgi_config.generate()
         subprocess.run(['uwsgi', '--ini', './uwsgi.ini'], check=True, close_fds=True, env=environment_vars)
     except KeyboardInterrupt:
         sys.exit()
