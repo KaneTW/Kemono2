@@ -1,4 +1,4 @@
-FROM python:3.8
+FROM nikolaik/python-nodejs:python3.8-nodejs16
 
 RUN apt-get update \
     && apt-get install -y \
