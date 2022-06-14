@@ -8,10 +8,12 @@ RUN apt-get update \
 WORKDIR /app
 
 COPY requirements.txt requirements.txt
+RUN pip3 install -r requirements.txt
 
 RUN npm install -g npm
+WORKDIR /app/client
 RUN npm ci --also=dev
-RUN pip3 install -r requirements.txt
+WORKDIR /app
 
 COPY . /app
 
