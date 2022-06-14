@@ -79,8 +79,8 @@ if __name__ == '__main__':
         opts = Configuration().webserver['gunicorn_options'].items()
         opts = ' '.join(list(f'--{k} {v}' for k, v in opts))
         if not Configuration().webserver['ip_security']:
-            opts += ' --forwarded_allow_ips *'
-            opts += ' --proxy_allow_ips *'
+            opts += ' --forwarded_allow_ips "*"'
+            opts += ' --proxy_allow_ips "*"'
         subprocess.run(f'''
             gunicorn \\
                 { '--reload' if Configuration().development_mode else '' } \\
