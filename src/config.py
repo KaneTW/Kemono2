@@ -92,6 +92,7 @@ class Configuration:
         self.redis['node_options']['host'] = self.redis['node_options'].get('host', '127.0.0.1')
         self.redis['node_options']['port'] = self.redis['node_options'].get('port', 6379)
         self.redis['node_options']['db'] = self.redis['node_options'].get('db', 0)
+        self.redis['node_options']['password'] = self.redis['node_options'].get('password', None)
 
         self.redis['nodes'] = self.redis.get('nodes', [{"db": 0}])
         self.redis['keyspaces'] = self.redis.get('keyspaces', {})
