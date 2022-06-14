@@ -16,7 +16,6 @@ class Configuration:
             with open(config_location) as f:
                 config = json.loads(f.read())
 
-        self.site = config.get('site', 'http://localhost:6942')
         self.development_mode = config.get('development_mode', True)
         self.automatic_migrations = config.get('automatic_migrations', True)
 
@@ -39,6 +38,13 @@ class Configuration:
         })
         # The port the site will be served on.
         self.webserver['port'] = self.webserver.get('port', 6942)
+        # The URL at which the site is publicly accessible.
+        # NOTE: `site` at root of config acceptable for backwards compatibility.
+        if config.get('site'):
+            # Only set backwards-compatibility values if the value is actually there.
+            # Otherwise, `get()`s will see a `None` value instead of a non-existent one and throw things off.
+            self.webserver['site'] = config['site']
+        self.webserver['site'] = self.webserver.get('site', f"http://localhost:{self.webserver['port']}")
         # The location of the resources that will be served.
         self.webserver['static_folder'] = self.webserver.get(
             'static_folder',

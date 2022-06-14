@@ -107,7 +107,7 @@ def do_init_stuff():
     g.freesites = freesites
     g.paysite_list = paysite_list
     g.paysites = paysites
-    g.origin = Configuration().site
+    g.origin = Configuration().webserver['site']
     g.custom_links = Configuration().webserver['ui']['sidebar_items']
 
     # Matomo.
@@ -116,7 +116,7 @@ def do_init_stuff():
     g.matomo_code = Configuration().webserver['ui']['matomo']['tracking_code']
     g.matomo_site_id = Configuration().webserver['ui']['matomo']['site_id']
 
-    g.canonical_url = urljoin(Configuration().site, request.path)
+    g.canonical_url = urljoin(Configuration().webserver['site'], request.path)
 
     session.permanent = True
     session.modified = False

@@ -35,12 +35,18 @@ if __name__ == '__main__':
     '''       related to cache. The only resolution as of now is '''
     '''       a restart of the entire webserver.                 '''
 
+    environment_vars = {
+        'NODE_ENV': 'development' if Configuration().development_mode else 'production',
+        'KEMONO_SITE': Configuration().webserver['site']
+    }
+
     try:
         if not os.path.isdir('./client/node_modules'):
             subprocess.run(
                 ['npm', 'install'],
                 check=True,
-                cwd='client'
+                cwd='client',
+                env=environment_vars
             )
 
         if Configuration().development_mode:
@@ -48,13 +54,15 @@ if __name__ == '__main__':
                 ['npm', 'run', 'dev'],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
-                cwd='client'
+                cwd='client',
+                env=environment_vars
             )
         else:
             subprocess.run(
                 ['npm', 'run', 'build'],
                 check=True,
-                cwd='client'
+                cwd='client',
+                env=environment_vars
             )
 
         if Configuration().automatic_migrations:
@@ -79,6 +87,6 @@ if __name__ == '__main__':
                 {opts} \\
                 -b 0.0.0.0:{ Configuration().webserver['port'] } \\
             server:app
-        ''', shell=True, check=True, close_fds=True)
+        ''', shell=True, check=True, close_fds=True, env=environment_vars)
     except KeyboardInterrupt:
         sys.exit()
