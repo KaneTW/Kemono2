@@ -213,12 +213,8 @@ def get_all_dms_by_query_count(text_query: str, reload: bool = False) -> int:
     query_args = dict(
         text_query=text_query
     )
-    query = """
-        SELECT COUNT(*)
-        FROM dms
-        WHERE
-            to_tsvector(\'english\', content) @@ websearch_to_tsquery(%(text_query)s)
-    """
+    query = 'SET random_page_cost = 0.0001; SET LOCAL statement_timeout = 10000; '
+    query += 'SELECT COUNT(*) FROM dms WHERE content &@~ %(text_query)s'
     cursor.execute(query, query_args)
     count = int(cursor.fetchone()['count'])
     redis.set(key, str(count), ex=600)

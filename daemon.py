@@ -46,6 +46,7 @@ if __name__ == '__main__':
     }
 
     try:
+        ''' Install client dependencies. '''
         if not os.path.isdir('./client/node_modules'):
             subprocess.run(
                 ['npm', 'install'],
@@ -54,6 +55,7 @@ if __name__ == '__main__':
                 env=environment_vars
             )
 
+        ''' Build or run client development server depending on config. '''
         if Configuration().development_mode:
             subprocess.Popen(
                 ['npm', 'run', 'dev'],
@@ -70,11 +72,21 @@ if __name__ == '__main__':
                 env=environment_vars
             )
 
+        ''' Initialize Pgroonga if needed. '''
+        database.init()
+        with database.pool.getconn() as conn:
+            with conn.cursor() as db:
+                db.execute('CREATE EXTENSION IF NOT EXISTS pgroonga')
+                db.execute('CREATE INDEX IF NOT EXISTS pgroonga_posts_idx ON posts USING pgroonga (title, content)')
+                db.execute('CREATE INDEX IF NOT EXISTS pgroonga_comments_idx ON comments USING pgroonga (content)')
+                db.execute('CREATE INDEX IF NOT EXISTS pgroonga_dms_idx ON dms USING pgroonga (content)')
+            conn.commit()
+            database.pool.putconn(conn)
+
         if Configuration().automatic_migrations:
             ''' Generate Tusker config... '''
             generate_tusker_config.generate()
             ''' ...and run migrations. '''
-            database.init()
             for migration in os.listdir('migrations'):
                 run_migration(migration)
 

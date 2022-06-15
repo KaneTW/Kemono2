@@ -82,7 +82,7 @@ Open `http://localhost:8000/` in the browser.
 ### Manual
 TODO: write installation and setup instructions
 
-This assumes you have Python 3.8+ Node 12+ installed and a running PostgreSQL server.
+This assumes you have Python 3.8+ Node 12+ installed and a running PostgreSQL server with Pgroonga.
 ```sh
 # make sure your database is initialized
 # cd to kemono directory

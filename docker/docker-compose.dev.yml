@@ -53,7 +53,7 @@ services:
       - frontend-assets-dev:/app/dev
     stdin_open: true
   kemono-db:
-    image: healthcheck/postgres
+    image: groonga/pgroonga:2.3.3-alpine-13-slim
     container_name: kemono-db
     environment:
       - POSTGRES_USER=nano
@@ -61,6 +61,12 @@ services:
       - POSTGRES_DB=kemonodb
     volumes:
       - db-data-dev:/var/lib/postgresql/data/
+    healthcheck:
+      test: ["CMD-SHELL", "-c", "pg_isready -U nano -d kemonodb"]
+      start_period: 30s
+      interval: 10s
+      timeout: 5s
+      retries: 5
     restart: unless-stopped
     # ports:
     #  - 5432:5432
