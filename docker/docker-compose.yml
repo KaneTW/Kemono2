@@ -9,9 +9,9 @@ services:
       kemono-archiver:
         condition: service_started
     ports:
-      - 8000:80
+      - 5000:80
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ../nginx.conf:/etc/nginx/nginx.conf
       - data:/storage
   kemono-db:
     image: groonga/pgroonga:2.3.3-alpine-13-slim
@@ -32,7 +32,7 @@ services:
   kemono-app:
     build:
       context: ..
-      dockerfile: ./Dockerfile
+      dockerfile: ./docker/Dockerfile
     container_name: kemono
     restart: unless-stopped
     depends_on:
@@ -48,15 +48,6 @@ services:
       timeout: 2m
       retries: 3
       start_period: 30s
-  kemono-frontend:
-    build:
-      context: ../client
-      dockerfile: ../client/Dockerfile
-    container_name: kemono-frontend
-    environment:
-      - NODE_ENV=production
-    volumes:
-      - frontend-assets:/app/dist
   kemono-archiver:
     build:
       context: ../archiver
@@ -69,8 +60,7 @@ services:
     environment:
       - FLASK_ENV=production
     volumes:
-      - ./kitsune.py:/app/config.py
-      - ./redis_map.py:/app/redis_map.py
+      - ./archiver:/app
       - data:/storage
     sysctls:
       net.core.somaxconn: 40000
