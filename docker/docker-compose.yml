@@ -61,7 +61,7 @@ services:
     environment:
       - FLASK_ENV=production
     volumes:
-      - ./archiver:/app
+      - ../archiver:/app
       - data:/storage
     sysctls:
       net.core.somaxconn: 40000
