@@ -72,8 +72,17 @@ if __name__ == '__main__':
                 env=environment_vars
             )
 
-        ''' Initialize Pgroonga if needed. '''
+        ''' Prepare for database interaction. '''
         database.init()
+
+        if Configuration().automatic_migrations:
+            ''' Generate Tusker config... '''
+            generate_tusker_config.generate()
+            ''' ...and run migrations. '''
+            for migration in os.listdir('migrations'):
+                run_migration(migration)
+
+        ''' Initialize Pgroonga if needed. '''
         with database.pool.getconn() as conn:
             with conn.cursor() as db:
                 db.execute('CREATE EXTENSION IF NOT EXISTS pgroonga')
@@ -83,12 +92,8 @@ if __name__ == '__main__':
             conn.commit()
             database.pool.putconn(conn)
 
-        if Configuration().automatic_migrations:
-            ''' Generate Tusker config... '''
-            generate_tusker_config.generate()
-            ''' ...and run migrations. '''
-            for migration in os.listdir('migrations'):
-                run_migration(migration)
+        ''' "Close" the database pool. '''
+        database.close_pool()
 
         generate_uwsgi_config.generate()
         subprocess.run(['uwsgi', '--ini', './uwsgi.ini'], check=True, close_fds=True, env=environment_vars)

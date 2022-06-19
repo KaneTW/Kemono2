@@ -39,6 +39,7 @@ services:
       kemono-db:
         condition: service_healthy
     volumes:
+      - ../:/app
       - frontend-assets:/app/dist:ro
     sysctls:
       net.core.somaxconn: 500

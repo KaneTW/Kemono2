@@ -36,6 +36,12 @@ def get_pool():
     return pool
 
 
+def close_pool():
+    global pool
+    pool.closeall()
+    pool = None
+
+
 def get_cursor() -> cursor:
     if 'cursor' not in g:
         g.connection = pool.getconn()
