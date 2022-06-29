@@ -153,22 +153,27 @@ function filterCards(order, service, sortBy, query) {
   filteredCreators = creators.slice(0);
 
   if (order === 'desc') {
-    filteredCreators.reverse()
+    filteredCreators.reverse();
   }
 
   filteredCreators = filteredCreators.filter(
     creator => creator.service === (service || creator.service)
   ).sort((a, b) => {
 
-    if (order === 'desc') {
+    if (order === 'asc') {
       return sortBy === 'indexed'
         ? a.parsedIndexed - b.parsedIndexed
-        : fastCompare(a[sortBy], b[sortBy]);
-
+        : (sortBy === 'updated'
+            ? a.parsedUpdated - b.parsedUpdated
+            : fastCompare(a[sortBy], b[sortBy])
+          );
     } else {
       return sortBy === 'indexed'
         ? b.parsedIndexed - a.parsedIndexed
-        : fastCompare(b[sortBy], a[sortBy]);
+        : (sortBy === 'updated'
+            ? b.parsedUpdated - a.parsedUpdated
+            : fastCompare(b[sortBy], a[sortBy])
+          );
     }
   }).filter(creator => {
     return creator.name.match(
@@ -307,6 +312,7 @@ async function retrieveArtists(loadingStatus) {
       // preemptively do it here, it's taxing to parse a date string then convert it to a unix timestamp in milliseconds
       // this way we only have to do it once after fetching and none for sorting
       artist.parsedIndexed = Date.parse(artist.indexed);
+      artist.parsedUpdated = Date.parse(artist.updated);
     }
 
     loadingStatus.innerHTML = '';
