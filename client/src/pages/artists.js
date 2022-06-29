@@ -190,7 +190,7 @@ function createPaginator() {
     ? createRange(currentPage - 2, currentPage + 3)
     : createRange(0, 7);
 
-  const currentCeilingOfRange = ((skip + limit) < filteredCreators.length) ? skip + props.limit : filteredCreators.length;
+  const currentCeilingOfRange = ((skip + limit) < filteredCreators.length) ? skip + limit : filteredCreators.length;
   const paginator = (filteredCreators.length > limit) ? `
     <small>Showing ${ skip + 1 } - ${ currentCeilingOfRange } of ${ filteredCreators.length }</small>
     <menu>

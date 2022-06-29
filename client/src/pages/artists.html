@@ -1,6 +1,7 @@
 {% extends 'components/shell.html' %}
 
 {% from 'components/image_link.html' import image_link %}
+{% from 'components/fancy_image.html' import fancy_image %}
 {% from 'components/card_list.html' import card_list %}
 {% from 'components/cards/user.html' import user_card, user_card_header, user_card_skeleton %}
 
@@ -91,5 +92,6 @@
 
 {% block components %}
   {{ image_link("") }}
+  {{ fancy_image("") }}
   {{ user_card_skeleton() }}
 {% endblock components %}

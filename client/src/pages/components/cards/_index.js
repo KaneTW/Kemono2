@@ -1,5 +1,5 @@
 import { createComponent } from "@wp/js/component-factory";
-import { ImageLink, FancyLink, Timestamp } from "@wp/components";
+import { ImageLink, Timestamp, FancyImage } from "@wp/components";
 import { freesites, paysites } from "@wp/utils";
 
 /**
@@ -113,16 +113,14 @@ function initUserCardFromScratch(user, isCount, isDate, className) {
    * @type {HTMLElement}
    */
   const userCard = createComponent("user-card");
-
+  userCard.href = profileLink;
   userCard.style.backgroundImage = `linear-gradient(rgb(0 0 0 / 50%), rgb(0 0 0 / 80%)), url(${profileBanner})`;
 
-  const imageLink = ImageLink(null,
-    profileLink,
+  const imageLink = FancyImage(null,
     profileIcon,
+    profileIcon,
+    true,
     "",
-    profileIcon,
-    true,
-    true,
     'user-card__user-icon'
   );
 

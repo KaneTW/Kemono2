@@ -1,13 +1,13 @@
 {# not splitting on several lines because it adds whitespaces in the output #}
 {% macro fancy_link(url, text=url, is_noop=true, class_name=none ) %}
-  <div
+  <a
     class="fancy-link {{ class_name if class_name }}"
     href="{{ url }}"
     {% if is_noop %}
       target="_blank"
       rel="noopener noreferrer"
     {% endif %}
-  >{{ text if not caller else caller() }}</div>
+  >{{ text if not caller else caller() }}</a>
 {%- endmacro -%}
 
 {% macro download_link(url, text=url, file_name=text, class_name=none) %}

@@ -1,5 +1,6 @@
 {% from 'components/timestamp.html' import timestamp %}
 {% from 'components/image_link.html' import image_link %}
+{% from 'components/fancy_image.html' import fancy_image %}
 {% from 'components/links.html' import fancy_link %}
 
 {% macro user_card_header(is_count=false, is_date=false) %}
@@ -38,11 +39,9 @@
   >
     {# Icon. #}
     <div class="user-card__icon">
-      {{ image_link(
-        url=user_link,
-        src=user_icon,
-        class_name='user-card__user-icon'
-      ) }}
+      <div class="user-card__user-icon">
+        {{ fancy_image(src=user_icon) }}
+      </div>
     </div>
 
     {# Secondary identifiers and elements. #}
