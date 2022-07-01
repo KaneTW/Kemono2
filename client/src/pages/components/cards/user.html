@@ -26,16 +26,16 @@
   is_date=false,
   class_name=none
 ) %}
-  {% set user_link = g.freesites.kemono.user.profile(user.service, user.id) %}
-  {% set user_icon = g.freesites.kemono.user.icon(user.service, user.id) %}
-  {% set user_banner = g.freesites.kemono.user.banner(user.service, user.id) %}
+  {% set user_link = 'https://kemono.party' ~ g.freesites.kemono.user.profile(user.service, user.id) %}
+  {% set user_icon = 'https://kemono.party' ~ g.freesites.kemono.user.icon(user.service, user.id) %}
+  {% set user_banner = 'https://kemono.party' ~ g.freesites.kemono.user.banner(user.service, user.id) %}
 
   <a
     href="{{ user_link }}"
     class="user-card {{ class_name if class_name }}"
     data-id="{{ user.id }}"
     data-service="{{ user.service }}"
-    style="background-image: linear-gradient(rgb(0 0 0 / 50%), rgb(0 0 0 / 80%)), url({{ user_banner }});"
+    data-style="background-image: linear-gradient(rgb(0 0 0 / 50%), rgb(0 0 0 / 80%)), url({{ user_banner }});"
   >
     {# Icon. #}
     <div class="user-card__icon">
