@@ -16,20 +16,21 @@ connection_lock = Lock()
 
 def init():
     global pool
-    try:
-        pool = ThreadedConnectionPool(
-            1,
-            2000,
-            host=Configuration().database['host'],
-            dbname=Configuration().database['database'],
-            user=Configuration().database['user'],
-            password=Configuration().database['password'],
-            port=Configuration().database['port'],
-            cursor_factory=RealDictCursor
-        )
-    except Exception as error:
-        print("Failed to connect to the database: ", error)
-    return pool
+    if not pool:
+        try:
+            pool = ThreadedConnectionPool(
+                1,
+                2000,
+                host=Configuration().database['host'],
+                dbname=Configuration().database['database'],
+                user=Configuration().database['user'],
+                password=Configuration().database['password'],
+                port=Configuration().database['port'],
+                cursor_factory=RealDictCursor
+            )
+        except Exception as error:
+            print("Failed to connect to the database: ", error)
+    return True
 
 
 def get_pool():
@@ -38,7 +39,8 @@ def get_pool():
 
 def close_pool():
     global pool
-    pool.closeall()
+    if pool:
+        pool.closeall()
     pool = None
 
 

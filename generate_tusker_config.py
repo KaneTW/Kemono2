@@ -1,6 +1,31 @@
+import psycopg2
 import textwrap
+import os
 
+from src.internals.database import database
 from src.config import Configuration
+
+
+def run_migration(migration) -> bool:
+    database.init()
+    with open(os.path.join('migrations', migration)) as f:
+        for query in f.read().split(';'):
+            query = query.strip()
+            if query and not query.startswith('--') and not query.startswith('#'):
+                with database.pool.getconn() as conn:
+                    with conn.cursor() as db:
+                        try:
+                            db.execute(query)
+                        except psycopg2.Error as e:
+                            # https://www.postgresql.org/docs/current/errcodes-appendix.html
+                            if str(e.pgcode) in ['42P07', '42710', '55000']:
+                                ''' Ignore errors about tables or constraints already existing. '''
+                                continue
+                            raise
+                    conn.commit()
+                    database.pool.putconn(conn)
+
+    return True
 
 
 def generate():
@@ -28,6 +53,12 @@ def generate():
 
     with open('tusker.toml', 'w') as f:
         f.write(config_str)
+
+
+def run_migrations():
+    generate()
+    for migration in os.listdir('migrations'):
+        run_migration(migration)
 
 
 if __name__ == '__main__':
