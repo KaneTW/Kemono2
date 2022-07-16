@@ -51,6 +51,7 @@ if __name__ == '__main__':
                 env=environment_vars
             )
 
+        database.init()
         try:
             if Configuration().automatic_migrations:
                 ''' Run migrations. '''
