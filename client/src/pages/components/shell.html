@@ -8,6 +8,15 @@
 {% from 'components/tooltip.html' import register_message %}
 {% from 'components/buttons.html' import button %}
 
+{% macro header_link(url, text, class_name=none) %}
+  <a 
+    href="{{url}}"
+    class="header-link {{ class_name if class_name }}"
+     >
+      {{ text }}
+  </a>
+{% endmacro %}
+
 <!DOCTYPE html>
 <html prefix="og: https://ogp.me/ns#">
   <head>
@@ -157,6 +166,12 @@
         <div id="burgor">
           <img src="/static/menu.svg" />
         </div>
+        {{ header_link('/', 'Home', 'home') }}
+        {{ header_link('/artists', 'Artists') }}
+        {{ header_link('/posts', 'Posts') }}
+        {{ header_link('/importer', 'Import', 'import') }}
+        {{ header_link('/account/register', 'Register', 'register') }}
+        {{ header_link('/account/login', 'Login', 'login') }}
       </div>
       {% include 'components/flash_messages.html' %}
 

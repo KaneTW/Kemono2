@@ -48,22 +48,33 @@ export function initShell(sidebar) {
   if (isLoggedIn) {
     const accountList = sidebar.querySelector('.account');
     const login = accountList.querySelector('.login');
+    const loginHeader = header.querySelector('.login');
     const register = accountList.querySelector('.register');
+    const registerHeader = header.querySelector('.register');
     const favorites = accountList.querySelector('.favorites');
     login.classList.remove('login');
+    loginHeader.classList.remove('login');
+    loginHeader.classList.add('logout');
     register.classList.remove('register');
+    registerHeader.classList.remove('register');
     favorites.classList.remove('hidden');
     login.innerText = 'Logout';
     login.href = '/account/logout';
+    loginHeader.innerText = 'Logout';
+    loginHeader.href = '/account/logout';
     register.innerText = 'Keys';
     register.href = '/account/keys';
-    login.addEventListener('click', e => {
+    registerHeader.innerText = 'Favorites';
+    registerHeader.href = '/favorites';
+    const onLogout = e => {
       e.preventDefault();
       localStorage.removeItem('logged_in');
       localStorage.removeItem('favs');
       localStorage.removeItem('post_favs');
       location.href = '/account/logout';
-    })
+    };
+    login.addEventListener('click', onLogout);
+    loginHeader.addEventListener('click', onLogout);
   } else {
     const accountHeader = sidebar.querySelector('.account-header');
     const newHeader = document.createElement('div');
