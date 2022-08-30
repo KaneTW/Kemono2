@@ -2,7 +2,7 @@
 
 {% import 'components/site.html' as site %}
 {% from 'components/card_list.html' import card_list %}
-{% from 'components/cards/dm.html' import approved_dm_card %}
+{% from 'components/cards/dm.html' import dm_card %}
 
 {% block content %}
 {% call site.section("all-dms", title="DMs") %}
@@ -29,7 +29,7 @@
 
   {% call card_list("phone") %}
     {% for dm in props.dms %}
-      {{ approved_dm_card(dm, artist=props.artists[loop.index0]) }}
+      {{ dm_card(dm, artist=props.artists[loop.index0]) }}
     {% else %}
       <div class="no-results">
         <h2 class="site-section__subheading">Nobody here but us chickens!</h1>
