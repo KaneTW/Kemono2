@@ -29,6 +29,8 @@ paysite_list = [
     "dlsite",
     "discord",
     "fantia",
+    "boosty",
+    "afdian"
 ]
 
 paysites = Paysites()

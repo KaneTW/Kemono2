@@ -27,6 +27,7 @@
             class="form__option"
             value="{{ entry }}"
             {{ "selected" if loop.first }}
+            {{ "disabled" if entry == 'discord' or entry == 'dlsite' }}
           >
             {{ paysite.title }}
           </option>
