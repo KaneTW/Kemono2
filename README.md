@@ -6,7 +6,7 @@
     width = 120
 />
 
-# Kemono <br> Project
+# Kemono Project
 
 *Frontend designed for PaySite leaking.*
 
