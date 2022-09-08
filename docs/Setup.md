@@ -1,16 +1,37 @@
 
+# Setup
 
-## Setup
-1. Clone repo and switch to the repo folder:
+*How to use this project for yourself.*
+
+<br>
+
+1.  Clone the repository & switch to it's folder.
+    
     ```sh
-    git clone --recurse-submodules https://github.com/OpenYiff/Kemono2.git kemono-2
+    git clone                                   \
+        --recurse-submodules                    \
+        https://github.com/OpenYiff/Kemono2.git \
+        kemono-2
+    
     cd kemono-2
     ```
+    
+    <br>
 
-2. Set up configs:
+2.  Configure the setup.
+
     ```sh
-    cp kitsune.py.example kitsune.py # archiver config
-    cp .env.example .env # open .env and configure
-    cp redis_map.py.example redis_map.py # open redis_map.py and configure
-    cp flask.cfg.example flask.cfg # open flask.cfg and set 'SECRET_KEY' value
+    #   Archiver Config
+    cp kitsune.py.example kitsune.py 
+    
+    #   Open .env + Configure
+    cp .env.example .env 
+    
+    #   Open redis_map.py + Configure
+    cp redis_map.py.example redis_map.py 
+    
+    #   Open flask.cfg + Set 'SECRET_KEY' Value
+    cp flask.cfg.example flask.cfg
     ```
+    
+<br>
