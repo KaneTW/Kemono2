@@ -8,7 +8,7 @@
 
 # Kemono Project
 
-*Frontend designed for PaySite leaking.*
+*Frontend designed for Paysite leaking.*
 
 <br>
 <br>
