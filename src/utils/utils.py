@@ -140,6 +140,13 @@ def offset(num, list_var):
     return list_var[num:]
 
 
+def step_int(i: int, mod: int):
+    # Ensure that i % mod == 0 or return nothing
+    if i % mod:
+        return None
+    return i
+
+
 def limit_int(i: int, limit: int):
     if i > limit:
         return limit
