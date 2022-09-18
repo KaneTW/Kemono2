@@ -69,7 +69,7 @@
 
       {% call card_list('phone') %}
         {% for user in results %}
-          {{ user_card(user, is_date=true) }}
+          {{ user_card(user, is_updated=true) }}
         {% else %}
           <h2 class="subtitle">Nobody here but us chickens!</h2>
           <p class="subtitle">

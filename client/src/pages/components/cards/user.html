@@ -20,6 +20,8 @@
 
 {% macro user_card(
   user, 
+  is_updated=false,
+  is_indexed=false,
   is_count=false,
   single_of='',
   plural_of='',
@@ -55,9 +57,14 @@
 
       <div class="user-card__name">{{ user.name }}</div>
 
-      {% if is_date %}
+      {% if is_updated %}
         <div class="user-card__updated">
           {{ timestamp(user.updated) }}
+        </div>
+      {% endif %}
+      {% if is_indexed %}
+        <div class="user-card__updated">
+          {{ timestamp(user.indexed) }}
         </div>
       {% endif %}
       {% if is_count %}
