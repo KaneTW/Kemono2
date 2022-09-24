@@ -43,7 +43,22 @@ def count_all_posts_for_query(q: str, reload=False):
         if lock.acquire(blocking=False):
             cursor = get_cursor()
             query = "SET random_page_cost = 0.0001; SET LOCAL statement_timeout = 10000; "
-            query += "SELECT COUNT(*) FROM ( SELECT * FROM posts WHERE content &@~ %s UNION SELECT * FROM posts WHERE title &@~ %s ) as UnionSearch;"
+            query += """
+                SELECT COUNT(*)
+                FROM (
+                    SELECT * 
+                    FROM posts 
+                    WHERE 
+                        content &@~ %s
+                        AND ("user", service) NOT IN (SELECT id, service from dnp)
+                    UNION
+                    SELECT * 
+                    FROM posts
+                    WHERE
+                        title &@~ %s
+                        AND ("user", service) NOT IN (SELECT id, service from dnp)
+                ) as UnionSearch;
+            """
             cursor.execute(query, (q, q))
             count = cursor.fetchone()
             redis.set(key, str(count['count']), ex=600)
@@ -65,7 +80,14 @@ def get_all_posts(offset: int, limit=50, reload=False):
         lock = KemonoRedisLock(redis, key, expire=60, auto_renewal=True)
         if lock.acquire(blocking=False):
             cursor = get_cursor()
-            query = 'SELECT * FROM posts ORDER BY added desc OFFSET %s LIMIT %s'
+            query = """
+                SELECT *
+                FROM posts
+                WHERE ("user", service) NOT IN (SELECT id, service from dnp)
+                ORDER BY added desc
+                OFFSET %s
+                LIMIT %s
+            """
             cursor.execute(query, (offset, limit))
             all_posts = cursor.fetchall()
             redis.set(key, serialize_dict_list(all_posts), ex=600)
@@ -89,7 +111,21 @@ def get_all_posts_for_query(q: str, offset: int, limit=50, reload=False):
         if lock.acquire(blocking=False):
             cursor = get_cursor()
             query = "SET random_page_cost = 0.0001; SET LOCAL statement_timeout = 10000; "
-            query += "(SELECT * FROM posts WHERE content &@~ %s) UNION (SELECT * FROM posts WHERE title &@~ %s) ORDER BY added desc LIMIT %s OFFSET %s;"
+            query += """
+                (
+                    SELECT *
+                    FROM posts
+                    WHERE
+                        content &@~ %s
+                        AND ("user", service) NOT IN (SELECT id, service from dnp)
+                ) UNION (
+                    SELECT *
+                    FROM posts
+                    WHERE
+                        title &@~ %s
+                        AND ("user", service) NOT IN (SELECT id, service from dnp)
+                ) ORDER BY added desc LIMIT %s OFFSET %s;
+            """
             params = (q, q, limit, offset)
 
             cursor.execute(query, params)
