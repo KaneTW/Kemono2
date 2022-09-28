@@ -24,8 +24,16 @@ artists = Blueprint('artists', __name__)
 def list():
     props = dict(currentPage='artists')
     base = dict()
+<<<<<<< Updated upstream
     base['logged_in'] = request.args.get('logged_in', False)
+=======
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
     limit = 25
+=======
+    base['logged_in'] = request.args.get('logged_in', False)
+    limit = 50
+>>>>>>> Stashed changes
 
     results = get_top_artists_by_faves(0, limit)
     props['display'] = 'cached popular artists'
@@ -47,7 +55,7 @@ def updated():
     base = dict(commit=True, sort_by='updated')
     base['logged_in'] = request.args.get('logged_in', False)
     props = dict(currentPage='artists')
-    limit = 25
+    limit = 50
 
     results = get_artists_by_update_time(offset=0)
     props['display'] = 'cached updated artists'
@@ -74,7 +82,7 @@ def get(service: str, artist_id: str):
     base["artist_id"] = artist_id
 
     query = request.args.get('q', default='').strip()
-    limit = limit_int(int(request.args.get('limit') or 25), 50)
+    limit = limit_int(int(request.args.get('limit') or 50), 50)
     offset = step_int(parse_int(request.args.get('o'), 0), limit)
     if offset is None:
         return redirect(url_for('artists.list'))
