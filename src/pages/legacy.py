@@ -202,7 +202,7 @@ def recent():
     offset = request.args.get('o') if request.args.get('o') else 0
     query += "OFFSET %s "
     params += (offset,)
-    limit = request.args.get('limit') if request.args.get('limit') and int(request.args.get('limit')) <= 50 else 25
+    limit = request.args.get('limit') if request.args.get('limit') and int(request.args.get('limit')) <= 50 else 50
     query += "LIMIT %s"
     params += (limit,)
 
@@ -262,7 +262,7 @@ def discord_channel(id):
     offset = request.args.get('skip') if request.args.get('skip') else 0
     query += "OFFSET %s "
     params += (offset,)
-    limit = request.args.get('limit') if request.args.get('limit') and int(request.args.get('limit')) <= 150 else 25
+    limit = request.args.get('limit') if request.args.get('limit') and int(request.args.get('limit')) <= 150 else 50
     query += "LIMIT %s"
     params += (limit,)
 
@@ -298,7 +298,7 @@ def user_search(service, user):
     offset = request.args.get('o') if request.args.get('o') else 0
     query += "OFFSET %s "
     params += (offset,)
-    limit = request.args.get('limit') if request.args.get('limit') and int(request.args.get('limit')) <= 150 else 25
+    limit = request.args.get('limit') if request.args.get('limit') and int(request.args.get('limit')) <= 150 else 50
     query += "LIMIT %s"
     params += (limit,)
 
@@ -374,7 +374,7 @@ def user_api(service, id):
     offset = request.args.get('o') if request.args.get('o') else 0
     query += "OFFSET %s "
     params += (offset,)
-    limit = request.args.get('limit') if request.args.get('limit') and int(request.args.get('limit')) <= 50 else 25
+    limit = request.args.get('limit') if request.args.get('limit') and int(request.args.get('limit')) <= 50 else 50
     query += "LIMIT %s"
     params += (limit,)
 
