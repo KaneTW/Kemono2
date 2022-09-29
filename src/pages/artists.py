@@ -24,16 +24,8 @@ artists = Blueprint('artists', __name__)
 def list():
     props = dict(currentPage='artists')
     base = dict()
-<<<<<<< Updated upstream
-    base['logged_in'] = request.args.get('logged_in', False)
-=======
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-    limit = 25
-=======
     base['logged_in'] = request.args.get('logged_in', False)
     limit = 50
->>>>>>> Stashed changes
 
     results = get_top_artists_by_faves(0, limit)
     props['display'] = 'cached popular artists'
