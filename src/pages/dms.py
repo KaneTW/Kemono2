@@ -31,7 +31,7 @@ def get_dms():
 
     offset = parse_int(request.args.get('o'), 0)  # noqa F811
     query = request.args.get('q', default='').strip()
-    limit = limit_int(int(request.args.get('limit') or 50), 50)
+    limit = limit_int(int(request.args.get('limit') or 25), 50)
     dms = None
     total_count = None
 

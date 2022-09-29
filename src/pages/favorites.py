@@ -39,7 +39,7 @@ def list():
     props['sort_field'] = sort_field
     props['sort_asc'] = sort_asc
     props['count'] = len(favorites)
-    props['limit'] = 50
+    props['limit'] = 25
 
     response = make_response(render_template(
         'favorites.html',
@@ -90,4 +90,4 @@ def delete_favorite_artist(service, artist_id):
 
 def sort_and_filter_favorites(favorites, o, field, asc):
     favorites = sort_dict_list_by(favorites, field, not asc)
-    return take(50, offset(o, favorites))
+    return take(25, offset(o, favorites))

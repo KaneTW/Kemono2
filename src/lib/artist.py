@@ -221,7 +221,7 @@ def get_artist_last_updated(service, artist_id, reload=False):
     return last_updated
 
 
-def get_artists_by_update_time(offset, limit=50, reload=False):
+def get_artists_by_update_time(offset, reload=False):
     redis = get_conn()
     key = 'artists_by_update_time:' + str(offset)
     artists = redis.get(key)

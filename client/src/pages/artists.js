@@ -11,11 +11,8 @@ let creators;
  * @type {KemonoAPI.User[]}
  */
 let filteredCreators;
-let skip = parseInt(window.location.hash.substring(1).split('&').find(e => e.split('=')[0] === 'o')?.split('=')[1]) || 0;
-let limit = 50;
-const TOTAL_BUTTONS = 5;
-const OPTIONAL_BUTTONS = TOTAL_BUTTONS - 2;
-const MANDATORY_BUTTONS = TOTAL_BUTTONS - OPTIONAL_BUTTONS;
+let skip = 0;
+let limit = 25;
 
 // generic debounce function, idk jsdoc, figure it out :)
 function debounce(func, timeout = 300){
@@ -81,19 +78,13 @@ export async function artistsPage(section) {
      * @type {HTMLAnchorElement}
      */
     const button = event.target;
-    const isB = button.parentElement.classList.contains('paginator-button-ident');
+
     if (
-      (button.classList.contains('paginator-button-ident')
+      button.classList.contains("paginator-button")
       && button.dataset
-      && button.dataset.value)
-      ||
-      (isB
-      && button.parentElement.dataset
-      && button.parentElement.dataset.value)
+      && button.dataset.value
     ) {
-      event.preventDefault();
-      skip = Number(isB ? button.parentElement.dataset.value : button.dataset.value);
-      window.location.hash = 'o=' + skip;
+      skip = Number(button.dataset.value);
       filterCards(
         orderSelect.value,
         serviceSelect.value,
@@ -198,79 +189,67 @@ function filterCards(order, service, sortBy, query) {
   })
 }
 
-function _paginatorButton(content, skip, className = '') {
-  if (typeof skip === 'string') {
-    className = skip;
-    skip = null;
-  }
-  if (typeof skip === 'number') return `<a href="#" class="${className ? className : ''} paginator-button-ident" data-value="${skip}"><b>${content}</b></a>`;
-  return `<li class="${className ? className : ''} paginator-button-ident"><b>${content}</b></li>`;
-}
-
 function createPaginator() {
-  const count = filteredCreators.length;
+  let currentPage = Math.ceil(skip / limit);
+  let maxPages = Math.ceil(filteredCreators.length / limit);
+  const range = skip >= 100
+    ? createRange(currentPage - 2, currentPage + 3)
+    : createRange(0, 7);
 
-  const currentCeilingOfRange = (skip + limit) < count ? skip + limit : count
-
-  const currPageNum = Math.ceil((skip + limit) / limit);
-  const totalPages = Math.ceil(count / limit);
-  const numBeforeCurrPage = ((totalPages < TOTAL_BUTTONS) || (currPageNum < TOTAL_BUTTONS)) ? currPageNum - 1 : ((totalPages - currPageNum) < TOTAL_BUTTONS ? ((TOTAL_BUTTONS - 1) + ((TOTAL_BUTTONS) - (totalPages - currPageNum))) : (TOTAL_BUTTONS - 1))
-  const basePageNum = Math.max(currPageNum - numBeforeCurrPage - 1, 1);
-  const showFirstPostsButton = basePageNum > 1;
-  const showLastPostsButton = totalPages - currPageNum > (TOTAL_BUTTONS + (currPageNum - basePageNum < TOTAL_BUTTONS ? (TOTAL_BUTTONS - (currPageNum - basePageNum)) : 0));
-  const optionalBeforeButtons = currPageNum - MANDATORY_BUTTONS - (totalPages - currPageNum < MANDATORY_BUTTONS ? (MANDATORY_BUTTONS - (totalPages - currPageNum)) : 0);
-  const optionalAfterButtons = currPageNum + MANDATORY_BUTTONS + (currPageNum - basePageNum < MANDATORY_BUTTONS ? (MANDATORY_BUTTONS - (currPageNum - basePageNum)) : 0);
-
-  const range = createRange(0, (TOTAL_BUTTONS * 2) + 1);
-
-  const paginator = (count > limit) ? `
-    <small>Showing ${ skip + 1 } - ${ currentCeilingOfRange } of ${ count }</small>
+  const currentCeilingOfRange = ((skip + limit) < filteredCreators.length) ? skip + limit : filteredCreators.length;
+  const paginator = (filteredCreators.length > limit) ? `
+    <small>Showing ${ skip + 1 } - ${ currentCeilingOfRange } of ${ filteredCreators.length }</small>
     <menu>
-
-    ${
-      (showFirstPostsButton || showLastPostsButton) ? 
-      showFirstPostsButton ? _paginatorButton('<<', 0) : _paginatorButton('<<', `pagination-button-disabled${ currPageNum - MANDATORY_BUTTONS - 1 ? ' pagination-desktop' : '' }`)
-      : ``
-    }
-    ${
-      showFirstPostsButton ? '' :
-      currPageNum - MANDATORY_BUTTONS - 1 ? 
-      _paginatorButton('<<', 0, 'pagination-mobile') :
-      ((totalPages - currPageNum > MANDATORY_BUTTONS) && !showLastPostsButton) ? 
-      _paginatorButton('<<', 'pagination-button-disabled pagination-mobile') : ''
-    }
-    ${
-      currPageNum > 1 ? 
-      _paginatorButton('<', (currPageNum - 2) * limit) :
-      _paginatorButton('<', 'pagination-button-disabled')
-    }
-    ${
-      range.map(page => (
-        (page + basePageNum) && ((page + basePageNum) <= totalPages) ? 
-        _paginatorButton((page + basePageNum), (page + basePageNum) != currPageNum ? (page + basePageNum - 1) * limit : null, 
-        (((page + basePageNum) < optionalBeforeButtons || (page + basePageNum) > optionalAfterButtons) && ((page + basePageNum) != currPageNum)) ? 'pagination-button-optional' :
-        ((page + basePageNum) == currPageNum) ? 'pagination-button-disabled pagination-button-current' : 
-        ((page + basePageNum) == (currPageNum + 1)) ? 'pagination-button-after-current' : ''
-        )
-        : ''
-      )).join('\n')
-    }
-    ${
-      currPageNum < totalPages ? _paginatorButton('>', currPageNum * limit) : _paginatorButton('>', `pagination-button-disabled${totalPages ? ' pagination-button-after-current' : ''}`)
-    }
-    ${
-      showFirstPostsButton || showLastPostsButton ?
-      showLastPostsButton ? 
-      _paginatorButton('>>', (totalPages - 1) * limit) :
-      _paginatorButton('>>', `pagination-button-disabled${totalPages - currPageNum > MANDATORY_BUTTONS ? ' pagination-desktop' : ''}`) : ''
-    }
-    ${
-      showLastPostsButton ? '' : 
-      totalPages - currPageNum > MANDATORY_BUTTONS ? 
-      _paginatorButton('>>', (totalPages - 1) * limit, 'pagination-mobile') :
-      ((currPageNum > OPTIONAL_BUTTONS) && !showFirstPostsButton) ? 
-      _paginatorButton('>>', 'pagination-button-disabled pagination-mobile') : ''
-    }
+      ${skip >= limit
+        ? `<li>
+            <a href="#" class="paginator-button" data-value="${skip - limit}" title="Previous page">
+              &lt;
+            </a>
+          </li>`
+        : '<li class="subtitle">&lt;</li>'
+      }
+      ${skip >= 100
+        ? `
+        <li>
+          <a href="#" class="paginator-button" data-value="0">
+            1
+          </a>
+        </li>
+        <li>...</li>
+      ` : ''
+      }
+      ${range.map(page => {
+        if (filteredCreators.length > page * limit) {
+          if (page * limit == skip) {
+            return `<li>${page + 1}</li>`
+          } else {
+            return `
+              <li>
+                <a href="#" class="paginator-button" data-value="${page * limit}">
+                  ${page + 1}
+                </a>
+              </li>
+            `
+          }
+        }
+      }).join('')}
+      ${createRange(0, maxPages).map((page, index, arr) => {
+        if (index === arr.length - 1 && filteredCreators.length - skip >= 100 && filteredCreators.length > 175) {
+          return `
+            <li>...</li>
+            <li>
+              <a href="#" class="paginator-button" data-value="${page * limit}">
+                ${maxPages}
+              </a>
+            </li>
+          `
+        }
+      }).join('')}
+      ${filteredCreators.length - skip > limit ? `
+        <li><a href="#" class="paginator-button" data-value="${skip + limit}" title="Next page">&gt;</a></li>
+      ` : `
+        <li class="subtitle">&gt;</li>
+      `}
     </menu>
   ` : '';
 
@@ -305,7 +284,7 @@ async function loadCards(displayStatus, cardContainer, pagination, sortBy) {
   } else {
     const fragment = document.createDocumentFragment();
 
-    for await (const user of filteredCreators.slice(skip, skip + limit)) {
+    for await (const user of filteredCreators.slice(skip, skip + 25)) {
       const userIsCount = sortBy === 'favorited';
       const userIsIndexed = sortBy === 'indexed';
       const userIsUpdated = sortBy === 'updated';

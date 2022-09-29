@@ -57,7 +57,7 @@ def count_all_posts_for_query(q: str, reload=False):
     return count
 
 
-def get_all_posts(offset: int, limit=50, reload=False):
+def get_all_posts(offset: int, reload=False):
     redis = get_conn()
     key = 'all_posts:' + str(offset)
     all_posts = redis.get(key)
@@ -65,8 +65,8 @@ def get_all_posts(offset: int, limit=50, reload=False):
         lock = KemonoRedisLock(redis, key, expire=60, auto_renewal=True)
         if lock.acquire(blocking=False):
             cursor = get_cursor()
-            query = 'SELECT * FROM posts ORDER BY added desc OFFSET %s LIMIT %s'
-            cursor.execute(query, (offset, limit))
+            query = 'SELECT * FROM posts ORDER BY added desc OFFSET %s LIMIT 25'
+            cursor.execute(query, (offset,))
             all_posts = cursor.fetchall()
             redis.set(key, serialize_dict_list(all_posts), ex=600)
             lock.release()
@@ -78,7 +78,7 @@ def get_all_posts(offset: int, limit=50, reload=False):
     return all_posts
 
 
-def get_all_posts_for_query(q: str, offset: int, limit=50, reload=False):
+def get_all_posts_for_query(q: str, offset: int, reload=False):
     if q.strip() == '':
         return get_all_posts(0)
     redis = get_conn()
@@ -89,8 +89,8 @@ def get_all_posts_for_query(q: str, offset: int, limit=50, reload=False):
         if lock.acquire(blocking=False):
             cursor = get_cursor()
             query = "SET random_page_cost = 0.0001; SET LOCAL statement_timeout = 10000; "
-            query += "(SELECT * FROM posts WHERE content &@~ %s) UNION (SELECT * FROM posts WHERE title &@~ %s) ORDER BY added desc LIMIT %s OFFSET %s;"
-            params = (q, q, limit, offset)
+            query += "(SELECT * FROM posts WHERE content &@~ %s) UNION (SELECT * FROM posts WHERE title &@~ %s) ORDER BY added desc LIMIT 25 OFFSET %s;"
+            params = (q, q, offset)
 
             cursor.execute(query, params)
             results = cursor.fetchall()
