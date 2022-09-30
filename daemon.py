@@ -1,3 +1,4 @@
+import sentry_sdk
 import subprocess
 import psycopg2
 import sys
@@ -6,9 +7,10 @@ import os
 import generate_tusker_config
 import generate_uwsgi_config
 
-from src.config import Configuration
+from sentry_sdk.integrations.flask import FlaskIntegration
+from sentry_sdk.integrations.redis import RedisIntegration
 from src.internals.database import database
-
+from src.config import Configuration
 
 if __name__ == '__main__':
     ''' Bugs to fix at a later time:                             '''
@@ -25,6 +27,13 @@ if __name__ == '__main__':
     }
 
     try:
+        ''' Initialize Sentry. '''
+        if Configuration().sentry_dsn:
+            sentry_sdk.init(
+                integrations=[FlaskIntegration(), RedisIntegration()],
+                dsn=Configuration().sentry_dsn
+            )
+
         ''' Install client dependencies. '''
         if not os.path.isdir('./client/node_modules'):
             subprocess.run(

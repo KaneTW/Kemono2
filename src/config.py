@@ -16,6 +16,7 @@ class Configuration:
             with open(config_location) as f:
                 config = json.loads(f.read())
 
+        self.sentry_dsn = config.get('sentry_dsn', None)
         self.development_mode = config.get('development_mode', True)
         self.automatic_migrations = config.get('automatic_migrations', True)
 
