@@ -72,6 +72,7 @@ export function fixImageLinks(imageElements) {
       && !link.classList.contains("user-header__profile")
       && !link.classList.contains("user-card")
       && !link.classList.contains("image-link")
+      && !link.classList.contains("global-sidebar-entry-item")
     ) {
       link.classList.add("image-link");
     }

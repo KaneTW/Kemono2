@@ -126,35 +126,35 @@
   <body class="transition-preload">
     <div class="global-sidebar">
       {% call nav_entry(class_name='clickable-header-entry') %}
-        {{ nav_item('/', 'Home', 'clickable-header home-button') }}
+        {{ nav_item('/', 'Home', 'clickable-header home-button', icon='/static/menu/home.svg') }}
         <div class='close-sidebar' >
           <img src="/static/close.svg" />
         </div>
       {% endcall %}
       {{ nav_list([
         [
-          { 'header': true, 'text': 'Artists' },
-          { 'text': 'Search', 'link': '/artists' },
-          { 'text': 'Recent', 'link': '/artists/updated' },
-          { 'text': 'Random', 'link': '/artists/random' }
+          { 'header': true, 'text': 'Artists', 'icon': '/static/menu/artists.svg' },
+          { 'text': 'Search', 'link': '/artists', 'icon': '/static/menu/search.svg' },
+          { 'text': 'Recent', 'link': '/artists/updated', 'icon': '/static/menu/recent.svg' },
+          { 'text': 'Random', 'link': '/artists/random', 'icon': '/static/menu/random1.svg' }
         ],
         [
-          { 'header': true, 'text': 'Posts' },
-          { 'text': 'Search', 'link': '/posts' },
-          { 'text': 'DMs', 'link': '/dms' },
-          { 'text': 'Random', 'link': '/posts/random' }
+          { 'header': true, 'text': 'Posts', 'icon': '/static/menu/posts.svg' },
+          { 'text': 'Search', 'link': '/posts', 'icon': '/static/menu/search.svg' },
+          { 'text': 'DMs', 'link': '/dms', 'icon': '/static/menu/dm.svg' },
+          { 'text': 'Random', 'link': '/posts/random', 'icon': '/static/menu/random2.svg' }
         ],
         [
-          { 'header': true, 'text': 'Importer' },
-          { 'text': 'Import', 'link': '/importer' },
-          { 'text': 'FAQ', 'link': '/importer/tutorial' }
+          { 'header': true, 'text': 'Importer', 'icon': '/static/menu/importer.svg' },
+          { 'text': 'Import', 'link': '/importer', 'icon': '/static/menu/import.svg' },
+          { 'text': 'FAQ', 'link': '/importer/tutorial', 'icon': '/static/menu/faq.svg' }
         ]
       ]) }}
       {{ nav_entry([
-        { 'header': true, 'text': 'Account', 'link': '/account', 'class_name': 'account-header' },
-        { 'text': 'Register', 'link': '/account/register', 'class_name': 'register' },
-        { 'text': 'Favorites', 'link': '/favorites', 'class_name': 'favorites hidden' },
-        { 'text': 'Login', 'link': '/account/login', 'class_name': 'login' }
+        { 'header': true, 'text': 'Account', 'link': '/account', 'class_name': 'account-header', 'icon': '/static/menu/account.svg' },
+        { 'text': 'Register', 'link': '/account/register', 'class_name': 'register', 'icon': '/static/menu/register.svg' },
+        { 'text': 'Favorites', 'link': '/favorites', 'class_name': 'favorites hidden', 'icon': '/static/menu/favorites.svg' },
+        { 'text': 'Login', 'link': '/account/login', 'class_name': 'login', 'icon': '/static/menu/login.svg' }
       ], 'account') }}
       {{ nav_entry(g.custom_links, 'stuck-bottom') }}
     </div>

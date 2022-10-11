@@ -13,11 +13,12 @@
             {{ nav_item(
                 item.link,
                 item.text,
-                "clickable-header " ~ (item.class_name if item.class_name)
+                "clickable-header " ~ (item.class_name if item.class_name),
+                icon=item.icon
               )
             }}
           {% else %}
-            {{ nav_header(item.text, item.class_name) }}
+            {{ nav_header(item.text, item.class_name, item.icon) }}
           {% endif %}
         {% else %}
           {{ nav_item(
@@ -25,7 +26,8 @@
               item.text,
               item.class_name,
               item.is_external,
-              item.color
+              item.color,
+              item.icon
             )
           }}
         {% endif %}
@@ -36,8 +38,11 @@
   </div>
 {% endmacro %}
 
-{% macro nav_header(text, class_name=none) %}
+{% macro nav_header(text, class_name=none, icon=none) %}
   <div class="global-sidebar-entry-item header {{ class_name if class_name }}">
+    {% if icon %}
+      <img src="{{ icon }}" class="global-sidebar-entry-item-icon" />
+    {% endif %}
     {% if not caller %}
       {{ text }}
     {% else %}
@@ -46,7 +51,7 @@
   </div>
 {% endmacro %}
 
-{% macro nav_item(link, text=link, class_name=none, is_external=false, color=none) %}
+{% macro nav_item(link, text=link, class_name=none, is_external=false, color=none, icon=none) %}
   <a
   class="global-sidebar-entry-item {{ class_name if class_name }}"
   {% if color %}
@@ -56,7 +61,9 @@
   {% if is_external %}
   target="_blank"
   {% endif %}
-  >
+  > {% if icon %}
+      <img src="{{ icon }}" class="global-sidebar-entry-item-icon" />
+    {% endif %}
     {% if not caller %}
       {{ text }}
     {% else %}
