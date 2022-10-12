@@ -135,6 +135,17 @@ async function initButtons(buttonPanel) {
   );
 
   buttonPanel.appendChild(favButton);
+
+  document.addEventListener('keydown', e => {
+    switch (e.key) {
+      case 'ArrowLeft': 
+        document.querySelector('.post__nav-link.prev')?.click();
+        break;
+      case 'ArrowRight':
+        document.querySelector('.post__nav-link.next')?.click();
+        break;
+    }
+  });
 }
 
 /**
