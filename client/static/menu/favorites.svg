@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="120"
+   height="120"
+   viewBox="0 0 120 120"
+   version="1.1"
+   id="svg5"
+   xml:space="preserve"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"><defs
+     id="defs2" /><g
+     id="layer16"
+     style="display:inline"
+     transform="translate(-130,-390)"><g
+       id="g41521"
+       transform="matrix(3.6420666,0,0,3.6420666,135.369,395.369)"
+       style="fill:#737373;fill-opacity:1"><path
+         id="path41446"
+         style="fill:#737373;fill-opacity:1;stroke-width:0.5;stroke-linejoin:round;paint-order:stroke fill markers"
+         d="M 12.816406,0.34375 A 0.53769904,0.53769904 0 0 0 12.310547,0.69921875 L 9.4179688,8.7148438 0.90039062,8.9882812 a 0.53769904,0.53769904 0 0 0 -0.3125,0.9609376 L 7.3203125,15.177734 4.9472656,23.361328 a 0.53769904,0.53769904 0 0 0 0.8183594,0.595703 l 7.050781,-4.787109 7.050782,4.787109 a 0.53769904,0.53769904 0 0 0 0.818359,-0.595703 L 18.3125,15.177734 25.044922,9.9492188 a 0.53769904,0.53769904 0 0 0 -0.3125,-0.9609376 L 16.214844,8.7148438 13.322266,0.69921875 A 0.53769904,0.53769904 0 0 0 12.816406,0.34375 Z"
+         transform="translate(2.1835937,2.8030942)" /><ellipse
+         style="fill:#737373;fill-opacity:1;stroke-width:0.31628;stroke-linejoin:round;paint-order:stroke fill markers"
+         id="path41508"
+         cx="2.6507754"
+         cy="10.58839"
+         rx="0.64333206"
+         ry="2.2315495"
+         transform="matrix(0.90744248,-0.42017633,0.54406637,0.83904218,0,0)" /><use
+         x="0"
+         y="0"
+         xlink:href="#path41508"
+         id="use41510"
+         transform="matrix(-1,0,0,1,30,-1.236367e-7)"
+         style="fill:#737373;fill-opacity:1" /></g></g><metadata
+     id="metadata69257"><rdf:RDF><cc:Work
+         rdf:about=""><cc:license
+           rdf:resource="http://scripts.sil.org/OFL" /></cc:Work><cc:License
+         rdf:about="http://scripts.sil.org/OFL"><cc:permits
+           rdf:resource="http://scripts.sil.org/pub/OFL/Reproduction" /><cc:permits
+           rdf:resource="http://scripts.sil.org/pub/OFL/Distribution" /><cc:permits
+           rdf:resource="http://scripts.sil.org/pub/OFL/Embedding" /><cc:permits
+           rdf:resource="http://scripts.sil.org/pub/OFL/DerivativeWorks" /><cc:requires
+           rdf:resource="http://scripts.sil.org/pub/OFL/Notice" /><cc:requires
+           rdf:resource="http://scripts.sil.org/pub/OFL/Attribution" /><cc:requires
+           rdf:resource="http://scripts.sil.org/pub/OFL/ShareAlike" /><cc:requires
+           rdf:resource="http://scripts.sil.org/pub/OFL/DerivativeRenaming" /><cc:requires
+           rdf:resource="http://scripts.sil.org/pub/OFL/BundlingWhenSelling" /></cc:License></rdf:RDF></metadata></svg>

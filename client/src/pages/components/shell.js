@@ -58,11 +58,13 @@ export function initShell(sidebar) {
     register.classList.remove('register');
     registerHeader.classList.remove('register');
     favorites.classList.remove('hidden');
-    login.innerText = 'Logout';
+    login.lastChild.textContent = 'Logout';
+    login.firstElementChild.src = '/static/menu/logout.svg';
     login.href = '/account/logout';
     loginHeader.innerText = 'Logout';
     loginHeader.href = '/account/logout';
-    register.innerText = 'Keys';
+    register.lastChild.textContent = 'Keys';
+    register.firstElementChild.src = '/static/menu/keys.svg';
     register.href = '/account/keys';
     registerHeader.innerText = 'Favorites';
     registerHeader.href = '/favorites';
