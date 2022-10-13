@@ -132,7 +132,6 @@
 
 .content-wrapper {
   width: 100%;
-  overflow: auto;
   transition: margin-left 250ms ease-in-out 0s;
 
   @media (min-width: #{$sidebar-min-width + 1}) {
