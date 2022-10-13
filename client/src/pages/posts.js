@@ -1,4 +1,4 @@
-import { CardList, PostCard } from "@wp/components";
+import { CardList, PostCard, registerPaginatorKeybinds } from "@wp/components";
 import { isLoggedIn } from "@wp/js/account";
 import { findFavouritePost, findFavouriteArtist } from "@wp/js/favorites";
 
@@ -10,6 +10,8 @@ export function postsPage(section) {
   const { cardList, cardItems } = CardList(cardListElement);
 
   cardItems.forEach(async (card) => {
+    registerPaginatorKeybinds();
+    
     const { postID, userID, service } = PostCard(card);
     const favPost = isLoggedIn && await findFavouritePost(service, userID, postID);
     const favUser = isLoggedIn && await findFavouriteArtist(userID, service);
