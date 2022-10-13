@@ -1,5 +1,5 @@
 import { addFavouriteArtist, findFavouriteArtist, removeFavouriteArtist, findFavouritePost } from "@wp/js/favorites";
-import { CardList, PostCard, showTooltip, registerMessage } from "@wp/components";
+import { CardList, PostCard, showTooltip, registerMessage, registerPaginatorKeybinds } from "@wp/components";
 import { createComponent } from "@wp/js/component-factory";
 import { isLoggedIn } from "@wp/js/account";
 
@@ -7,6 +7,8 @@ import { isLoggedIn } from "@wp/js/account";
  * @param {HTMLElement} section
  */
 export async function userPage(section) {
+  registerPaginatorKeybinds();
+
   const artistID = document.head.querySelector("[name='id']").content;
   const artistService = document.head.querySelector("[name='service']").content;
   /**

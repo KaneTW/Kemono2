@@ -9,6 +9,8 @@ import { artistsPage } from "./artists";
 import { updatedPage } from "./updated";
 import { uploadPage } from "./upload";
 
+import { registerPaginatorKeybinds } from "@wp/components";
+
 export { adminPageScripts } from "./account/administrator/_index.js";
 export { moderatorPageScripts } from "./account/moderator/_index.js";
 /**
@@ -25,4 +27,6 @@ export const globalPageScripts = new Map([
   ["artists", artistsPage],
   ["updated", updatedPage],
   ["upload", uploadPage],
+  ["all-dms", registerPaginatorKeybinds],
+  ["favorites", registerPaginatorKeybinds],
 ]);

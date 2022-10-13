@@ -1,5 +1,5 @@
 import { kemonoAPI } from "@wp/api";
-import { CardList, UserCard } from "@wp/components";
+import { CardList, UserCard, registerPaginatorKeybinds } from "@wp/components";
 import { isLoggedIn } from "@wp/js/account";
 import { findFavouriteArtist } from "@wp/js/favorites";
 
@@ -115,6 +115,7 @@ export async function artistsPage(section) {
 
   await retrieveArtists(loadingStatus);
   handleSearch(orderSelect, serviceSelect, sortSelect, queryInput, displayStatus, cardContainer, pagination)(null);
+  registerPaginatorKeybinds();
 }
 
 /**
@@ -241,7 +242,7 @@ function createPaginator() {
     }
     ${
       currPageNum > 1 ? 
-      _paginatorButton('<', (currPageNum - 2) * limit) :
+      _paginatorButton('<', (currPageNum - 2) * limit, 'prev') :
       _paginatorButton('<', 'pagination-button-disabled')
     }
     ${
@@ -256,7 +257,7 @@ function createPaginator() {
       )).join('\n')
     }
     ${
-      currPageNum < totalPages ? _paginatorButton('>', currPageNum * limit) : _paginatorButton('>', `pagination-button-disabled${totalPages ? ' pagination-button-after-current' : ''}`)
+      currPageNum < totalPages ? _paginatorButton('>', currPageNum * limit, 'next') : _paginatorButton('>', `pagination-button-disabled${totalPages ? ' pagination-button-after-current' : ''}`)
     }
     ${
       showFirstPostsButton || showLastPostsButton ?
