@@ -82,6 +82,7 @@ export function initShell(sidebar) {
     const newHeader = document.createElement('div');
     newHeader.className = 'global-sidebar-entry-item header';
     newHeader.innerText = 'Account';
+    newHeader.prepend(accountHeader.firstElementChild);
     accountHeader.parentElement.replaceChild(newHeader, accountHeader);
   }
   // questionable? close sidebar on tap of an item,
