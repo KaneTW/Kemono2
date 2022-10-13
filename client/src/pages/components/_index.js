@@ -7,3 +7,4 @@ export { ImageLink } from "./image_link";
 export { showTooltip, registerMessage} from "./tooltip";
 export { initShell } from "./shell";
 export { Timestamp } from "./timestamp";
+export { registerPaginatorKeybinds } from "./paginator";

@@ -42,7 +42,7 @@
       {%endif%}
     {%endif%}
     {%if currPageNum > 1 %}
-      {{ paginator_button('<', href=url_for(request.endpoint, o = (currPageNum - 2) * props.limit, **base))}}
+      {{ paginator_button('<', href=url_for(request.endpoint, o = (currPageNum - 2) * props.limit, **base), class_name='prev') }}
     {%else%}
       {{ paginator_button('<', class_name='pagination-button-disabled')}}
     {%endif%}
@@ -50,7 +50,7 @@
       {{ paginator_button((page + basePageNum), href=url_for(request.endpoint, o = (page + basePageNum - 1) * props.limit, **base) if (page + basePageNum) != currPageNum else none, class_name='pagination-button-optional' if ((page + basePageNum) < optionalBeforeButtons or (page + basePageNum) > optionalAfterButtons) and (page + basePageNum) != currPageNum else ('pagination-button-disabled pagination-button-current' if (page + basePageNum) == currPageNum else ('pagination-button-after-current' if (page + basePageNum) == (currPageNum + 1) else ''))) }}
     {% endfor %}
     {%if currPageNum < totalPages %}
-      {{ paginator_button('>', href=url_for(request.endpoint, o = currPageNum * props.limit, **base)) }}
+      {{ paginator_button('>', href=url_for(request.endpoint, o = currPageNum * props.limit, **base), class_name='next') }}
     {%else%}
       {{ paginator_button('>', class_name='pagination-button-disabled' ~(' pagination-button-after-current' if totalPages else '')) }}
     {%endif%}
