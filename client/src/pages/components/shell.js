@@ -12,11 +12,13 @@ export function initShell(sidebar) {
   const burgor = document.getElementById('burgor');
   const header = burgor.parentElement;
   const backdrop = document.querySelector('.backdrop');
+  const contentWrapper = document.querySelector('.content-wrapper');
   const closeButton = sidebar.querySelector('.close-sidebar');
   const closeSidebar = (_, setState = true) => {
     sidebar.classList.toggle('expanded');
     sidebar.classList.toggle('retracted');
     backdrop.classList.toggle('backdrop-hidden');
+    contentWrapper.classList.toggle('shifted');
     const retracted = header.classList.toggle('sidebar-retracted');
     if (setState && window.innerWidth > 1020) localStorage.setItem('sidebar_state', retracted);
   };

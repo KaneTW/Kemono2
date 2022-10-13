@@ -9,7 +9,7 @@ html {
   padding: 0;
   margin: 0;
   overflow-wrap: break-word;
-  overflow: hidden;
+  overflow: auto;
 }
 
 *,
@@ -22,7 +22,6 @@ html {
 body {
   display: flex;
   position: relative;
-  overflow: hidden;
   height: 100%;
   width: 100%;
   color: var(--colour0-primary);
