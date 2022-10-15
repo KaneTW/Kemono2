@@ -134,6 +134,15 @@
   width: 100%;
   transition: margin-left 250ms ease-in-out 0s;
 
+  @media (max-width: $sidebar-min-width) {
+    position: fixed;
+
+    &.shifted {
+      position: static;
+    }
+  }
+
+
   @media (min-width: #{$sidebar-min-width + 1}) {
     &.shifted {
       margin-left: 12rem;
