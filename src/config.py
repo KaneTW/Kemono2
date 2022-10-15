@@ -53,6 +53,12 @@ class Configuration:
         self.webserver['ui'] = self.webserver.get('ui', {})
         # Add custom links to the bottom of the sidebar.
         self.webserver['ui']['sidebar_items'] = self.webserver['ui'].get('sidebar_items', [])
+        # Ads preferences. Each spot should be Base64-encoded.
+        self.webserver['ui']['ads'] = self.webserver['ui'].get('ads', {})
+        self.webserver['ui']['ads']['header'] = self.webserver['ui']['ads'].get('header', None)
+        self.webserver['ui']['ads']['middle'] = self.webserver['ui']['ads'].get('middle', None)
+        self.webserver['ui']['ads']['footer'] = self.webserver['ui']['ads'].get('footer', None)
+        self.webserver['ui']['ads']['slider'] = self.webserver['ui']['ads'].get('slider', None)
         # Matomo preferences.
         self.webserver['ui']['matomo'] = self.webserver['ui'].get('matomo', {})
         self.webserver['ui']['matomo']['enabled'] = self.webserver['ui']['matomo'].get('matomo', False)

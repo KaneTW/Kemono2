@@ -1,0 +1,29 @@
+{% macro header_ad() %}
+  {% if g.header_ad %}
+    <div class="ad-container">
+      {{ g.header_ad|safe }}
+    </div>
+  {% endif %}
+{% endmacro %}
+  
+{% macro middle_ad() %}
+  {% if g.middle_ad %}
+    <div class="ad-container">
+      {{ g.middle_ad|safe }}
+    </div>
+  {% endif %}
+{% endmacro %}
+
+{% macro footer_ad() %}
+  {% if g.footer_ad %}
+    <div class="ad-container">
+      {{ g.footer_ad|safe }}
+    </div>
+  {% endif %}
+{% endmacro %}
+
+{% macro slider_ad() %}
+  {% if g.slider_ad %}
+    {{ g.slider_ad|safe }}
+  {% endif %}
+{% endmacro %}

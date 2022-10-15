@@ -4,11 +4,14 @@
 {% from 'components/fancy_image.html' import fancy_image %}
 {% from 'components/card_list.html' import card_list %}
 {% from 'components/cards/user.html' import user_card, user_card_header, user_card_skeleton %}
+{% from 'components/ads.html' import slider_ad, header_ad, footer_ad %}
 
 {% block content %}
+  {{ slider_ad() }}
   <section 
     class="site-section site-section--artists page" id="page"
   >
+    {{ header_ad() }}
     <div class="no-posts" id="loading">
       <span class="subtitle">
         Loading creators... please wait!
@@ -91,6 +94,7 @@
         {% include 'components/paginator.html' %}
       </div>
     {% endif %}
+    {{ footer_ad() }}
   <section>
 {% endblock %}
 

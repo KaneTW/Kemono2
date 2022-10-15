@@ -3,13 +3,16 @@
 {% from 'components/card_list.html' import card_list %}
 {% from 'components/cards/user.html' import user_card, user_card_header %}
 {% from 'components/cards/post.html' import post_card %}
+{% from 'components/ads.html' import slider_ad, header_ad, footer_ad %}
 
 {% block scripts_extra %}
   <script src="{{ url_for('static', filename='js/favorites.js') }}" defer ></script>
 {% endblock scripts_extra %}
 
 {% block content %}
+{{ slider_ad() }}
 <section class="page site-section site-section--favorites" id="page">
+  {{ header_ad() }}
   <header class="site-section__header">
     <h1 class="site-section__heading">Favorite {{ 'Artists' if props.fave_type == 'artist' else 'Posts' }}</h1>
   </header>
@@ -102,5 +105,6 @@
       </div>
     {% endif %}
   {% endif %}
+  {{ footer_ad() }}
 </section>
 {% endblock content %}

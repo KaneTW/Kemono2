@@ -5,6 +5,7 @@ import re
 from datetime import timedelta
 from os import getenv
 from os.path import dirname, join
+from base64 import b64decode
 from threading import Lock
 from urllib.parse import urljoin
 from dotenv import load_dotenv
@@ -114,6 +115,15 @@ def do_init_stuff():
     g.matomo_domain = Configuration().webserver['ui']['matomo']['tracking_domain']
     g.matomo_code = Configuration().webserver['ui']['matomo']['tracking_code']
     g.matomo_site_id = Configuration().webserver['ui']['matomo']['site_id']
+
+    # Ads.
+    def decode_b64(s: str) -> str:
+        if s is not None:
+            return b64decode(s.encode()).decode()
+    g.header_ad = decode_b64(Configuration().webserver['ui']['ads']['header'])
+    g.middle_ad = decode_b64(Configuration().webserver['ui']['ads']['middle'])
+    g.footer_ad = decode_b64(Configuration().webserver['ui']['ads']['footer'])
+    g.slider_ad = decode_b64(Configuration().webserver['ui']['ads']['slider'])
 
     g.canonical_url = urljoin(Configuration().webserver['site'], request.path)
 

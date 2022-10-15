@@ -3,9 +3,12 @@
 {% import 'components/site.html' as site %}
 {% from 'components/card_list.html' import card_list %}
 {% from 'components/cards/dm.html' import dm_card %}
+{% from 'components/ads.html' import slider_ad, header_ad %}
 
 {% block content %}
 {% call site.section("all-dms", title="DMs") %}
+  {{ slider_ad() }}
+  {{ header_ad() }}
   <div class="paginator" id="paginator-top">
     {% include 'components/paginator.html' %}
     <form

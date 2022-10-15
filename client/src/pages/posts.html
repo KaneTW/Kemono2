@@ -2,8 +2,10 @@
 
 {% from 'components/card_list.html' import card_list %}
 {% from 'components/cards/post.html' import post_card %}
+{% from 'components/ads.html' import slider_ad, header_ad, footer_ad %}
 
 {% block content %}
+  {{ slider_ad() }}
   <section class="site-section site-section--posts">
     <header class="site-section__header">
       <h1 class="site-section__heading">Posts</h1>
@@ -29,6 +31,8 @@
       </form>
     </div>
 
+    {{ header_ad() }}
+
     {% call card_list() %}
       {% for post in results %}
         {{ post_card(post) }}
@@ -42,6 +46,8 @@
       {% endfor %}
     {% endcall %}
     
+    {{ footer_ad() }}
+
     <div class="paginator" id="paginator-bottom">
       {% include 'components/paginator.html' %}
     </div>

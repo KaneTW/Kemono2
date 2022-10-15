@@ -1,5 +1,6 @@
 {% extends 'components/shell.html' %}
 
+{% from 'components/ads.html' import slider_ad, header_ad, footer_ad %}
 {% from 'components/headers.html' import user_header %}
 {% from "components/loading_icon.html" import loading_icon %}
 {% from 'components/card_list.html' import card_list %}
@@ -28,6 +29,7 @@
 {% endblock opengraph %}
 
 {% block content %}
+{{ slider_ad() }}
 <section class="site-section site-section--user">
   {{ user_header(request, props) }}
   {% if results %}
@@ -52,11 +54,15 @@
       </form>
     </div>
 
+    {{ header_ad() }}
+
     {% call card_list() %}
       {% for post in results %}
         {{ post_card(post) }}
       {% endfor %}
     {% endcall %}
+
+    {{ footer_ad() }}
 
     <div class="paginator" id="paginator-bottom">
       {% include 'components/paginator.html' %}
