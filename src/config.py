@@ -52,7 +52,10 @@ class Configuration:
         # Interface preferences and customization options.
         self.webserver['ui'] = self.webserver.get('ui', {})
         # Add custom links to the bottom of the sidebar.
+        # See `client/src/pages/components/shell.html` for an idea of what the format is like.
         self.webserver['ui']['sidebar_items'] = self.webserver['ui'].get('sidebar_items', [])
+        # Add custom HTML elements to the footer.
+        self.webserver['ui']['footer_items'] = self.webserver['ui'].get('footer_items', [])
         # Ads preferences. Each spot should be Base64-encoded.
         self.webserver['ui']['ads'] = self.webserver['ui'].get('ads', {})
         self.webserver['ui']['ads']['header'] = self.webserver['ui']['ads'].get('header', None)

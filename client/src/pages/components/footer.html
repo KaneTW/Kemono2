@@ -1,3 +1,6 @@
 <ul class="footer">
   <li><a href="https://github.com/OpenYiff" target="_blank">[Source code]</a></li>
+  {% for item in g.custom_footer %}
+    <li>{{ item|safe }}</li>
+  {% endfor %}
 </ul>

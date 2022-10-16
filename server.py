@@ -109,6 +109,7 @@ def do_init_stuff():
     g.paysites = paysites
     g.origin = Configuration().webserver['site']
     g.custom_links = Configuration().webserver['ui']['sidebar_items']
+    g.custom_footer = Configuration().webserver['ui']['footer_items']
 
     # Matomo.
     g.matomo_enabled = Configuration().webserver['ui']['matomo']['enabled']
