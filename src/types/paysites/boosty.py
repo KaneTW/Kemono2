@@ -15,7 +15,7 @@ class Post(Service_Post):
 
 
 @dataclass
-class Afdian(Paysite):
+class Boosty(Paysite):
     name: str = 'boosty'
     title: str = 'Boosty'
     user: User = User()
