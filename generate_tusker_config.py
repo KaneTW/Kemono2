@@ -18,7 +18,7 @@ def run_migration(migration) -> bool:
                             db.execute(query)
                         except psycopg2.Error as e:
                             # https://www.postgresql.org/docs/current/errcodes-appendix.html
-                            if str(e.pgcode) in ['42P07', '42710', '55000']:
+                            if str(e.pgcode) in ['42P07', '42701', '42710', '55000']:
                                 ''' Ignore errors about tables or constraints already existing. '''
                                 continue
                             raise

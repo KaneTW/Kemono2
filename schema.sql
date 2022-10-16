@@ -71,7 +71,8 @@ create table dms (
 
 create table dnp (
     id varchar not null,
-    service varchar not null
+    service varchar not null,
+    import boolean not null default false
 );
 
 create table files (
