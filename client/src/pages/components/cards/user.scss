@@ -19,6 +19,12 @@
   --local-colour2-primary: none;
   --local-colour2-secondary: none;
 
+  &--fav {
+    border-color: var(--favourite-colour2-primary);
+    border-style: solid;
+    border-width: 2px;
+  }
+
   &:hover,
   &:focus-within {
     top: -3px;
