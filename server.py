@@ -3,13 +3,13 @@ import humanize
 import logging
 import re
 from datetime import timedelta
-from os import getenv
-from os.path import dirname, join
+from os import getenv, listdir
+from os.path import dirname, join, splitext, exists
 from base64 import b64decode
 from threading import Lock
 from urllib.parse import urljoin
 from dotenv import load_dotenv
-from flask import Flask, abort, g, redirect, render_template, request, session
+from flask import Flask, abort, g, redirect, render_template, request, session, make_response
 
 import src.internals.cache.redis as redis
 import src.internals.database.database as database
@@ -96,6 +96,14 @@ logging.getLogger('urllib3').setLevel(logging.WARNING)
 cache.init_app(app)
 database.init()
 redis.init()
+
+if exists(join(Configuration().webserver['template_folder'], 'nondynamic')):
+    for page in listdir(join(Configuration().webserver['template_folder'], 'nondynamic')):
+        app.get(f'/{splitext(page)[0]}')(lambda: make_response(render_template(
+            f'nondynamic/{page}',
+            props=dict(),
+            base=request.args.to_dict()
+        ), 200))
 
 
 @app.before_request
