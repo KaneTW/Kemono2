@@ -1,3 +1,6 @@
+import json
+
+from urllib.parse import unquote
 from dataclasses import dataclass
 from re import RegexFlag
 from re import compile as compile_regexp
@@ -85,6 +88,18 @@ def dlsiteKey(key: str, errors: List[str]):
     return errors
 
 
+def boostyKey(key: str, errors: List[str]):
+    try:
+        json.loads(unquote(key))
+    except ValueError:
+        errors.append(f'The key is not valid JSON.')
+    return errors
+
+
+def afdianKey(key: str, errors: List[str]):
+    return errors
+
+
 def discordKey(key: str, errors: List[str]):
     pattern_str = r"(mfa.[a-z0-9_-]{20,})|([a-z0-9_-]{23,28}.[a-z0-9_-]{6,7}.[a-z0-9_-]{27})"
     pattern = compile_regexp(pattern_str, RegexFlag.IGNORECASE)
@@ -107,4 +122,6 @@ service_constraints = dict(
     subscribestar=subscribestarKey,
     dlsite=dlsiteKey,
     discord=discordKey,
+    boosty=boostyKey,
+    afdian=afdianKey
 )
