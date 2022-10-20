@@ -1,9 +1,12 @@
+import sentry_sdk
 import datetime
 import humanize
 import logging
 import re
 from datetime import timedelta
 from os import getenv, listdir
+from sentry_sdk.integrations.flask import FlaskIntegration
+from sentry_sdk.integrations.redis import RedisIntegration
 from os.path import dirname, join, splitext, exists
 from base64 import b64decode
 from threading import Lock
@@ -96,6 +99,12 @@ logging.getLogger('urllib3').setLevel(logging.WARNING)
 cache.init_app(app)
 database.init()
 redis.init()
+
+if Configuration().sentry_dsn:
+    sentry_sdk.init(
+        integrations=[FlaskIntegration(), RedisIntegration()],
+        dsn=Configuration().sentry_dsn
+    )
 
 if exists(join(Configuration().webserver['template_folder'], 'nondynamic')):
     for page in listdir(join(Configuration().webserver['template_folder'], 'nondynamic')):
