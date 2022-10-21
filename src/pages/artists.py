@@ -229,6 +229,14 @@ def make_artist_display_data(artist: dict):
             'service': 'Fantia',
             'href': f"https://fantia.jp/fanclubs/{artist_id}",
         },
+        'boosty': {
+            'service': 'Boosty',
+            'href': f"https://boosty.to/{artist_id}",
+        },
+        'afdian': {
+            'service': 'Afdian',
+            'href': "",
+        }
     }
 
     if is_development:
