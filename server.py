@@ -91,10 +91,11 @@ app.jinja_env.filters['relative_date'] = lambda val: humanize.naturaltime(val)
 app.jinja_env.filters['regex_match'] = lambda val, rgx: re.search(rgx, val)
 app.jinja_env.filters['regex_find'] = lambda val, rgx: re.findall(rgx, val)
 
-logging.basicConfig(filename='kemono.log', level=logging.DEBUG)
-logging.getLogger('PIL').setLevel(logging.INFO)
-logging.getLogger('requests').setLevel(logging.WARNING)
-logging.getLogger('urllib3').setLevel(logging.WARNING)
+if Configuration().webserver['logging']:
+    logging.basicConfig(filename='kemono.log', level=logging.DEBUG)
+    logging.getLogger('PIL').setLevel(logging.INFO)
+    logging.getLogger('requests').setLevel(logging.WARNING)
+    logging.getLogger('urllib3').setLevel(logging.WARNING)
 
 cache.init_app(app)
 database.init()

@@ -33,6 +33,8 @@ class Configuration:
         self.webserver['uwsgi_options'] = self.webserver.get('uwsgi_options', {})
         # The port the site will be served on.
         self.webserver['port'] = self.webserver.get('port', 6942)
+        # Logging mode.
+        self.webserver['logging'] = self.webserver.get('logging', 'DEBUG' if self.development_mode else 'ERROR')
         # The URL at which the site is publicly accessible.
         # NOTE: `site` at root of config acceptable for backwards compatibility.
         if config.get('site'):
