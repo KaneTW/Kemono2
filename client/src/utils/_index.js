@@ -149,6 +149,22 @@ export const paysites = {
     },
     post: {}
   },
+  boosty: {
+    title: "Boosty",
+    color: "#fd6035",
+    user: {
+      profile: (userID) => `https://boosty.to/${userID}`
+    },
+    post: {}
+  },
+  afdian: {
+    title: "Afdian",
+    color: "#9169df",
+    user: {
+      profile: (userID) => ``
+    },
+    post: {}
+  }
 };
 
 export const freesites = {
