@@ -29,7 +29,7 @@ def get_dms():
     base = request.args.to_dict()
     base.pop('o', None)
 
-    offset = parse_int(request.args.get('o'), 0)  # noqa F811
+    offset = abs(parse_int(request.args.get('o'), 0))  # noqa F811
     query = request.args.get('q', default='').strip()
     limit = limit_int(int(request.args.get('limit') or 50), 50)
     dms = None

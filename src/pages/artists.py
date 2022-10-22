@@ -75,7 +75,7 @@ def get(service: str, artist_id: str):
 
     query = request.args.get('q', default='').strip()
     limit = limit_int(int(request.args.get('limit') or 50), 50)
-    offset = step_int(parse_int(request.args.get('o'), 0), limit)
+    offset = step_int(abs(parse_int(request.args.get('o'), 0)), limit)
     if offset is None:
         return redirect(url_for('artists.list'))
 

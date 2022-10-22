@@ -31,7 +31,7 @@ def list():
         favorites = get_favorite_artists(account['id'])
         sort_field = restrict_value(get_value(request.args, 'sort'), ['faved_seq', 'updated'], 'updated')
 
-    offset = parse_int(request.args.get('o'), 0)
+    offset = abs(parse_int(request.args.get('o'), 0))
     sort_asc = True if get_value(request.args, 'order') == 'asc' else False
     results = sort_and_filter_favorites(favorites, offset, sort_field, sort_asc)
 

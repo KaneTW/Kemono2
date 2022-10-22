@@ -18,7 +18,7 @@ def get_posts():
 
     props['limit'] = 50
     query = request.args.get('q', default='').strip()
-    offset = step_int(parse_int(request.args.get('o'), 0), props['limit'])
+    offset = step_int(abs(parse_int(request.args.get('o'), 0)), props['limit'])
     if offset is None:
         return redirect(url_for('posts.get_posts'))
 
