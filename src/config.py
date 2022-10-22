@@ -66,7 +66,7 @@ class Configuration:
         self.webserver['ui']['ads']['slider'] = self.webserver['ui']['ads'].get('slider', None)
         # Matomo preferences.
         self.webserver['ui']['matomo'] = self.webserver['ui'].get('matomo', {})
-        self.webserver['ui']['matomo']['enabled'] = self.webserver['ui']['matomo'].get('matomo', False)
+        self.webserver['ui']['matomo']['enabled'] = self.webserver['ui']['matomo'].get('enabled', False)
         # Fill in the information based on the embed code you get from the panel;
         """
             [...]
