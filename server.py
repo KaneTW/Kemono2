@@ -92,7 +92,10 @@ app.jinja_env.filters['regex_match'] = lambda val, rgx: re.search(rgx, val)
 app.jinja_env.filters['regex_find'] = lambda val, rgx: re.findall(rgx, val)
 
 if Configuration().webserver['logging']:
-    logging.basicConfig(filename='kemono.log', level=logging.DEBUG)
+    logging.basicConfig(
+        filename='kemono.log',
+        level=logging.getLevelName(Configuration().webserver['logging'])
+    )
     logging.getLogger('PIL').setLevel(logging.INFO)
     logging.getLogger('requests').setLevel(logging.WARNING)
     logging.getLogger('urllib3').setLevel(logging.WARNING)
