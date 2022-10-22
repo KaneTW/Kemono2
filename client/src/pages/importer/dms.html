@@ -1,6 +1,6 @@
 {% extends 'components/shell.html' %}
 
-{% from 'components/cards/dm.html' import unapproved_dm_card %}
+{% from 'components/cards/dm.html' import dm_card %}
 
 {% block title %}
   <title>Approve DMs for import to Kemono.</title>
@@ -36,7 +36,7 @@
             value="{{ dm.id }}"
           >
           <div class="dms__content">
-            {{ unapproved_dm_card(dm, class='dms__card') }}
+            {{ dm_card(dm, class_name='dms__card', is_private=true) }}
             <label class="dms__approve" for="{{ dm.id }}">
               Approve
             </label>
