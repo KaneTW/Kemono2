@@ -26,10 +26,16 @@
   &--preview  {
     .post-card__header {
       background: rgb(0 0 0 / 50%);
+      &--fav {
+        background: hsla(60, 100%, 30%, 0.5);
+      }
     }
 
     .post-card__footer {
       background: rgb(0 0 0 / 50%);
+      &--fav {
+        background: hsla(60, 100%, 30%, 0.5);
+      }
     }
   }
 

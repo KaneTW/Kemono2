@@ -21,10 +21,11 @@ export function postsPage(section) {
     };
 
     if (favUser) {
-      const user = card.querySelector(".post-card__user");
-      const userName = card.querySelector(".post-card__name");
+      const postHeader = card.querySelector(".post-card__header");
+      const postFooter = card.querySelector(".post-card__footer");
 
-      user.classList.add("post-card__user--fav");
+      postHeader.classList.add("post-card__header--fav");
+      postFooter.classList.add("post-card__footer--fav");
       userName.textContent = favUser.name;
     };
 
