@@ -18,7 +18,7 @@ def count_all_posts(reload=False):
         lock = KemonoRedisLock(redis, key, expire=60, auto_renewal=True)
         if lock.acquire(blocking=False):
             cursor = get_cursor()
-            query = 'SELECT COUNT(*) FROM posts'
+            query = 'SELECT COUNT(*) FROM posts WHERE ("user", service) NOT IN (SELECT id, service from dnp)'
             cursor.execute(query)
             count = cursor.fetchone()
             redis.set(key, str(count['count']), ex=600)
