@@ -23,7 +23,7 @@
 
 {% if props.count > props.limit %}
   <small>
-    Showing {{ skip + 1 }} - {{ currentCeilingOfRange }} of {{ props.count }}
+    Showing {{ skip + 1 }} - {{ currentCeilingOfRange }} of {{ props.true_count or props.count }}
   </small>
   {% set rng = range(0, (TOTAL_BUTTONS * 2) + 1) %}
   <menu>

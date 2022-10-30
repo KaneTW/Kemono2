@@ -22,12 +22,13 @@ def get_posts():
     if offset is None:
         return redirect(url_for('posts.get_posts'))
 
+    props['count'] = props['limit'] * 1000  # only load 1000 pages of any result
     if not query or len(query) < 2:
         results = get_all_posts(offset)
-        props['count'] = count_all_posts()
+        props['true_count'] = count_all_posts()
     else:
         results = get_all_posts_for_query(query, offset)
-        props['count'] = count_all_posts_for_query(query)
+        props['true_count'] = count_all_posts_for_query(query)
 
     (result_previews, result_attachments, result_flagged,
      result_after_kitsune, result_is_image) = get_render_data_for_posts(results)
