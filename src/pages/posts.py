@@ -17,12 +17,12 @@ def get_posts():
     base.pop('o', None)
 
     props['limit'] = 50
+    props['count'] = props['limit'] * 1000  # only load 1000 pages of any result
     query = request.args.get('q', default='').strip()
     offset = step_int(abs(parse_int(request.args.get('o'), 0)), props['limit'])
-    if offset is None:
+    if offset is None or offset > props['count']:
         return redirect(url_for('posts.get_posts'))
 
-    props['count'] = props['limit'] * 1000  # only load 1000 pages of any result
     if not query or len(query) < 2:
         results = get_all_posts(offset)
         props['true_count'] = count_all_posts()
