@@ -5,6 +5,8 @@ uwsgi.ini
 config.json
 flask.cfg
 kitsune.py
+config.py
+redis_map.py
 
 # Dev only files
 test/
