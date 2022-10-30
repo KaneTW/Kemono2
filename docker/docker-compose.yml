@@ -62,6 +62,8 @@ services:
       - FLASK_ENV=production
     volumes:
       - ../archiver:/app
+      - ./kitsune/config.py:/app/config.py
+      - ./kitsune/redis_map.py:/app/redis_map.py
       - data:/storage
     sysctls:
       net.core.somaxconn: 40000
