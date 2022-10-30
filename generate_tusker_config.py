@@ -57,7 +57,7 @@ def generate():
 
 def run_migrations():
     generate()
-    for migration in os.listdir('migrations'):
+    for migration in sorted(os.listdir('migrations')):
         run_migration(migration)
 
 
