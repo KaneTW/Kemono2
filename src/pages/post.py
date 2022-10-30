@@ -75,20 +75,25 @@ def get(service, artist_id, post_id):
                 'extension': file_extension,
                 'stem': stem
             })
+    allowed_tags = [
+        'a', 'abbr', 'acronym', 'b', 'blockquote', 'code', 'em',
+        'i', 'li', 'ol', 'strong', 'ul', 'img', 'br', 'h1',
+        'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'div', 'span',
+        'ul', 'ol', 'li'
+    ]
+    allowed_attributes = {
+        'a': ['href', 'title'],
+        'acronym': ['title'],
+        'abbr': ['title'],
+        'img': ['src'],
+    }
+    if post['service'] == 'fanbox':
+        # Some Fanbox embeds require the usage of IFrame
+        allowed_tags += ['iframe']
+        allowed_attributes['iframe'] = ['src']
     scrub = Cleaner(
-        tags=[
-            'a', 'abbr', 'acronym', 'b', 'blockquote', 'code', 'em',
-            'i', 'li', 'ol', 'strong', 'ul', 'img', 'br', 'h1',
-            'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'div', 'span',
-            'ul', 'ol', 'li', 'iframe'
-        ],
-        attributes={
-            'a': ['href', 'title'],
-            'abbr': ['title'],
-            'acronym': ['title'],
-            'iframe': ['src'],
-            'img': ['src'],
-        },
+        attributes=allowed_attributes,
+        tags=allowed_tags,
         strip=True
     )
     post['content'] = scrub.clean(post['content'])
