@@ -1,6 +1,7 @@
 import sentry_sdk
 import subprocess
 import psycopg2
+import logging
 import sys
 import os
 
@@ -37,7 +38,7 @@ if __name__ == '__main__':
         ''' Install client dependencies. '''
         if not os.path.isdir('./client/node_modules'):
             subprocess.run(
-                ['npm', 'install'],
+                ['npm', 'ci', '--also=dev'],
                 check=True,
                 cwd='client',
                 env=environment_vars
