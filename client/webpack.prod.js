@@ -1,7 +1,6 @@
 const path = require("path");
 
 const MiniCSSExtractPlugin = require("mini-css-extract-plugin");
-// const FaviconsWebpackPlugin = require('favicons-webpack-plugin');
 const { merge } = require("webpack-merge");
 
 const baseConfig = require("./webpack.config");
@@ -16,12 +15,7 @@ const webpackConfigProd = {
     new MiniCSSExtractPlugin({
       filename: "static/bundle/css/[name]-[contenthash].css",
       chunkFilename: "static/bundle/css/[id]-[contenthash].chunk.css"
-    }),
-    // new FaviconsWebpackPlugin({
-    //   logo:"./src/assets/logo/kemono-logo.svg",
-    //   inject: htmlPlugin => path.basename(htmlPlugin.options.filename) === "shell.html",
-    //   prefix: "assets/logo"
-    // })
+    })
   ],
   module: {
     rules: [
