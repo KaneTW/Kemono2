@@ -5,7 +5,7 @@ services:
     container_name: kemono-nginx
     depends_on:
       kemono-app:
-        condition: service_healthy
+        condition: service_started
       kemono-archiver:
         condition: service_started
     ports:
@@ -43,12 +43,6 @@ services:
       - frontend-assets:/app/dist:ro
     sysctls:
       net.core.somaxconn: 1000
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:80"]
-      interval: 1m
-      timeout: 2m
-      retries: 3
-      start_period: 30s
   kemono-archiver:
     build:
       context: ../archiver
