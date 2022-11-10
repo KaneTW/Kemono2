@@ -17,18 +17,20 @@ def get_posts():
     base.pop('o', None)
 
     props['limit'] = 50
-    props['count'] = props['limit'] * 1000  # only load 1000 pages of any result
+    max_offset = props['limit'] * 1000  # only load 1000 pages of any result
     query = request.args.get('q', default='').strip()
     offset = step_int(abs(parse_int(request.args.get('o'), 0)), props['limit'])
-    if offset is None or offset > props['count']:
+    if offset is None or offset > max_offset:
         return redirect(url_for('posts.get_posts'))
 
     if not query or len(query) < 2:
         results = get_all_posts(offset)
         props['true_count'] = count_all_posts()
+        props['count'] = limit_int(count_all_posts(), max_offset)
     else:
         results = get_all_posts_for_query(query, offset)
         props['true_count'] = count_all_posts_for_query(query)
+        props['count'] = limit_int(count_all_posts_for_query(query), max_offset)
 
     (result_previews, result_attachments, result_flagged,
      result_after_kitsune, result_is_image) = get_render_data_for_posts(results)
