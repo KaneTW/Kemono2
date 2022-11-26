@@ -177,7 +177,8 @@ def importer_submit():
             auto_import=request.form.get("auto_import"),
             save_session_key=request.form.get("save_session_key"),
             save_dms=request.form.get("save_dms"),
-            contributor_id=session.get("account_id")
+            contributor_id=session.get("account_id"),
+            priority=1
         )
         redis.set(f'imports:{import_id}', json.dumps(data))
 
