@@ -72,7 +72,6 @@ if __name__ == '__main__':
                 with conn.cursor() as db:
                     db.execute('CREATE EXTENSION IF NOT EXISTS pgroonga')
                     db.execute('CREATE INDEX IF NOT EXISTS pgroonga_posts_idx ON posts USING pgroonga (title, content)')
-                    db.execute('CREATE INDEX IF NOT EXISTS pgroonga_comments_idx ON comments USING pgroonga (content)')
                     db.execute('CREATE INDEX IF NOT EXISTS pgroonga_dms_idx ON dms USING pgroonga (content)')
                 conn.commit()
                 database.pool.putconn(conn)
