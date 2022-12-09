@@ -22,7 +22,9 @@
   <head>
     <script>var page_data = {{ render_page_data()|safe }}</script>
 
-    {% if g.matomo_enabled %}
+    {% if g.matomo_enabled and g.matomo_plain_code %}
+      {{ g.matomo_plain_code|safe }}
+    {% elif g.matomo_enabled %}
       <script>
         var _paq = window._paq = window._paq || [];
         /* tracker methods like "setCustomDimension" should be called before "trackPageView" */

@@ -81,6 +81,8 @@ class Configuration:
         self.webserver['ui']['matomo']['tracking_domain'] = self.webserver['ui']['matomo'].get('tracking_domain', 'beta.kemono.party')
         self.webserver['ui']['matomo']['tracking_code'] = self.webserver['ui']['matomo'].get('tracking_code', 'onomek')
         self.webserver['ui']['matomo']['site_id'] = self.webserver['ui']['matomo'].get('site_id', 2)
+        # ... or override the template by entering a plain Base64-encoded string.
+        self.webserver['ui']['matomo']['plain_code'] = self.webserver['ui']['matomo'].get('plain_code', None)
 
         self.database = config.get('database', {})
         self.database['host'] = self.database.get('host', '127.0.0.1')

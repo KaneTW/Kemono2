@@ -121,6 +121,10 @@ if exists(join(Configuration().webserver['template_folder'], 'nondynamic')):
 
 @app.before_request
 def do_init_stuff():
+    def decode_b64(s: str) -> str:
+        if s is not None:
+            return b64decode(s.encode()).decode()
+
     app.permanent_session_lifetime = timedelta(days=30)
 
     g.page_data = {}
@@ -134,14 +138,12 @@ def do_init_stuff():
 
     # Matomo.
     g.matomo_enabled = Configuration().webserver['ui']['matomo']['enabled']
+    g.matomo_plain_code = decode_b64(Configuration().webserver['ui']['matomo']['plain_code'])
     g.matomo_domain = Configuration().webserver['ui']['matomo']['tracking_domain']
     g.matomo_code = Configuration().webserver['ui']['matomo']['tracking_code']
     g.matomo_site_id = Configuration().webserver['ui']['matomo']['site_id']
 
     # Ads.
-    def decode_b64(s: str) -> str:
-        if s is not None:
-            return b64decode(s.encode()).decode()
     g.header_ad = decode_b64(Configuration().webserver['ui']['ads']['header'])
     g.middle_ad = decode_b64(Configuration().webserver['ui']['ads']['middle'])
     g.footer_ad = decode_b64(Configuration().webserver['ui']['ads']['footer'])
