@@ -67,14 +67,14 @@ if __name__ == '__main__':
                 ''' Run migrations. '''
                 generate_tusker_config.run_migrations()
 
-            ''' Initialize Pgroonga if needed. '''
-            with database.pool.getconn() as conn:
-                with conn.cursor() as db:
-                    db.execute('CREATE EXTENSION IF NOT EXISTS pgroonga')
-                    db.execute('CREATE INDEX IF NOT EXISTS pgroonga_posts_idx ON posts USING pgroonga (title, content)')
-                    db.execute('CREATE INDEX IF NOT EXISTS pgroonga_dms_idx ON dms USING pgroonga (content)')
-                conn.commit()
-                database.pool.putconn(conn)
+                ''' Initialize Pgroonga if needed. '''
+                with database.pool.getconn() as conn:
+                    with conn.cursor() as db:
+                        db.execute('CREATE EXTENSION IF NOT EXISTS pgroonga')
+                        db.execute('CREATE INDEX IF NOT EXISTS pgroonga_posts_idx ON posts USING pgroonga (title, content)')
+                        db.execute('CREATE INDEX IF NOT EXISTS pgroonga_dms_idx ON dms USING pgroonga (content)')
+                    conn.commit()
+                    database.pool.putconn(conn)
         finally:
             ''' "Close" the database pool. '''
             database.close_pool()
