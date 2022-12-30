@@ -21,6 +21,7 @@ def run_migration(migration) -> bool:
                             if str(e.pgcode) in ['42P07', '42701', '42710', '55000']:
                                 ''' Ignore errors about tables or constraints already existing. '''
                                 continue
+                            print(query)
                             raise
                     conn.commit()
                     database.pool.putconn(conn)

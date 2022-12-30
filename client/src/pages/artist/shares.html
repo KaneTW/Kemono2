@@ -1,0 +1,56 @@
+{% extends 'components/shell.html' %}
+
+{% from 'components/cards/share.html' import share_card %}
+{% from 'components/headers.html' import user_header %}
+{% from 'components/card_list.html' import card_list %}
+
+{% set paysite = g.paysites[props.service] %}
+{% set page_title = 'DMs of ' ~ props.artist.name ~ ' from ' ~ paysite.title ~ ' | Kemono' %}
+
+{% block title %}
+  <title>{{ page_title }}</title>
+{% endblock title %}
+
+{% block meta %}
+  <meta name="artist_id" content="{{ props.id }}">
+  <meta name="service" content="{{ props.service }}">
+  <meta name="artist_name" content="{{ props.artist.name }}">
+  <link rel="canonical" href="{{ g.canonical_url }}">
+{% endblock meta %}
+
+{% block opengraph %}
+  <meta property="og:title" content="{{ page_title }}">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Kemono">
+  <meta property="og:image" content="{{ g.origin }}/icons/{{ props.service }}/{{ props.id }}">
+  <meta property="og:url" content="{{ g.canonical_url }}">
+{% endblock opengraph %}
+
+{% block content %}
+<section class="site-section site-section--user">
+  {{ user_header(request, props) }}
+  <div class="paginator" id="paginator-top">
+    {% include 'components/tabs.html' %}
+  </div>
+  {% call card_list() %}
+    {% for dm in results %}
+      {{ share_card(dm) }}
+    {% else %}
+      <div class="no-results">
+        <h2 class="site-section__subheading">Nobody here but us chickens!</h1>
+        <p class="subtitle">
+          There are no uploads for your query.
+        </p>
+      </div>
+    {% endfor %}
+  {% endcall %}
+</section>
+{% endblock content %}
+
+{% block components %}
+  <button class="user-header__favourite" type="button">
+    <span class="user-header__fav-icon">☆</span>
+    <span class="user-header__fav-text">Favorite</span>
+  </button>
+  {{ loading_icon() }}
+{% endblock components %}

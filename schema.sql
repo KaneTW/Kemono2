@@ -114,6 +114,22 @@ create table file_server_relationships (
     remote_path character varying not null
 );
 
+create table shares (
+    id serial primary key,
+    name varchar not null,
+    description varchar not null,
+    uploader int references account(id),
+    added timestamp without time zone not null default CURRENT_TIMESTAMP
+);
+
+create table file_share_relationships (
+    share_id int not null references shares(id),
+    upload_url varchar not null,
+    upload_id varchar not null,
+    file_id int references files(id),
+    filename varchar not null,
+    primary key (share_id, upload_id)
+);
 
 create table lookup (
     id varchar not null,
@@ -122,6 +138,14 @@ create table lookup (
     indexed timestamp without time zone not null default CURRENT_TIMESTAMP,
     updated timestamp without time zone not null default CURRENT_TIMESTAMP,
     primary key (id, service)
+);
+
+create table lookup_share_relationships (
+    share_id int not null references shares(id),
+    service varchar not null,
+    user_id varchar not null,
+    primary key (share_id, service, user_id),
+    foreign key (service, user_id) references lookup (service, id) 
 );
 
 create table notifications (
@@ -236,6 +260,8 @@ create index file_post_service_idx on file_post_relationships using btree (servi
 
 create index file_post_user_idx on file_post_relationships using btree ("user");
 
+create index file_share_id_idx on file_share_relationships using btree (share_id);
+
 create index flag_id_idx on booru_flags using btree (id);
 
 create index flag_service_idx on booru_flags using btree (service);
@@ -259,6 +285,10 @@ create index saved_session_keys_with_hashes_dead_idx on saved_session_keys_with_
 create index search_idx on posts using gin (to_tsvector('english'::regconfig, ((content || ' '::text) || title)));
 
 create index server_idx on discord_posts using hash (server);
+
+create index shares_added_idx on shares using btree (added);
+
+create index shares_uploader_idx on shares using btree (uploader);
 
 create index service_idx on posts using btree (service);
 

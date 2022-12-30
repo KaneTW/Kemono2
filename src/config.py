@@ -84,6 +84,35 @@ class Configuration:
         # ... or override the template by entering a plain Base64-encoded string.
         self.webserver['ui']['matomo']['plain_code'] = self.webserver['ui']['matomo'].get('plain_code', None)
 
+        ''' Filehaus configuration. '''
+        self.filehaus = config.get('filehaus', {})
+        # If true, an account will be required for uploading.
+        self.filehaus['requires_account'] = self.filehaus.get('requires_account', True)
+        # Required account roles for uploading.
+        # If set to an empty list, no permissions will be required.
+        self.filehaus['required_roles'] = self.filehaus.get('required_roles', [
+            'administrator',
+            'moderator',
+            'uploader'
+        ])
+        # `tusd` configuration.
+        self.filehaus['tus'] = self.filehaus.get('tus', {})
+        # Automatically manage `tusd` on port 1080.
+        # If you intend to store uploads on a different server from Kemono3,
+        # set a custom URL instead...
+        self.filehaus['tus']['manage'] = self.filehaus['tus'].get('manage', True)
+        # ...right here. Note that if you do not allow automatic management and did
+        # not set a custom URL, uploads will be blackholed to a demo instance and
+        # Filehaus sharing will not function correctly.
+        # Do note that using `tusd` instances to enable Filehaus functionality requires
+        # the `post-create` hook to be pointed at Kemono's `/shares/tus` endpoint.
+        # `tusd --hooks-enabled-events post-create -hooks-http "http://127.0.0.1:6942/shares/tus" -upload-dir=./data`
+        self.filehaus['tus']['url'] = self.filehaus['tus'].get(
+            'url',
+            'http://localhost:1080' if self.filehaus['tus']['manage'] else 'https://tusd.tusdemo.net/files/'
+        )
+
+        ''' Database configuration. '''
         self.database = config.get('database', {})
         self.database['host'] = self.database.get('host', '127.0.0.1')
         self.database['port'] = self.database.get('port', 5432)
@@ -95,13 +124,11 @@ class Configuration:
             self.database['user'] = self.database.get('user', 'shinonome')
 
         self.redis = config.get('redis', {})
-
         self.redis['node_options'] = self.redis.get('defaults', {})
         self.redis['node_options']['host'] = self.redis['node_options'].get('host', '127.0.0.1')
         self.redis['node_options']['port'] = self.redis['node_options'].get('port', 6379)
         self.redis['node_options']['db'] = self.redis['node_options'].get('db', 0)
         self.redis['node_options']['password'] = self.redis['node_options'].get('password', None)
-
         self.redis['nodes'] = self.redis.get('nodes', [{"db": 0}])
         self.redis['keyspaces'] = self.redis.get('keyspaces', {})
         keyspaces = [
@@ -146,6 +173,8 @@ class Configuration:
             "importer_logs",
             "ratelimit",
             "all_posts",
+            "all_shares",
+            "all_shares_count",
             "all_posts_for_query",
             "global_post_count",
             "global_post_count_for_query",
@@ -158,7 +187,9 @@ class Configuration:
             "uploads",
             "pending_pieces",
             "shares",
-            "share_files"
+            "share",
+            "share_files",
+            "artist_shares"
         ]
 
         for name in keyspaces:

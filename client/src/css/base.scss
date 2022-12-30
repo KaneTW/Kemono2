@@ -141,13 +141,14 @@ label {
 }
 
 textarea {
-  width: calc(100% - 2px);
+  width: 100%;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
   min-height: 3rem;
   box-shadow: inset 0 1px 3px #1f2024;
   background:#3a3d43;
+  color: var(--colour0-primary);
   border: none;
 }
 

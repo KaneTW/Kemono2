@@ -1,5 +1,28 @@
 @use "../css/variables.scss" as *;
 
+.tabs {
+  margin: 0 auto;
+  padding-left: 0;
+  list-style-type: none;
+
+  & .tab {
+    display: inline-block;
+    line-height: 48px;
+    height: 48px;
+    padding: 0 0.75rem;
+
+    & a {
+      display: inline-block;
+      height: 100%;
+
+      &.active {
+        border-bottom-color: var(--local-colour1-primary);
+        border-bottom-width: 2px;
+      }
+    }
+  }
+}
+
 .site-section--user {
   .no-results {
     --card-size: #{$width-phone};

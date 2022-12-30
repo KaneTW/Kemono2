@@ -13,6 +13,10 @@
   "license": "ISC",
   "dependencies": {
     "@babel/runtime": "^7.13.10",
+    "@uppy/core": "^3.0.1",
+    "@uppy/dashboard": "^3.0.1",
+    "@uppy/form": "^3.0.0",
+    "@uppy/tus": "^3.0.1",
     "date-fns": "^2.20.1",
     "oboe": "^2.1.5",
     "unfetch": "^4.1.0",

@@ -94,6 +94,7 @@
       <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.5/build/base-min.css">
       <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.5/build/grids-min.css">
       <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.5/build/grids-responsive-min.css">
+      <link rel="stylesheet" type="text/css" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css">
     {% endblock styles %}
 
     {% block scripts %}
@@ -150,6 +151,10 @@
           { 'header': true, 'text': 'Importer', 'icon': '/static/menu/importer.svg' },
           { 'text': 'Import', 'link': '/importer', 'icon': '/static/menu/import.svg' },
           { 'text': 'FAQ', 'link': '/importer/tutorial', 'icon': '/static/menu/faq.svg' }
+        ],
+        [
+          { 'header': true, 'text': 'Filehaus' },
+          { 'text': 'Recent', 'link': '/shares' },
         ]
       ]) }}
       {{ nav_entry([
