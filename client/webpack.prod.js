@@ -91,6 +91,13 @@ const webpackConfigProd = {
           filename: "static/bundle/svg/[name]-[contenthash][ext][query]"
         }
       },
+      {
+        test: /\.css$/,
+        use: [
+          'style-loader',
+          'css-loader'
+        ]
+      }
     ]
   },
   output: {

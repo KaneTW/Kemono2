@@ -1,4 +1,7 @@
 import "./global.scss";
+import "purecss/build/base-min.css"
+import "purecss/build/grids-min.css"
+import "purecss/build/grids-responsive-min.css"
 import { isLoggedIn } from "@wp/js/account";
 import { initFavorites } from "@wp/js/favorites";
 import { fixImageLinks } from "@wp/utils";

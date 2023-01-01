@@ -76,6 +76,13 @@ const webpackConfigDev = {
       {
         test: /\.svg$/i,
         type: 'asset/resource',
+      },
+      {
+        test: /\.css$/,
+        use: [
+          'style-loader',
+          'css-loader'
+        ]
       }
     ]
   },
