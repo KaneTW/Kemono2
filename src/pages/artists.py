@@ -94,6 +94,8 @@ def get(service: str, artist_id: str):
     if artist is None:
         return redirect(url_for('artists.list'))
     display_data = make_artist_display_data(artist)
+    if display_data is None:
+        return redirect(url_for('artists.list'))
     dm_count = count_user_dms(service, artist_id)
 
     (result_previews, result_attachments, result_flagged,
@@ -245,7 +247,5 @@ def make_artist_display_data(artist: dict):
             service=kemono_dev.title,
             href=kemono_dev.user.profile
         )
-    data = data_by_service_name[service_name]
-    data['proxy'] = f"/{service_name}/user/{artist_id}"
-
+    data = data_by_service_name.get(service_name, None)
     return data
