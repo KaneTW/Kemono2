@@ -4,9 +4,10 @@ from typing import List, Optional, TypedDict
 
 from src.internals.cache.redis import get_conn, serialize_dict_list, deserialize_dict_list
 from src.internals.database.database import get_cursor
-
+from src.internals.cache.decorator import cache
 from src.types.account import Notification
 
+@cache('account_notifications')
 def count_account_notifications(account_id: int) -> int:
     """
     TODO: fix `psycopg2.ProgrammingError: no results to fetch` error
@@ -30,6 +31,8 @@ def count_account_notifications(account_id: int) -> int:
     except:
         return 0
 
+
+@cache('new_notifications')
 def count_new_notifications(account_id: int) -> int:
     """
     TODO: fix `psycopg2.ProgrammingError: no results to fetch` error
@@ -58,6 +61,7 @@ def count_new_notifications(account_id: int) -> int:
     except:
         return 0
 
+
 def set_notifications_as_seen(notification_ids: List[int]) -> bool:
     args_dict = dict(
         notification_ids= notification_ids
@@ -72,6 +76,7 @@ def set_notifications_as_seen(notification_ids: List[int]) -> bool:
     cursor.execute(query, args_dict)
 
     return True
+
 
 def get_account_notifications(account_id: int, reload: bool = False) -> List[Notification]:
     redis = get_conn()
@@ -101,13 +106,14 @@ def get_account_notifications(account_id: int, reload: bool = False) -> List[Not
     notifications = [Notification.init_from_dict(notification) for notification in result]
     return notifications
 
+
 def send_notifications(
     account_ids: List[str],
     notification_type: int,
     extra_info: Optional[TypedDict]
 ) -> bool:
     cursor = get_cursor()
-    if  not account_ids:
+    if not account_ids:
         return False
 
     if extra_info is not None:
@@ -123,5 +129,10 @@ def send_notifications(
         ;
         """
     cursor.execute(insert_query, account_ids)
+
+    for account_id in account_ids:
+        redis = get_conn()
+        redis.delete(f'account_notifications:{account_id}')
+        redis.delete(f'new_notifications:{account_id}')
 
     return True

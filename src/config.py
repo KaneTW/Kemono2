@@ -158,7 +158,9 @@ class Configuration:
             "uploads",
             "pending_pieces",
             "shares",
-            "share_files"
+            "share_files",
+            "account_notifications",
+            "new_notifications"
         ]
 
         for name in keyspaces:
