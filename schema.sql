@@ -198,6 +198,13 @@ create table unapproved_dms (
     primary key (id, service)
 );
 
+create table posts_added_max (
+    "user" varchar not null,
+    service varchar not null,
+    added timestamp without time zone not null,
+    primary key ("user", service)
+);
+
 create index account_artist_favorite_service_artist_id_idx on account_artist_favorite using btree (service, artist_id);
 
 create index account_idx on account using btree (username, created_at, role);
@@ -267,3 +274,17 @@ create index unapproved_dm_idx on unapproved_dms using btree (import_id);
 create index updated_idx on lookup using btree (updated);
 
 create index user_idx on posts using btree ("user");
+
+CREATE OR REPLACE FUNCTION POSTS_ADDED_MAX()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO posts_added_max (service, "user", added)
+  VALUES(NEW.service, NEW."user", NEW.added)
+  ON CONFLICT (service, "user") DO
+    UPDATE SET added = NEW.added WHERE NEW.added > OLD.added;
+  RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER POSTS_ADDED_MAX AFTER UPDATE OR INSERT
+ON posts FOR EACH ROW EXECUTE PROCEDURE POSTS_ADDED_MAX();

@@ -9,21 +9,19 @@ from src.config import Configuration
 def run_migration(migration) -> bool:
     database.init()
     with open(os.path.join('migrations', migration)) as f:
-        for query in f.read().split(';'):
-            query = query.strip()
-            if query and not query.startswith('--') and not query.startswith('#'):
-                with database.pool.getconn() as conn:
-                    with conn.cursor() as db:
-                        try:
-                            db.execute(query)
-                        except psycopg2.Error as e:
-                            # https://www.postgresql.org/docs/current/errcodes-appendix.html
-                            if str(e.pgcode) in ['42P07', '42701', '42710', '55000']:
-                                ''' Ignore errors about tables or constraints already existing. '''
-                                continue
-                            raise
-                    conn.commit()
-                    database.pool.putconn(conn)
+        query = f.read()
+        with database.pool.getconn() as conn:
+            with conn.cursor() as db:
+                try:
+                    db.execute(query)
+                except psycopg2.Error as e:
+                    # https://www.postgresql.org/docs/current/errcodes-appendix.html
+                    if str(e.pgcode) in ['42P07', '42701', '42710', '55000']:
+                        ''' Ignore errors about tables or constraints already existing. '''
+                        return False
+                    raise
+            conn.commit()
+            database.pool.putconn(conn)
 
     return True
 
@@ -44,7 +42,7 @@ def generate():
         dbname = "{Configuration().database['database']}"
 
         [migra]
-        safe = false
+        safe = true
         privileges = false
     '''
     config_str = textwrap.dedent(config_str)

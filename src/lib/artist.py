@@ -230,11 +230,11 @@ def get_artist_last_updated(service, artist_id, reload=False):
         lock = KemonoRedisLock(redis, key, expire=60, auto_renewal=True)
         if lock.acquire(blocking=False):
             cursor = get_cursor()
-            query = 'SELECT max(added) as max FROM posts WHERE service = %s AND "user" = %s'
+            query = 'SELECT added FROM posts_added_max WHERE service = %s AND "user" = %s'
             cursor.execute(query, (service, artist_id,))
             last_updated = cursor.fetchone()
-            if get_value(last_updated, 'max') is not None:
-                last_updated = last_updated['max']
+            if get_value(last_updated, 'added') is not None:
+                last_updated = last_updated['added']
             else:
                 last_updated = datetime.datetime.min
             redis.set(key, last_updated.isoformat(), ex=600)
