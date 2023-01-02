@@ -233,7 +233,7 @@ def get_artist_last_updated(service, artist_id, reload=False):
             query = 'SELECT added FROM posts_added_max WHERE service = %s AND "user" = %s'
             cursor.execute(query, (service, artist_id,))
             last_updated = cursor.fetchone()
-            if get_value(last_updated, 'added') is not None:
+            if last_updated:
                 last_updated = last_updated['added']
             else:
                 last_updated = datetime.datetime.min
