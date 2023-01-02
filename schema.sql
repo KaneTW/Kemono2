@@ -278,10 +278,14 @@ create index user_idx on posts using btree ("user");
 CREATE OR REPLACE FUNCTION POSTS_ADDED_MAX()
 RETURNS TRIGGER AS $$
 BEGIN
-  INSERT INTO posts_added_max (service, "user", added)
-  VALUES(NEW.service, NEW."user", NEW.added)
-  ON CONFLICT (service, "user") DO
-    UPDATE SET added = NEW.added WHERE NEW.added > OLD.added;
+  INSERT INTO posts_added_max AS pam ("user", service, added)
+    SELECT "user", service, max(added) AS added FROM posts
+     WHERE posts.service = NEW.service
+     AND posts."user" = NEW."user"
+    GROUP BY "user", service
+  ON CONFLICT (service, "user")
+    DO UPDATE SET added = EXCLUDED.added
+    WHERE EXCLUDED.added > pam.added;
   RETURN NULL;
 END;
 $$ LANGUAGE plpgsql;
