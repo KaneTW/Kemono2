@@ -1,5 +1,3 @@
-from base64 import b64encode
-
 import multiprocessing
 import getpass
 import random
@@ -25,8 +23,7 @@ class Configuration:
         ''' Configuration for the frontend server. '''
         self.webserver = config.get('webserver', {})
         # Secret key used to encrypt sessions.
-        self.webserver['secret'] = self.webserver.get('secret', ''.join(
-            random.choice(string.ascii_letters) for _ in range(32)))
+        self.webserver['secret'] = self.webserver.get('secret', ''.join(random.choice(string.ascii_letters) for _ in range(32)))
         # How many workers and threads should run at once?
         self.webserver['workers'] = self.webserver.get('workers', multiprocessing.cpu_count())
         self.webserver['threads'] = self.webserver.get('threads', 2)
@@ -67,12 +64,6 @@ class Configuration:
         self.webserver['ui']['ads']['middle'] = self.webserver['ui']['ads'].get('middle', None)
         self.webserver['ui']['ads']['footer'] = self.webserver['ui']['ads'].get('footer', None)
         self.webserver['ui']['ads']['slider'] = self.webserver['ui']['ads'].get('slider', None)
-        self.webserver['ui']['ads']['video'] = self.webserver['ui']['ads'].get('video', b64encode(json.dumps(({
-            # This value should be a (still Base64-encoded!) JSON object.
-            # See https://github.com/sampotts/plyr#options > `ads`.
-            'enabled': False,
-            'tagUrl': ''
-        })).encode()).decode())
         # Matomo preferences.
         self.webserver['ui']['matomo'] = self.webserver['ui'].get('matomo', {})
         self.webserver['ui']['matomo']['enabled'] = self.webserver['ui']['matomo'].get('enabled', False)
@@ -87,8 +78,7 @@ class Configuration:
               g.async=true; g.src=u+'{{   tracking_code   }}.js'; s.parentNode.insertBefore(g,s);
             })();
         """
-        self.webserver['ui']['matomo']['tracking_domain'] = self.webserver['ui']['matomo'].get(
-            'tracking_domain', 'beta.kemono.party')
+        self.webserver['ui']['matomo']['tracking_domain'] = self.webserver['ui']['matomo'].get('tracking_domain', 'beta.kemono.party')
         self.webserver['ui']['matomo']['tracking_code'] = self.webserver['ui']['matomo'].get('tracking_code', 'onomek')
         self.webserver['ui']['matomo']['site_id'] = self.webserver['ui']['matomo'].get('site_id', 2)
         # ... or override the template by entering a plain Base64-encoded string.

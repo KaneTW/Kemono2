@@ -15,7 +15,6 @@
     "@babel/runtime": "^7.13.10",
     "date-fns": "^2.20.1",
     "oboe": "^2.1.5",
-    "plyr": "^3.7.3",
     "purecss": "^3.0.0",
     "unfetch": "^4.1.0",
     "unraw": "^2.0.0"
