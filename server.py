@@ -8,7 +8,6 @@ from os import getenv, listdir
 from sentry_sdk.integrations.flask import FlaskIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
 from os.path import dirname, join, splitext, exists
-from base64 import b64decode
 from threading import Lock
 from urllib.parse import urljoin
 from dotenv import load_dotenv
@@ -40,7 +39,8 @@ from src.utils.utils import (
     paysite_list,
     paysites,
     render_page_data,
-    url_is_for_non_logged_file_extension
+    url_is_for_non_logged_file_extension,
+    decode_b64
 )
 
 load_dotenv(join(dirname(__file__), '.env'))
@@ -121,10 +121,6 @@ if exists(join(Configuration().webserver['template_folder'], 'nondynamic')):
 
 @app.before_request
 def do_init_stuff():
-    def decode_b64(s: str) -> str:
-        if s is not None:
-            return b64decode(s.encode()).decode()
-
     app.permanent_session_lifetime = timedelta(days=30)
 
     g.page_data = {}
@@ -148,6 +144,7 @@ def do_init_stuff():
     g.middle_ad = decode_b64(Configuration().webserver['ui']['ads']['middle'])
     g.footer_ad = decode_b64(Configuration().webserver['ui']['ads']['footer'])
     g.slider_ad = decode_b64(Configuration().webserver['ui']['ads']['slider'])
+    g.video_ad = decode_b64(Configuration().webserver['ui']['ads']['video'])
 
     g.canonical_url = urljoin(Configuration().webserver['site'], request.path)
 
