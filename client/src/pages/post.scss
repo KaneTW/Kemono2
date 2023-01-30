@@ -66,12 +66,12 @@
 
   &__actions {
     font-size: 1.5em;
-    
+
 
     & > * {
       margin-right: 1em;
       user-select: none;
-  
+
       &:last-child {
         margin-right: 0;
       }
@@ -82,9 +82,9 @@
     display: inline-block;
     color: hsl(3, 100%, 69%);
     font-weight: bold;
-    text-shadow: 
-    hsl(0, 0%, 0%) 0px 0px 3px, 
-    hsl(0, 0%, 0%) -1px -1px 0px, 
+    text-shadow:
+    hsl(0, 0%, 0%) 0px 0px 3px,
+    hsl(0, 0%, 0%) -1px -1px 0px,
     hsl(0, 0%, 0%) 1px 1px 0px;
     background-color: transparent;
     border:transparent;
@@ -115,13 +115,13 @@
   &__fav {
     color: hsl(0, 0%, 100%);
     font-weight: bold;
-    text-shadow: 
-    hsl(0, 0%, 0%) 0px 0px 3px, 
-    hsl(0, 0%, 0%) -1px -1px 0px, 
+    text-shadow:
+    hsl(0, 0%, 0%) 0px 0px 3px,
+    hsl(0, 0%, 0%) -1px -1px 0px,
     hsl(0, 0%, 0%) 1px 1px 0px;
     background-color: transparent;
     border:transparent;
-    
+
     &--unfav {
       color: var(--favourite-colour1-primary);
 
@@ -158,7 +158,7 @@
 
   &__content {
     line-height: 1.5;
-    
+
     & p {
       padding: $size-small 0;
     }
@@ -172,6 +172,10 @@
 
   &__thumbnail {
     margin: 0.5em 0;
+  }
+
+  &__video {
+    max-width: 60vw;
   }
 
   &__footer {
@@ -208,6 +212,10 @@
     &__user {
       border-right: none;
       border-bottom: solid hsla(0, 0%, 50%, 0.7) $size-thin;
+    }
+    &__video {
+      max-width: 100%;
+      height: auto;
     }
   }
 }

@@ -1,4 +1,5 @@
 from urllib.parse import urlencode, parse_qs, urlsplit, urlunsplit
+from base64 import b64decode, b64encode
 from datetime import datetime
 from flask import request, g
 import json
@@ -169,6 +170,20 @@ def render_page_data():
 def get_import_id(data):
     salt = str(random.randrange(0, 1000))
     return take(16, hashlib.sha256((data + salt).encode('utf-8')).hexdigest())
+
+
+def decode_b64(s: str) -> str:
+    if s is not None:
+        return b64decode(s.encode()).decode()
+
+
+def encode_b64(s: str) -> str:
+    if s is not None:
+        return b64encode(s.encode()).decode()
+
+
+def encode_b64_dict(d: dict) -> str:
+    return encode_b64(json.dumps(d))
 
 
 # doing it in the end to avoid circular import error

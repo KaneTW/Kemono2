@@ -6,6 +6,9 @@ import { isLoggedIn } from "@wp/js/account";
 import { isAntiscraperLink } from "@wp/lib/antiantiscraper.js";
 import { AntiscraperLink } from "@wp/components";
 
+import "plyr/src/sass/plyr.scss";
+import Plyr from "plyr";
+
 const meta = {
   service: null,
   user: null,
@@ -30,6 +33,16 @@ export async function postPage(section) {
 
   cleanupBody(postBody);
   await initButtons(buttonPanel);
+  Array.from(document.querySelectorAll('#player')).forEach(player => {
+    new Plyr(player, {
+      controls: [
+        'play-large', 'restart',  'rewind', 'play', 'fast-forward',
+        'progress', 'current-time', 'duration', 'mute', 'volume',
+        'captions', 'settings', 'pip', 'airplay', 'download',
+        'fullscreen'
+      ]
+    });
+  });
 }
 
 /**
@@ -138,7 +151,7 @@ async function initButtons(buttonPanel) {
 
   document.addEventListener('keydown', e => {
     switch (e.key) {
-      case 'ArrowLeft': 
+      case 'ArrowLeft':
         document.querySelector('.post__nav-link.prev')?.click();
         break;
       case 'ArrowRight':

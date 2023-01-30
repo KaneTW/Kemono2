@@ -13,6 +13,7 @@ from ..lib.favorites import is_post_favorited
 from ..lib.account import load_account
 
 post = Blueprint('post', __name__)
+video_extensions = ['.mp4', '.webm']
 
 
 @post.route('/<service>/user/<artist_id>/post/<post_id>')
@@ -39,6 +40,7 @@ def get(service, artist_id, post_id):
 
     previews = []
     attachments = []
+    videos = []
     if len(post['file']):
         if re.search("\.(gif|jpe?g|jpe|png|webp)$", post['file']['path'], re.IGNORECASE):  # noqa w605
             previews.append({
@@ -75,6 +77,13 @@ def get(service, artist_id, post_id):
                 'extension': file_extension,
                 'stem': stem
             })
+    for attachment in attachments:
+        if attachment['extension'] in video_extensions:
+            videos.append({
+                'path': attachment['path'],
+                'name': attachment.get('name'),
+                'extension': attachment['extension']
+            })
     allowed_tags = [
         'a', 'abbr', 'acronym', 'b', 'blockquote', 'code', 'em',
         'i', 'li', 'ol', 'strong', 'ul', 'img', 'br', 'h1',
@@ -109,6 +118,7 @@ def get(service, artist_id, post_id):
         comments=comments,
         result_previews=previews,
         result_attachments=attachments,
+        videos=videos,
     ), 200)
     response.headers['Cache-Control'] = 's-maxage=60'
     return response
