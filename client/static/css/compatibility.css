@@ -171,7 +171,7 @@ h1, h2, h3, p {
 }
 
 .user-header-info-patreon {
-  background-image: url(/patreon.svg);
+  background-image: url(/static/patreon.svg);
   margin-top: 15px;
   margin-left: 10px;
   width: 25px;
@@ -180,7 +180,7 @@ h1, h2, h3, p {
 }
 
 .user-header-info-fanbox {
-  background-image: url(/fanbox.svg);
+  background-image: url(/static/fanbox.svg);
   margin-top: 15px;
   margin-left: 10px;
   width: 50px;
@@ -190,7 +190,7 @@ h1, h2, h3, p {
 }
 
 .user-header-info-gumroad {
-  background-image: url(/gumroad.svg);
+  background-image: url(/static/gumroad.svg);
   margin-top: 15px;
   margin-left: 10px;
   width: 25px;
@@ -199,7 +199,7 @@ h1, h2, h3, p {
 }
 
 .user-header-info-subscribestar {
-  background-image: url(/subscribestar.png);
+  background-image: url(/static/subscribestar.png);
   margin-top: 15px;
   margin-left: 10px;
   width: 30px;
