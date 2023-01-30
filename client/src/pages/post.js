@@ -6,7 +6,7 @@ import { isLoggedIn } from "@wp/js/account";
 import { isAntiscraperLink } from "@wp/lib/antiantiscraper.js";
 import { AntiscraperLink } from "@wp/components";
 
-import "plyr/src/sass/plyr.scss";
+import "../../static/css/plyr.css";
 import Plyr from "plyr";
 
 const meta = {
