@@ -34,6 +34,7 @@
   {{ user_header(request, props) }}
   {% if results %}
     <div class="paginator" id="paginator-top">
+    {% include 'components/tabs.html' %}
     {% include 'components/paginator.html' %}
       <form
         action="{{ request.path }}"

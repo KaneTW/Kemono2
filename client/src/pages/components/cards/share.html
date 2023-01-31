@@ -1,0 +1,66 @@
+{% from 'components/fancy_image.html' import fancy_image, background_image %}
+{% from 'components/timestamp.html' import timestamp %}
+{% from 'components/links.html' import fancy_link %}
+{% from 'components/buttons.html' import button %}
+
+{% macro share_card(share) %}
+  <article
+    class="post-card"
+    data-id="{{ share.id }}"
+  >
+    <a href="/share/{{ share.id }}">
+      <header class="post-card__header">
+        {{ share.name }}
+      </header>
+  
+      <section class="post-card__body" tabindex="0">
+        {# writing it like this so there wouldn't be whitespaces/newlines in the output #}
+        <div class="dm-card__content"><pre>{{ share.description }}</pre></div>
+      </section>
+  
+      <footer class="post-card__footer">
+        <div class="dm-card__added">
+          Added: {{ share.added }}
+        </div>
+      </footer>
+    </a>
+  </article>
+{% endmacro %}
+<!-- 
+{% macro post_card(post) %}
+  {% set src = post.file.path if post.file.path and post.file.path|lower|regex_match("\.(gif|jpe?g|jpe|png|webp)$") %}
+  {% set post_link = g.freesites.kemono.post.link(post.service, post.user, post.id) %}
+  <article
+    class="post-card {{ 'post-card--preview' if src }}"
+    data-id="{{ post.id }}"
+    data-service="{{ post.service }}"
+    data-user="{{ post.user }}"
+  >
+    <a href="{{ post_link }}">
+      <header class="post-card__header">
+        {{ post.title }}
+      </header>
+      {% if src %}
+        <div class="post-card__image-container">
+            <img
+              class="post-card__image"
+              src="/thumbnail/data{{ src|replace('https://kemono.party', '') }}"
+            >
+          </div>
+      {% endif %}
+      <footer class="post-card__footer">
+        {% if post.published %}
+            {{ timestamp(post.published) }}
+        {% endif %}
+        <div>
+          {% if post.attachments|length %}
+            {{ post.attachments|length }} {{ 'attachment' if post.attachments|length == 1 else 'attachments' }}
+          {% else %}
+            No attachments
+          {% endif %}
+        </div>
+      </footer>
+    </a>
+  </article>
+{% endmacro %}
+ -->

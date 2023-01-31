@@ -9,80 +9,51 @@
 
 {% block content %}
 {% call site_section('upload') %}
+<div class="upload-view">
   {{ site_section_header('Upload file') }}
-  <p>
-    If content for a user is distributed by means inaccessible by the <a href="/importer">importers</a>, (like email or private message) you can upload the files manually here.
-  </p>
-  <noscript>
-    <p class="subtitle">
-      This page requires Javascript.
-    </p>
-  </noscript>
   <form
     id="upload-form"
-    class="search-form form"
+    class="form"
     action="/api/upload"
     enctype="multipart/form-data"
     method="post"
   > 
-    <div>
-      {% if request.args.get('service') %}
+    <div class="form__section">
+      {% if request.args.get('service') and request.args.get('user') %}
         <input
+          class="form__input"
           type="hidden"
           name="service"
           id="service"
           value="{{ request.args.get('service') }}"
         >
-      {% else %}
-        <label for="service">Service</label>
-        <select id="service" name="service">
-          {% for paysite in g.paysite_list %}
-            <option 
-              class="form__option" 
-              value="{{ paysite }}"
-              {% if loop.first %}
-                selected
-              {% endif %}
-            >
-              {{ g.paysites[paysite].title }}
-            </option>
-          {% endfor %}
-        </select>
-      {% endif %}
-    </div>
-    <div>
-      {% if request.args.get('user') %}
         <input
+          class="form__input"
           type="hidden"
           name="user"
           id="user"
           value="{{ request.args.get('user') }}"
         >
       {% else %}
-        <label for="user">User ID</label>
-        <input 
-          type="text"
-          name="user"
-          id="user"
-          required
-        >
+        {# <!-- placeholder --> #}
       {% endif %}
     </div>
     <div>
-      <label for="title">Title</label>
+      <label class="form__label" for="title">Title</label>
       <input 
+        class="form__input"
         type="text"
         name="title"
         id="title"
         maxlength="50"
         required
       >
-      <small>
-        February 2020 Rewards
+      <small class="subtitle">
+        example, "February 2020 Rewards"
       </small>
     </div>
     <div>
-      <label for="content">Description</label>
+      <label class="form__label" for="content">Description</label>
       <textarea
         name="content"
         id="content"
@@ -91,16 +62,26 @@
         rows="4"
         wrap="soft"
       ></textarea>
-      <small>
-        Specify what the file/archive is, where the original post can be found, include relevant keys/passwords, etc.
+      <small class="subtitle">
+        Specify what the file/archive is, where the original data can be found, include relevant keys/passwords, etc.
       </small>
+    </div>
+    <ul id="file-list">
+    </ul>
+    <div class="upload-button" id="upload-button">
+      Add files
+    </div>
+    <div class="form__section">
+      <button 
+        class="form__button form__button--submit"
+        type="submit"
+      >
+        Finish
+      </button>
     </div>
   </form>
   <div id="upload">
-    <div class="upload-button" id="upload-button">
-      Select or drop file
-    </div>
-    <small class="subtitle">2GB size limit</small>
   </div>
+</div>
 {% endcall %}
 {% endblock %}

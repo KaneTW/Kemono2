@@ -61,6 +61,23 @@ if __name__ == '__main__':
                 env=environment_vars
             )
 
+        ''' Run `tusd`. '''
+        if Configuration().filehaus['tus']['manage']:
+            subprocess.Popen(
+                [
+                    'tusd',
+                    '-upload-dir=./storage/uploads',
+                    '--hooks-enabled-events',
+                    'post-create',
+                    '-hooks-http',
+                    'http://127.0.0.1:3343'
+                    # 'http://127.0.0.1:6942/shares/tus'
+                ],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                env=environment_vars
+            )
+
         database.init()
         try:
             if Configuration().automatic_migrations:

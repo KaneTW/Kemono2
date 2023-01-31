@@ -9,7 +9,7 @@
 {% from 'components/buttons.html' import button %}
 
 {% macro header_link(url, text, class_name=none) %}
-  <a 
+  <a
     href="{{url}}"
     class="header-link {{ class_name if class_name }}"
      >
@@ -147,6 +147,10 @@
           { 'header': true, 'text': 'Importer', 'icon': '/static/menu/importer.svg' },
           { 'text': 'Import', 'link': '/importer', 'icon': '/static/menu/import.svg' },
           { 'text': 'FAQ', 'link': '/importer/tutorial', 'icon': '/static/menu/faq.svg' }
+        ],
+        [
+          { 'header': true, 'text': 'Filehaus' },
+          { 'text': 'Recent', 'link': '/shares' },
         ]
       ]) }}
       {{ nav_entry([

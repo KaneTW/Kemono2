@@ -1,0 +1,31 @@
+{% extends 'components/shell.html' %}
+
+{% from 'components/site_section.html' import site_section, site_section_header %}
+
+{% block scripts_extra %}
+  <script src="{{ url_for('static', filename='js/resumable.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='js/upload.js') }}" defer></script>
+{% endblock scripts_extra %}
+
+{% block content %}
+{% call site_section('upload') %}
+<div class="upload-view">
+  {{ site_section_header(share.name) }}
+  <pre>{{ share.description }}</pre>
+  {% for file in share_files %}
+    <li class="post__attachment">
+      <a
+        class="post__attachment-link"
+        {% if file.hash %}
+          href="/{{ file['hash'][0:2] }}/{{ file['hash'][2:4] }}/{{ file['hash'] }}.{{ file['ext'] }}"
+        {% else %}
+          href="{{ file['upload_url'] }}"
+        {% endif %}
+      >
+        Download {{ file['filename'] }}
+      </a>
+    </li>
+  {% endfor %}
+</div>
+{% endcall %}
+{% endblock %}

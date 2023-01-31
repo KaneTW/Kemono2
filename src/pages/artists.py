@@ -10,12 +10,13 @@ from src.lib.artist import (get_all_non_discord_artists, get_artist,
                             get_top_artists_by_faves)
 from src.lib.dms import count_user_dms, get_artist_dms
 from src.lib.favorites import is_artist_favorited
+from src.lib.filehaus import get_artist_shares
 from src.lib.post import (get_all_posts_by_artist, get_artist_posts,
                           get_render_data_for_posts, is_post_flagged)
 from src.utils.utils import (limit_int, offset, parse_int, sort_dict_list_by,
                              take, step_int)
 from src.internals.database.database import get_cursor
-from .artists_types import ArtistDMsProps, ArtistPageProps
+from .artists_types import ArtistDMsProps, ArtistPageProps, ArtistShareProps
 
 artists = Blueprint('artists', __name__)
 
@@ -98,6 +99,8 @@ def get(service: str, artist_id: str):
         return redirect(url_for('artists.list'))
     dm_count = count_user_dms(service, artist_id)
 
+    shares = get_artist_shares(artist_id, service)
+
     (result_previews, result_attachments, result_flagged,
      result_after_kitsune, result_is_image) = get_render_data_for_posts(posts)
 
@@ -111,7 +114,8 @@ def get(service: str, artist_id: str):
         favorited=favorited,
         artist=artist,
         display_data=display_data,
-        dm_count=dm_count
+        dm_count=dm_count,
+        share_count=len(shares)
     )
 
     response = make_response(render_template(
@@ -124,6 +128,49 @@ def get(service: str, artist_id: str):
         result_flagged=result_flagged,
         result_after_kitsune=result_after_kitsune,
         result_is_image=result_is_image
+    ), 200)
+    response.headers['Cache-Control'] = 's-maxage=60'
+    return response
+
+
+@artists.route('/<service>/user/<artist_id>/shares')
+def get_shares(service: str, artist_id: str):
+    # cursor = get_cursor()
+
+    base = request.args.to_dict()
+    base.pop('o', None)
+    base["service"] = service
+    base["artist_id"] = artist_id
+
+    favorited = False
+    account = load_account()
+    if account is not None:
+        favorited = is_artist_favorited(account['id'], service, artist_id)
+
+    dm_count = count_user_dms(service, artist_id)
+    shares = get_artist_shares(artist_id, service)
+
+    artist = get_artist(service, artist_id)
+    if artist is None:
+        return redirect(url_for('artists.list'))
+    display_data = make_artist_display_data(artist)
+
+    props = ArtistShareProps(
+        display_data=display_data,
+        favorited=favorited,
+        service=service,
+        session=session,
+        artist=artist,
+        id=artist_id,
+        dm_count=dm_count,
+        share_count=len(shares)
+    )
+
+    response = make_response(render_template(
+        'artist/shares.html',
+        results=shares,
+        props=props,
+        base=base
     ), 200)
     response.headers['Cache-Control'] = 's-maxage=60'
     return response

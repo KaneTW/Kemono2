@@ -27,7 +27,7 @@ const webpackConfigProd = {
           options: {
             presets: [
               [
-                '@babel/preset-env', 
+                '@babel/preset-env',
                 { targets: "defaults" }
               ],
             ],
@@ -36,6 +36,10 @@ const webpackConfigProd = {
             ]
           }
         }
+      },
+      {
+        test: /\.css$/i,
+        use: ['style-loader', 'css-loader'],
       },
       {
         test: /\.s[ac]ss$/i,
@@ -47,8 +51,8 @@ const webpackConfigProd = {
             // options: {
             //   sourceMap: true,
             // }
-          }, 
-          
+          },
+
           {
             loader: "postcss-loader",
             options: {
@@ -66,7 +70,7 @@ const webpackConfigProd = {
               additionalData: `$kemono-site: '${kemonoSite}';`
             }
           }
-          
+
         ],
       },
 

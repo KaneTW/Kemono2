@@ -25,6 +25,7 @@ from src.lib.notification import count_new_notifications
 from src.blueprints import api, pages
 from src.pages.account import account
 from src.pages.artists import artists
+from src.pages.filehaus import filehaus
 from src.pages.dms import dms
 from src.pages.favorites import favorites
 from src.pages.help import help_app
@@ -63,6 +64,7 @@ app.register_blueprint(post)
 app.register_blueprint(posts)
 app.register_blueprint(account)
 app.register_blueprint(favorites)
+app.register_blueprint(filehaus)
 app.register_blueprint(imports)
 app.register_blueprint(dms)
 app.register_blueprint(help_app, url_prefix='/help')

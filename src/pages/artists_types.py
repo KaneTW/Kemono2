@@ -18,6 +18,20 @@ class ArtistPageProps(PageProps):
     artist: Dict
     display_data: Callable[[Dict], Dict[str, str]]
     dm_count: int
+    share_count: int
+
+
+@dataclass
+class ArtistShareProps(PageProps):
+    currentPage = "shares"
+    id: str
+    service: str
+    session: Dict
+    artist: Dict
+    display_data: Callable[[Dict], Dict[str, str]]
+    favorited: bool
+    dm_count: int
+    share_count: int
 
 
 @dataclass
