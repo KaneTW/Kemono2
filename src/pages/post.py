@@ -49,9 +49,15 @@ def get(service, artist_id, post_id):
                 'path': post['file']['path'].replace('https://kemono.party', '')
             })
         else:
+            path = post['file']['path'].replace('https://kemono.party', '')
+            file_extension = PurePath(path).suffix
+            # filename without extension
+            stem = PurePath(path).stem
             attachments.append({
-                'path': post['file']['path'].replace('https://kemono.party', ''),
-                'name': post['file'].get('name')
+                'path': path,
+                'name': post['file'].get('name'),
+                'extension': file_extension,
+                'stem': stem
             })
     if len(post['embed']):
         previews.append({
