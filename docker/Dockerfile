@@ -6,9 +6,10 @@ RUN apt-get update \
         curl \
         jq
 
-RUN curl -L -O $(curl https://api.github.com/repos/tus/tusd/releases/latest -s | jq '.assets[] | select(.name=="tusd_linux_amd64.tar.gz") | .browser_download_url' -r)
-RUN tar -O -zxvf tusd_linux_amd64.tar.gz tusd_linux_amd64/tusd > /usr/bin/tusd
-RUN chmod +x /usr/bin/tusd
+RUN curl -L -O $(curl https://api.github.com/repos/tus/tusd/releases/latest -s | jq '.assets[] | select(.name=="tusd_linux_amd64.tar.gz") | .browser_download_url' -r); \
+    tar -xvf tusd_linux_amd64.tar.gz -C /usr/local/bin/ --strip-components=1 tusd_linux_amd64/tusd; \
+    chmod +x /usr/local/bin/tusd; \
+    rm tusd_linux_amd64.tar.gz
 
 WORKDIR /app
 
