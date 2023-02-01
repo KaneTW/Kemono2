@@ -36,10 +36,9 @@ export async function postPage(section) {
   Array.from(document.querySelectorAll('#player')).forEach(player => {
     new Plyr(player, {
       controls: [
-        'play-large', 'restart',  'rewind', 'play', 'fast-forward',
-        'progress', 'current-time', 'duration', 'mute', 'volume',
-        'captions', 'settings', 'pip', 'airplay', 'download',
-        'fullscreen'
+        'play-large', 'play', 'progress', 'current-time',
+        'duration', 'mute', 'captions', 'settings',
+        'pip', 'airplay', 'fullscreen'
       ]
     });
   });
