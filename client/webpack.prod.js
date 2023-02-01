@@ -38,10 +38,6 @@ const webpackConfigProd = {
         }
       },
       {
-        test: /\.css$/i,
-        use: ['style-loader', 'css-loader'],
-      },
-      {
         test: /\.s[ac]ss$/i,
         exclude: /\.module\.s[ac]ss$/i,
         use: [
