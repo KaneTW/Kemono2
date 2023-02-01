@@ -209,9 +209,30 @@
     <p class="subtitle">
       This DLsite post was received as a split set of multiple files due to file size. Download all the files, then open the .exe file to compile them into a single one.
     </p>
-  {% endif %}
+    {% endif %}
 
-  {% if attachments %}
+    {% if videos %}
+      <h2>Videos</h2>
+      <ul style="text-align: center;list-style-type: none;">
+        {% for video in videos %}
+          <li>
+            <summary>{{ video.name }}</summary>
+              <video
+                id="player"
+                playsinline
+                controls
+                preload="none"
+                data-plyr-config='{ title: "{{ video.name }}", ads: {{ g.video_ad|safe }} }'
+                class="post__video"
+              >
+                <source src="/data{{ video.path }}" type="video/{{ video.extension[1:] }}" />
+              </video>
+          </li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+
+    {% if attachments %}
     <h2>Downloads</h2>
     <ul class="post__attachments">
       {% for attachment in attachments %}
@@ -242,26 +263,6 @@
     </div>
   {% endif %}
 
-  {% if videos %}
-    <h2>Videos</h2>
-    <ul style="text-align: center;list-style-type: none;">
-      {% for video in videos %}
-        <li>
-          <summary>{{ video.name }}</summary>
-            <video
-              id="player"
-              playsinline
-              controls
-              preload="none"
-              data-plyr-config='{ title: "{{ video.name }}", ads: {{ g.video_ad|safe }} }'
-              class="post__video"
-            >
-              <source src="/data{{ video.path }}" type="video/{{ video.extension[1:] }}" />
-            </video>
-        </li>
-      {% endfor %}
-      </ul>
-  {% endif %}
 
   {% if previews %}
     <h2>Files</h2>
