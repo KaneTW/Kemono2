@@ -67,12 +67,10 @@ class Configuration:
         self.webserver['ui']['ads']['middle'] = self.webserver['ui']['ads'].get('middle', None)
         self.webserver['ui']['ads']['footer'] = self.webserver['ui']['ads'].get('footer', None)
         self.webserver['ui']['ads']['slider'] = self.webserver['ui']['ads'].get('slider', None)
-        self.webserver['ui']['ads']['video'] = self.webserver['ui']['ads'].get('video', b64encode(json.dumps(({
-            # This value should be a (still Base64-encoded!) JSON object.
-            # See https://github.com/sampotts/plyr#options > `ads`.
-            'enabled': False,
-            'tagUrl': ''
-        })).encode()).decode())
+        self.webserver['ui']['ads']['video'] = self.webserver['ui']['ads'].get('video', b64encode(json.dumps([
+            # This value should be a (still Base64-encoded!) JSON list of objects.
+            # See https://docs.fluidplayer.com/docs/configuration/ads/#adlist
+        ]).encode()).decode())
         # Matomo preferences.
         self.webserver['ui']['matomo'] = self.webserver['ui'].get('matomo', {})
         self.webserver['ui']['matomo']['enabled'] = self.webserver['ui']['matomo'].get('enabled', False)

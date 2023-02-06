@@ -6,8 +6,8 @@ import { isLoggedIn } from "@wp/js/account";
 import { isAntiscraperLink } from "@wp/lib/antiantiscraper.js";
 import { AntiscraperLink } from "@wp/components";
 
-import "../../static/css/plyr.css";
-import Plyr from "plyr";
+import "fluid-player/src/css/fluidplayer.css";
+import fluidPlayer from 'fluid-player';
 
 const meta = {
   service: null,
@@ -33,15 +33,20 @@ export async function postPage(section) {
 
   cleanupBody(postBody);
   await initButtons(buttonPanel);
-  Array.from(document.querySelectorAll('#player')).forEach(player => {
-    new Plyr(player, {
-      controls: [
-        'play-large', 'play', 'progress', 'current-time',
-        'duration', 'mute', 'captions', 'settings',
-        'pip', 'airplay', 'fullscreen'
-      ]
-    });
-  });
+  fluidPlayer('kemono-player', {
+    vastOptions: {
+      adList: window.videoAds,
+      adTextPosition: 'top left',
+      maxAllowedVastTagRedirects: 2,
+
+      vastAdvanced: {
+        vastLoadedCallback: (function() {}),
+        noVastVideoCallback: (function() {}),
+        vastVideoSkippedCallback: (function() {}),
+        vastVideoEndedCallback: (function() {})
+      }
+    }
+  })
 }
 
 /**
