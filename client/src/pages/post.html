@@ -214,16 +214,19 @@
   {% if videos %}
     <h2>Videos</h2>
     <script>window.videoAds = {{ g.video_ad|safe }};</script>
-    <ul style="list-style-type: none;">
+    <ul style="text-align: center;list-style-type: none;">
       {% for video in videos %}
-        <div class="post__video">
-          <li style="text-align: center">
-            <summary>{{ video.name }}</summary>
-            <video id="kemono-player" controls class="post__video">
-              <source src="/data{{ video.path }}" type="video/{{ video.extension[1:] }}"/>
-            </video>
-          </li>
-        </div>
+        <li>
+          <summary>{{ video.name }}</summary>
+          <video
+            id="kemono-player"
+            controls
+            playsinline
+            preload="none"
+          >
+            <source src="/data{{ video.path }}" type="video/{{ video.extension[1:] }}"/>
+          </video>
+        </li>
       {% endfor %}
     </ul>
   {% endif %}
