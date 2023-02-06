@@ -34,6 +34,9 @@ export async function postPage(section) {
   cleanupBody(postBody);
   await initButtons(buttonPanel);
   fluidPlayer('kemono-player', {
+    layoutControls: {
+      fillToContainer: false
+    },
     vastOptions: {
       adList: window.videoAds,
       adTextPosition: 'top left',
