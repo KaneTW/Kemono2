@@ -175,7 +175,8 @@
   }
 
   &__video {
-    max-width: 60vw;
+    width: 100% !important;
+    height: 100% !important;
   }
 
   &__footer {
