@@ -83,9 +83,10 @@ def get(service, artist_id, post_id):
                 'extension': file_extension,
                 'stem': stem
             })
-    for attachment in attachments:
+    for (i, attachment) in enumerate(attachments):
         if attachment['extension'] in video_extensions:
             videos.append({
+                'index': i,
                 'path': attachment['path'],
                 'name': attachment.get('name'),
                 'extension': attachment['extension']

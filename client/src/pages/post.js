@@ -33,23 +33,25 @@ export async function postPage(section) {
 
   cleanupBody(postBody);
   await initButtons(buttonPanel);
-  fluidPlayer('kemono-player', {
-    layoutControls: {
-      fillToContainer: false
-    },
-    vastOptions: {
-      adList: window.videoAds,
-      adTextPosition: 'top left',
-      maxAllowedVastTagRedirects: 2,
-
-      vastAdvanced: {
-        vastLoadedCallback: (function() {}),
-        noVastVideoCallback: (function() {}),
-        vastVideoSkippedCallback: (function() {}),
-        vastVideoEndedCallback: (function() {})
+  Array.from(document.getElementsByTagName('video')).forEach((_, i) => {
+    fluidPlayer(`kemono-player${i}`, {
+      layoutControls: {
+        fillToContainer: false,
+        preload: 'none'
+      },
+      vastOptions: {
+        adList: window.videoAds,
+        adTextPosition: 'top left',
+        maxAllowedVastTagRedirects: 2,
+        vastAdvanced: {
+          vastLoadedCallback: (function() {}),
+          noVastVideoCallback: (function() {}),
+          vastVideoSkippedCallback: (function() {}),
+          vastVideoEndedCallback: (function() {})
+        }
       }
-    }
-  })
+    });
+  });
 }
 
 /**
