@@ -8,7 +8,8 @@ import ujson
 import copy
 import dateutil
 
-def get_favorite_artists(account_id, reload = False):
+
+def get_favorite_artists(account_id, reload=False):
     redis = get_conn()
     key = 'favorite_artists:' + str(account_id)
     favorites = redis.get(key)
@@ -31,7 +32,8 @@ def get_favorite_artists(account_id, reload = False):
             artists.append(artist)
     return artists
 
-def get_favorite_posts(account_id, reload = False):
+
+def get_favorite_posts(account_id, reload=False):
     redis = get_conn()
     key = 'favorite_posts:' + str(account_id)
     favorites = redis.get(key)
@@ -52,7 +54,8 @@ def get_favorite_posts(account_id, reload = False):
             posts.append(post)
     return posts
 
-def is_artist_favorited(account_id, service, artist_id, reload = False):
+
+def is_artist_favorited(account_id, service, artist_id, reload=False):
     redis = get_conn()
     key = 'artist_favorited:' + str(account_id) + ':' + str(service) + str(artist_id)
     value = redis.get(key)
@@ -67,7 +70,8 @@ def is_artist_favorited(account_id, service, artist_id, reload = False):
 
     return value
 
-def is_post_favorited(account_id, service, artist_id, post_id, reload = False):
+
+def is_post_favorited(account_id, service, artist_id, post_id, reload=False):
     redis = get_conn()
     key = 'post_favorited:' + str(account_id) + ':' + str(service) + str(artist_id) + ':' + str(post_id)
     value = redis.get(key)
@@ -82,12 +86,14 @@ def is_post_favorited(account_id, service, artist_id, post_id, reload = False):
 
     return value
 
+
 def add_favorite_artist(account_id, service, artist_id):
     cursor = get_cursor()
     query = 'insert into account_artist_favorite (account_id, service, artist_id) values (%s, %s, %s) ON CONFLICT (account_id, service, artist_id) DO NOTHING'
     cursor.execute(query, (account_id, service, artist_id))
     get_favorite_artists(account_id, True)
     is_artist_favorited(account_id, service, artist_id, True)
+
 
 def add_favorite_post(account_id, service, artist_id, post_id):
     cursor = get_cursor()
@@ -96,16 +102,39 @@ def add_favorite_post(account_id, service, artist_id, post_id):
     get_favorite_posts(account_id, True)
     is_post_favorited(account_id, service, artist_id, post_id, True)
 
+
 def remove_favorite_artist(account_id, service, artist_id):
     cursor = get_cursor()
-    query = 'delete from account_artist_favorite where account_id = %s and service = %s and artist_id = %s'
+    query = """
+        DELETE FROM account_artist_favorite
+        WHERE id IN (
+            SELECT id
+            FROM account_artist_favorite
+            WHERE
+                account_id = %s
+                AND service = %s
+                AND artist_id = %s
+        );
+    """
     cursor.execute(query, (account_id, service, artist_id))
     get_favorite_artists(account_id, True)
     is_artist_favorited(account_id, service, artist_id, True)
 
+
 def remove_favorite_post(account_id, service, artist_id, post_id):
     cursor = get_cursor()
-    query = 'delete from account_post_favorite where account_id = %s and service = %s and artist_id = %s and post_id = %s'
+    query = """
+        DELETE FROM account_post_favorite
+        WHERE id IN (
+            SELECT id
+            FROM account_post_favorite
+            WHERE
+                account_id = %s
+                AND service = %s
+                AND artist_id = %s
+                AND post_id = %s
+        );
+    """
     cursor.execute(query, (account_id, service, artist_id, post_id))
     get_favorite_posts(account_id, True)
     is_post_favorited(account_id, service, artist_id, post_id, True)
