@@ -91,6 +91,9 @@ class Configuration:
         self.webserver['ui']['matomo']['site_id'] = self.webserver['ui']['matomo'].get('site_id', 2)
         # ... or override the template by entering a plain Base64-encoded string.
         self.webserver['ui']['matomo']['plain_code'] = self.webserver['ui']['matomo'].get('plain_code', None)
+        # File extensions recognized as (browser-friendly) video; will automatically be embedded in post pages.
+        self.webserver['ui']['video_extensions'] = self.webserver['ui'].get(
+            'video_extensions', ['.mp4', '.webm', '.m4v', '.3gp'])
 
         ''' Filehaus configuration. '''
         self.filehaus = config.get('filehaus', {})

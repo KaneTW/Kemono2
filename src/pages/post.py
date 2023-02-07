@@ -11,9 +11,10 @@ from ..lib.post import get_post, is_post_flagged, get_next_post_id, get_previous
 from ..lib.artist import get_artist
 from ..lib.favorites import is_post_favorited
 from ..lib.account import load_account
+from ..config import Configuration
 
 post = Blueprint('post', __name__)
-video_extensions = ['.mp4', '.webm']
+video_extensions = Configuration().webserver['ui']['video_extensions']
 
 
 @post.route('/<service>/user/<artist_id>/post/<post_id>')
