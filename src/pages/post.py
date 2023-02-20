@@ -7,11 +7,15 @@ import re
 from ..utils.utils import make_cache_key
 from ..internals.cache.flask_cache import cache
 from ..internals.database.database import get_cursor
-from ..lib.post import get_post, is_post_flagged, get_next_post_id, get_previous_post_id, get_post_comments
 from ..lib.artist import get_artist
 from ..lib.favorites import is_post_favorited
 from ..lib.account import load_account
 from ..config import Configuration
+from ..lib.post import (
+    get_post, is_post_flagged, get_next_post_id,
+    get_previous_post_id, get_post_comments,
+    get_fileserver_for_value
+)
 
 post = Blueprint('post', __name__)
 video_extensions = Configuration().webserver['ui']['video_extensions']
@@ -44,10 +48,12 @@ def get(service, artist_id, post_id):
     videos = []
     if len(post['file']):
         if re.search("\.(gif|jpe?g|jpe|png|webp)$", post['file']['path'], re.IGNORECASE):  # noqa w605
+            path = post['file']['path'].replace('https://kemono.party', '')
             previews.append({
                 'type': 'thumbnail',
+                'server': get_fileserver_for_value(path),
                 'name': post['file'].get('name'),
-                'path': post['file']['path'].replace('https://kemono.party', '')
+                'path': path
             })
         else:
             path = post['file']['path'].replace('https://kemono.party', '')
@@ -68,21 +74,24 @@ def get(service, artist_id, post_id):
             'description': post['embed']['description']
         })
     for attachment in post['attachments']:
+        path = attachment['path'].replace('https://kemono.party', '')
         if re.search("\.(gif|jpe?g|jpe|png|webp)$", attachment['path'], re.IGNORECASE):  # noqa w605
             previews.append({
                 'type': 'thumbnail',
+                'server': get_fileserver_for_value(path),
                 'name': attachment['name'],
-                'path': attachment['path'].replace('https://kemono.party', '')
+                'path': path,
             })
         else:
-            file_extension = PurePath(attachment['path']).suffix
+            file_extension = PurePath(path).suffix
             # filename without extension
-            stem = PurePath(attachment['path']).stem
+            stem = PurePath(path).stem
             attachments.append({
-                'path': attachment['path'],
+                'server': get_fileserver_for_value(path),
                 'name': attachment.get('name'),
                 'extension': file_extension,
-                'stem': stem
+                'stem': stem,
+                'path': path,
             })
     for (i, attachment) in enumerate(attachments):
         if attachment['extension'] in video_extensions:

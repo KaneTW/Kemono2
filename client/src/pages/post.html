@@ -225,7 +225,10 @@
             preload="none"
             class="post__video"
           >
-            <source src="/data{{ video.path }}" type="video/{{ video.extension[1:] }}"/>
+            <source
+              src="{{ attachment.server or '' }}/data{{ video.path }}"
+              type="video/{{ video.extension[1:] }}"
+            />
           </video>
         </li>
       {% endfor %}
@@ -239,8 +242,8 @@
         <li class="post__attachment">
           <a
             class="post__attachment-link"
-            href="/data{{ attachment.path }}?f={{ attachment.name|urlencode }}"
-            download
+            href="{{ attachment.server or '' }}/data{{ attachment.path }}"
+            download="{{ attachment.name|urlencode }}"
           >
             Download {{ attachment.name }}
           </a>
@@ -270,7 +273,11 @@
       {% for preview in previews %}
         {% if preview.type == 'thumbnail' %}
           <div class="post__thumbnail">
-            <a class="fileThumb" href="/data{{ preview.path }}?f={{ preview.name|urlencode }}">
+            <a
+              class="fileThumb"
+              href="{{ preview.server or '' }}/data{{ preview.path }}"
+              download="{{ preview.name|urlencode }}"
+            >
               {# TODO: move backup image logic to the script #}
               <img
                 data-src="/thumbnail/data{{ preview.path }}"

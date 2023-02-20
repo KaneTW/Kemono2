@@ -1,5 +1,7 @@
+from murmurhash2 import murmurhash2
 from ..internals.cache.redis import get_conn, KemonoRedisLock
 from ..internals.database.database import get_cursor
+from ..config import Configuration
 import ujson
 import redis_lock
 import dateutil
@@ -272,6 +274,28 @@ def get_previous_post_id(post_id, artist_id, service, reload=False):
         return prev_post
 
 
+def get_fileserver_for_value(value: str):
+    if Configuration().webserver['ui']['fileservers']:
+        path_hash = murmurhash2(value.encode(), 0)
+        max_value = 2**32 - 1
+        path_percentage = (path_hash & max_value) * 100 // max_value
+        cumulative_percentage = 0
+        entries = Configuration().webserver['ui']['fileservers']
+        total_servers = len(entries)
+        for i, entry in enumerate(entries):
+            if isinstance(entry, str):
+                if i >= total_servers - 1:
+                    return entry
+                entry = (entry, (100 / total_servers) // 0.01 / 100)
+            name, percentage = entry
+            if percentage == '':
+                return name
+            cumulative_percentage += percentage
+            if path_percentage < cumulative_percentage:
+                return name
+    return None
+
+
 def get_render_data_for_posts(posts):
     result_previews = []
     result_attachments = []
@@ -288,18 +312,21 @@ def get_render_data_for_posts(posts):
         previews = []
         attachments = []
         if len(post['file']):
+            path = post['file']['path'].replace('https://kemono.party', '')
             if re.search("\.(gif|jpe?g|jpe|png|webp)$", post['file']['path'], re.IGNORECASE):  # noqa: W605
                 result_is_image.append(True)
                 previews.append({
                     'type': 'thumbnail',
+                    'server': get_fileserver_for_value(path),
                     'name': post['file'].get('name'),
-                    'path': post['file']['path'].replace('https://kemono.party', '')
+                    'path': path,
                 })
             else:
                 result_is_image.append(False)
                 attachments.append({
-                    'path': post['file']['path'].replace('https://kemono.party', ''),
-                    'name': post['file'].get('name')
+                    'server': get_fileserver_for_value(path),
+                    'name': post['file'].get('name'),
+                    'path': path,
                 })
         else:
             result_is_image.append(False)
@@ -312,16 +339,19 @@ def get_render_data_for_posts(posts):
                 'description': post['embed']['description']
             })
         for attachment in post['attachments']:
+            path = attachment['path'].replace('https://kemono.party', '')
             if re.search("\.(gif|jpe?g|jpe|png|webp)$", attachment['path'], re.IGNORECASE):  # noqa: W605
                 previews.append({
                     'type': 'thumbnail',
                     'name': attachment.get('name'),
-                    'path': attachment['path'].replace('https://kemono.party', '')
+                    'path': path,
+                    'server': get_fileserver_for_value(f'/data{path}')
                 })
             else:
                 attachments.append({
-                    'path': attachment['path'],
-                    'name': attachment.get('name')
+                    'path': path,
+                    'name': attachment.get('name'),
+                    'server': get_fileserver_for_value(f'/data{path}')
                 })
 
         result_flagged.append(is_post_flagged(post['id'], post['user'], post['service']))

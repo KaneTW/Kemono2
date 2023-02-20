@@ -33,6 +33,7 @@ lxml==4.6.2
 MarkupSafe==2.0.0rc2
 mccabe==0.6.1
 migra==3.0.1652017683
+murmurhash2==0.2.10
 natsort==7.1.1
 nodeenv==1.6.0
 packaging==20.7

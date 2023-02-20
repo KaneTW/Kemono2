@@ -56,6 +56,12 @@ class Configuration:
         )
         # Interface preferences and customization options.
         self.webserver['ui'] = self.webserver.get('ui', {})
+        # Use custom fileservers. By default, files will simply point to the root.
+        # If you have multiple, this'll let you load balance!
+        # Each value in the array may either be a string pointing to the address
+        #   of each server or a two-element array containing an address and split
+        #   percentage (out of 100)
+        self.webserver['ui']['fileservers'] = self.webserver['ui'].get('fileservers', None)
         # Add custom links to the bottom of the sidebar.
         # See `client/src/pages/components/shell.html` for an idea of what the format is like.
         self.webserver['ui']['sidebar_items'] = self.webserver['ui'].get('sidebar_items', [])
