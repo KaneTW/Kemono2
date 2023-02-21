@@ -317,14 +317,14 @@ def get_render_data_for_posts(posts):
                 result_is_image.append(True)
                 previews.append({
                     'type': 'thumbnail',
-                    'server': get_fileserver_for_value(path),
+                    'server': get_fileserver_for_value(f'/data{path}'),
                     'name': post['file'].get('name'),
                     'path': path,
                 })
             else:
                 result_is_image.append(False)
                 attachments.append({
-                    'server': get_fileserver_for_value(path),
+                    'server': get_fileserver_for_value(f'/data{path}'),
                     'name': post['file'].get('name'),
                     'path': path,
                 })

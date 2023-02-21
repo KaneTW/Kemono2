@@ -51,7 +51,7 @@ def get(service, artist_id, post_id):
             path = post['file']['path'].replace('https://kemono.party', '')
             previews.append({
                 'type': 'thumbnail',
-                'server': get_fileserver_for_value(path),
+                'server': get_fileserver_for_value(f'/data{path}'),
                 'name': post['file'].get('name'),
                 'path': path
             })
@@ -61,10 +61,11 @@ def get(service, artist_id, post_id):
             # filename without extension
             stem = PurePath(path).stem
             attachments.append({
-                'path': path,
+                'server': get_fileserver_for_value(f'/data{path}'),
                 'name': post['file'].get('name'),
                 'extension': file_extension,
-                'stem': stem
+                'stem': stem,
+                'path': path,
             })
     if len(post['embed']):
         previews.append({
@@ -78,7 +79,7 @@ def get(service, artist_id, post_id):
         if re.search("\.(gif|jpe?g|jpe|png|webp)$", attachment['path'], re.IGNORECASE):  # noqa w605
             previews.append({
                 'type': 'thumbnail',
-                'server': get_fileserver_for_value(path),
+                'server': get_fileserver_for_value(f'/data{path}'),
                 'name': attachment['name'],
                 'path': path,
             })
@@ -87,7 +88,7 @@ def get(service, artist_id, post_id):
             # filename without extension
             stem = PurePath(path).stem
             attachments.append({
-                'server': get_fileserver_for_value(path),
+                'server': get_fileserver_for_value(f'/data{path}'),
                 'name': attachment.get('name'),
                 'extension': file_extension,
                 'stem': stem,
