@@ -226,7 +226,7 @@
             class="post__video"
           >
             <source
-              src="{{ attachment.server or '' }}/data{{ video.path }}"
+              src="/data{{ video.path }}"
               type="video/{{ video.extension[1:] }}"
             />
           </video>
