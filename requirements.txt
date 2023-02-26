@@ -29,7 +29,7 @@ isort==5.6.4
 itsdangerous==2.0.0
 Jinja2==3.0.0
 lazy-object-proxy==1.4.3
-lxml==4.6.2
+lxml==4.9.2
 MarkupSafe==2.0.0rc2
 mccabe==0.6.1
 migra==3.0.1652017683
@@ -71,7 +71,7 @@ text-unidecode==1.3
 toml==0.10.2
 tomlkit==0.10.2
 tusker==0.4.5
-typed-ast==1.4.1
+typed-ast==1.4.3
 ujson==4.0.2
 Unidecode==0.4.21
 urllib3==1.26.2
