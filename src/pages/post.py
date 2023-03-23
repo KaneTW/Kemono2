@@ -14,7 +14,7 @@ from ..config import Configuration
 from ..lib.post import (
     get_post, is_post_flagged, get_next_post_id,
     get_previous_post_id, get_post_comments,
-    get_fileserver_for_value
+    get_fileserver_for_value, get_post_files_from_db
 )
 
 post = Blueprint('post', __name__)
@@ -94,6 +94,21 @@ def get(service, artist_id, post_id):
                 'stem': stem,
                 'path': path,
             })
+    names = set([x['path'] for x in attachments])
+    for file in get_post_files_from_db(service, artist_id, post_id):
+        if file['path'] in names:
+            continue
+        path = file['path']
+        file_extension = PurePath(path)
+        stem = PurePath(path).stem
+        attachments.append({
+            'server': get_fileserver_for_value(f'/data{path}'),
+            'name': file['filename'],
+            'extension': file_extension,
+            'stem': stem,
+            'path': path,
+            })
+
     for (i, attachment) in enumerate(attachments):
         if attachment['extension'] in video_extensions:
             videos.append({

@@ -9,7 +9,7 @@ import datetime
 import copy
 import re
 import time
-
+import os
 
 def get_random_posts_keys(count, reload=False):
     redis = get_conn()
@@ -418,3 +418,17 @@ def rebuild_comment_fields(comment):
     comment['added'] = dateutil.parser.parse(comment['added'])
     comment['published'] = dateutil.parser.parse(comment['published']) if comment['published'] else None
     return comment
+
+def get_post_files_from_db(service, artist_id, post_id):
+    cursor = get_cursor()
+    cursor.execute("SELECT filename, hash, ext FROM file_post_relationships as fpr, files as f WHERE fpr.file_id=f.id and service=%s and fpr.user=%s and post=%s", (service, artist_id, post_id))
+    result = cursor.fetchall()
+    out = []
+    for row in result:
+        out.append({
+            'filename': row['filename'],
+            'path': os.path.join('/', row['hash'][:2], row['hash'][2:4], row['hash'] + row['ext'])
+            })
+    return out
+
+
